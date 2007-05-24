@@ -19,8 +19,12 @@ function wpupdate_admin_init(){
 	add_action('load-plugins.php', 'wpupdate_plugins');
 	add_action('load-themes.php', 'wpupdate_themes');
 	//Add extra Subpages.
-	add_submenu_page('plugins.php','Plugin search','Plugin Search','edit_plugins','wp-update/wp-update-plugins-search.php'); //Possibly hard-code this.
-	add_submenu_page('themes.php','Theme search','Theme Search','edit_themes','wp-update/wp-update-themes-search.php'); //Possibly hard-code this.
+	add_submenu_page('plugins.php','Plugin Search','Plugin Search','edit_plugins','wp-update/wp-update-plugins-search.php'); //Possibly hard-code this.
+	add_submenu_page('plugins.php','Plugin Install','Plugin Install','edit_plugins','wp-update/wp-update-plugins-install.php'); //Possibly hard-code this.
+	add_submenu_page('themes.php','Theme Search','Theme Search','edit_themes','wp-update/wp-update-themes-search.php'); //Possibly hard-code this.
+	add_submenu_page('themes.php','Theme Install','Theme Install','edit_themes','wp-update/wp-update-themes-install.php'); //Possibly hard-code this.
+	
+	add_options_page('Wp-Update','Wp-Update',8,'wp-update/wp-update-options.php');
 	
 	//Enqueue jQuery
 	if(	'themes.php' == $pagenow || 
