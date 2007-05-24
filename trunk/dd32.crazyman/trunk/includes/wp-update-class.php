@@ -150,56 +150,69 @@ class WP_Update{
 	
 	/** PLUGIN SEARCH FUNCTIONS **/
 	function searchPlugins($term){
-		$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		$ret = array();
-		preg_match_all('#<h2>(Plugin title matches|Relevant plugins)</h2>(.*?)</ol>#ims',$snoopy->results,$mat);
-		for( $i=0; $i < count($mat[1]); $i++){
-			$regex = ('Plugin title matches' == $mat[1][$i]) ? 
-						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small><p>(.*?)</p></small>#ims' : 
-						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
-						
-			preg_match_all($regex,$mat[2][$i],$matPlugins);
-			
-			$type = ('Plugin title matches' == $mat[1][$i]) ? 'titlematch' : 'relevant';
-			
-			for( $j=0; $j < count($matPlugins[1]); $j++){
-				$ret[ $type ][] = array('Uri'=>$matPlugins[1][$j], 'Name'=>$matPlugins[2][$j], 'Desc'=>$matPlugins[3][$j]);
+		$searchresults = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
+		if( ! $searchresults ){
+			$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
+			$snoopy = new Snoopy();
+			$snoopy->fetch($url);
+			$searchresults = array();
+			preg_match_all('#<h2>(Plugin title matches|Relevant plugins)</h2>(.*?)</ol>#ims',$snoopy->results,$mat);
+			for( $i=0; $i < count($mat[1]); $i++){
+				$regex = ('Plugin title matches' == $mat[1][$i]) ? 
+							'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small><p>(.*?)</p></small>#ims' : 
+							'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
+							
+				preg_match_all($regex,$mat[2][$i],$matPlugins);
+				
+				$type = ('Plugin title matches' == $mat[1][$i]) ? 'titlematch' : 'relevant';
+				
+				for( $j=0; $j < count($matPlugins[1]); $j++){
+					$searchresults[ $type ][] = array('Uri'=>$matPlugins[1][$j], 'Name'=>$matPlugins[2][$j], 'Desc'=>$matPlugins[3][$j]);
+				}
 			}
+			wp_cache_set('wpupdate_search_'.rawurlencode($term), $searchresults, 'wpupdate', 21600); //6*60*60=21600
 		}
-		return $ret;
+		return $searchresults;
 	}
 	
 	/** PLUGIN UPDATE FUNCTIONS **/
 	function checkPluginUpdate($pluginfile){
 		$data = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $pluginfile);
-		if( '' != $data['Update'] ) //We have a custom update URL.
+		if( '' != $data['Update'] ){
+			//We have a custom update URL.
 			return $this->checkPluginUpdateCustom($pluginfile,$data);
+		}
 		//Else, We check wordpress.org.. 
-		//Check via search:
+		//Find the plugin:
 		$plugins = $this->searchPlugins($data['Name']);
 		if( isset($plugins['titlematch']) ){
 			foreach($plugins['titlematch'] as $result){
 				if( $result['Name'] == $data['Name'] ){
+					//Return information:
 					return $this->checkPluginUpdateWordpressOrg($data,$result);
 				}
 			}
 		}
-		foreach($plugins as $result){
-		
+		if( isset($plugins['relevant']) ){
+			foreach($plugins['relevant'] as $result){
+				if( $result['Name'] == $data['Name'] ){
+					//return information:
+					return $this->checkPluginUpdateWordpressOrg($data,$result);
+				}
+			}
 		}
-		//I think i need to do a search.. and then check the corresp. page..?
-		//$wp_name = str_replace(' ','-',strtolower($data['Name']));
-		//$wp_name = preg_replace("#![\w\-]#",'',$wp_name);
-		//echo $wp_name;
 		//Else, We check wordpressplugins.net
 	}
 	function checkPluginUpdateWordpressOrg($pluginData,$wordpressInfo){
-		return $this->getPluginInformationWordPressOrg($wordpressInfo['url']);
-		//version_compare
+		$wordpressPluginInfo = $this->getPluginInformationWordPressOrg($wordpressInfo['Uri']);
+		if( version_compare($wordpressPluginInfo['Version'] , $pluginData['Version'], '>') ){
+			echo 'There is a newer version available: '.$wordpressPluginInfo['Version'];
+		} else {
+			echo 'You have the latest version';
+		}
 	}
 	function getPluginInformationWordPressOrg( $pluginurl ){
+		if ( ! $pluginurl ) return false;
 		$plugin = wp_cache_get('wpupdate_'.$pluginurl, 'wpupdate');
 		if( ! $plugin ){
 			$snoopy = new Snoopy();
@@ -237,9 +250,15 @@ class WP_Update{
 						'Tags'		=>	$final_tags,
 						'Related'	=>	$final_related
 						);
-			wp_cache_set('wpupdate_'.$pluginurl, $plugin, 'wpupdate', 43200); //24*60*60=43200
+			wp_cache_set('wpupdate_'.$pluginurl, $plugin, 'wpupdate', 21600); //12*60*60=21600
 		}
 		return $plugin;
+	}
+	function checkPluginUpdateCustom($pluginfile,$plugindata){
+		$url = $plugindata['Update'];
+		$snoopy = new Snoopy();
+		$snoopy->fetch($url);
+		$data = unserialize($snoopy->results);
 	}
 }
 ?>
