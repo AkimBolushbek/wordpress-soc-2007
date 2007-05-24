@@ -127,7 +127,36 @@ if ( count($broken_themes) ) {
 ?>
 
 <h2><?php _e('Featured Themes'); ?></h2>
-<iframe name="themes" id="themes" src ="http://wordpress.org/extend/themes/themes.php" width="100%" height="382" frameborder="0"></iframe>
+<style type="text/css">
+	div#featured{
+		width:100%;
+	}
+	div#featured .theme{
+		display:inline-block;
+		height:350px;
+		width:460px;
+		margin-right:20px;
+		text-align:center;
+	}
+</style>
+<div id="featured">
+<?php
+	$themes = $wpupdate->getThemesFeatured();
+	foreach($themes as $theme){
+	/*[id] => almost-spring
+    [thumbnail] => http://wordpress.org/extend/themes/t/almost-spring.png
+    [name] => Almost Spring
+    [author] => Becca Wei
+    [authorhomepage] => http://beccary.com
+    [download]*/
+		echo "<div class='theme' id='{$theme['id']}'>";
+		echo "<img src='{$theme['thumbnail']}' height='320' width='450' /><br />";
+		echo "{$theme['name']} By <a href='{$theme['authorhomepage']}' target='_blank'>{$theme['author']}</a> | ";
+		echo "<a href='#'>Install</a>";
+		echo '</div>';
+	}
+?>
+</div>
 
 </div>
 
