@@ -174,7 +174,7 @@ if (empty($plugins)) {
 		else
 			$edit = '';
 		if( current_user_can('edit_plugins') )
-			$forceupdate = "<a href='#' onclick='checkPluginUpdate(\"$plugin_file\")' title='".__('Check for Plugin Update')."' class='edit'>".__('Check for Update')."</a>";
+			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\'); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
 		else
 			$forceupdate = '';
 			
@@ -182,7 +182,7 @@ if (empty($plugins)) {
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>Checking Update..{$plugin_data['Update']}</td>
+		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>{$plugin_data['Update']}</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') )
@@ -209,18 +209,24 @@ if ( current_user_can('edit_plugins') ){
 </table>
 <script type="text/javascript">
 //<![CDATA[
-<?php
-$updatefile = get_settings('home').'/wp-content/plugins/wp-update/wp-update-ajax.php';
+function checkUpdate(file){
+	var update = 'td#wpupdate-' + file.replace('/','').replace('.','');
+	$(update).html('Checking Update..');
+	$(update).load('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=checkPluginUpdate&file='+file);
+}
 
-foreach($plugins as $plugin_file => $plugin_data) {
+<?php
+foreach($plugins as $plugin_file => $plugin_data)
+	echo "checkUpdate('$plugin_file');\n";
+	//echo "checkUpdate('".str_replace(array('/','.'),'',$plugin_file)."');\n";
+	
 	/*echo "$.get('$updatefile', {action: 'checkPluginUpdate', file: '$plugin_file'}, 
 				function(data) { 
 					$('td#wpupdate-$plugin_file').html(data);
 					}
 		);
 		";*/
-	echo "$('td#wpupdate-".str_replace(array('/','.'),'',$plugin_file)."').load('$updatefile?action=checkPluginUpdate&file=".$plugin_file."');\n";
-}
+	//echo "$('td#wpupdate-".str_replace(array('/','.'),'',$plugin_file)."').load('$updatefile?action=checkPluginUpdate&file=".$plugin_file."');\n";
 ?>
 //]]>
 </script>
