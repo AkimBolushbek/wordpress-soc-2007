@@ -173,16 +173,24 @@ if (empty($plugins)) {
 			$edit = "<a href='plugin-editor.php?file=$plugin_file' title='".__('Open this file in the Plugin Editor')."' class='edit'>".__('Edit')."</a>";
 		else
 			$edit = '';
+		
 		if( current_user_can('edit_plugins') )
-			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
+			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\'); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
 		else
 			$forceupdate = '';
-			
+		
+		if( !get_option('update_notification_enable') ||
+			( !get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins) ) )
+			$updatetext = __('Not Checked');
+		else
+			$updatetext = __('Please Wait');
+		
+		
 		echo "
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>{$plugin_data['Update']}</td>
+		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>$updatetext</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') )
@@ -216,8 +224,12 @@ function checkUpdate(file){
 }
 
 <?php
-foreach($plugins as $plugin_file => $plugin_data)
-	echo "checkUpdate('$plugin_file');\n";
+if( get_option('update_notification_enable') ){
+	foreach($plugins as $plugin_file => $plugin_data){
+		if ( get_option('update_check_inactive') || in_array($plugin_file, $current_plugins) )
+			echo "checkUpdate('$plugin_file');\n";
+	}
+}
 ?>
 //]]>
 </script>
