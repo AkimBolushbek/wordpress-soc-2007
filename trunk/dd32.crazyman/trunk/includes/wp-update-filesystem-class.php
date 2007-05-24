@@ -6,7 +6,7 @@ class WP_Filesystem{
 
 	function WP_Filesystem($method='',$arg=''){
 		$method = $this->bestOption($method);
-		if( ! $method ) return false;
+		if( ! $method ) return;
 
 		@require('wp-update-filesystem-'.$method.'-class.php');
 		return new "WP_Filesystem_$method"($arg);
