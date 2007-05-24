@@ -75,7 +75,7 @@ class WP_Update{
 			$snoopy = new Snoopy();
 			$snoopy->fetch('http://wordpress.org/extend/plugins/tags/');
 			$tags = $this->parseTagHTML($snoopy->results);
-			wp_cache_set('wpupdate_PluginSearchTags', $tags);
+			wp_cache_set('wpupdate_PluginSearchTags', $tags, 'wpupdate', 43200); //12*60*60=43200
 		}
 		return $tags;
 	}
