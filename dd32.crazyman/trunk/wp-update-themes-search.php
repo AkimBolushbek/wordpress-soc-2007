@@ -159,9 +159,9 @@ if(!$items){
 	foreach($items as $theme){
 		echo "&nbsp;<div class='themeinfo'>
 				<span>
-					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}</a><br />
-					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /><br/>
-					<a href='{$theme['testrun']}' target='_blank'>Test Run</a> | <a href='#' target='_blank'>Install</a>
+					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
+					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
+					<a href='{$theme['testrun']}' target='_blank'>Test Run</a> | <a href='#' onclick='return false;' target='_blank'>Install</a>
 				</span>
 			</div>\n";
 	}
