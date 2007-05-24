@@ -10,7 +10,7 @@ class WP_Update{
 			if('html' == $output){ //Format it for HTML output.
 				$items = $this->searchThemes($tags,$page);
 				$ret = '';
-				foreach($items as $theme){
+				foreach( (array)$items as $theme){
 					$ret .="&nbsp;<div class='themeinfo'><span>
 							<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
 							<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' 
@@ -186,7 +186,7 @@ class WP_Update{
 		//Find the plugin:
 		$plugins = $this->searchPlugins($data['Name']);
 		if( isset($plugins['titlematch']) ){
-			foreach($plugins['titlematch'] as $result){
+			foreach( (array)$plugins['titlematch'] as $result){
 				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
 					//Return information:
 					return $this->checkPluginUpdateWordpressOrg($data,$result);
@@ -194,7 +194,7 @@ class WP_Update{
 			}
 		}
 		if( isset($plugins['relevant']) ){
-			foreach($plugins['relevant'] as $result){
+			foreach( (array)$plugins['relevant'] as $result){
 				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
 					//return information:
 					return $this->checkPluginUpdateWordpressOrg($data,$result);
@@ -229,7 +229,7 @@ class WP_Update{
 		if( ! $snoopy->results )
 			return false;
 		$WPInfo = unserialize($snoopy->results);
-		foreach($WPInfo as $plugin){
+		foreach( (array)$WPInfo as $plugin){
 			if( 0 === strcasecmp($plugin['plugin_name'],$pluginData['Name']) ){
 				//We have a match.
 				$plugin = array(
