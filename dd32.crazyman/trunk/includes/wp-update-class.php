@@ -189,8 +189,7 @@ class WP_Update{
 			foreach($plugins['titlematch'] as $result){
 				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
 					//Return information:
-					$this->checkPluginUpdateWordpressOrg($data,$result);
-					return;
+					return $this->checkPluginUpdateWordpressOrg($data,$result);
 				}
 			}
 		}
@@ -198,20 +197,40 @@ class WP_Update{
 			foreach($plugins['relevant'] as $result){
 				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
 					//return information:
-					$this->checkPluginUpdateWordpressOrg($data,$result);
-					return;
+					return $this->checkPluginUpdateWordpressOrg($data,$result);
 				}
 			}
 		}
-		echo "Not found on wordpress.org";
-		//Else, We check wordpressplugins.net
+		//Else, We check wp-plugins.net
+		$status = $this->checkPluginUpdateWpPluginsNet($data);
+		if( $status)
+			return $status;
+		//We have a plugin that we cant find a home for.
+		$this->registerNoUpdatePlugin($pluginfile, $data);
+		return null;
 	}
 	function checkPluginUpdateWpPluginsNet($pluginData){
+		$plugin = $this->getPluginInformationWpPluginsNet($pluginData);
+		if( $plugin ){
+			//Plugin was found
+			if( ! $plugin['Version'])
+				return null;
+			if( version_compare($plugin['Version'] , $pluginData['Version'], '>') ){
+				return $plugin['Version'];
+			} else {
+				return false;
+			}
+		}
+	}
+	function getPluginInformationWpPluginsNet($pluginData){
+		$plugin = false;
 		$snoopy = new Snoopy();
 		$snoopy->fetch('http://wp-plugins.net/get_plugin_data.php?wp_version=any&filter='.$pluginData['Name']);
+		if( ! $snoopy->results )
+			return false;
 		$WPInfo = unserialize($snoopy->results);
 		foreach($WPInfo as $plugin){
-			if( 0 === strcasecmp($plugin['plugin_name'],$pluginData['Name']){
+			if( 0 === strcasecmp($plugin['plugin_name'],$pluginData['Name']) ){
 				//We have a match.
 				$plugin = array(
 						'Name' 		=>	$plugin['plugin_name'],
@@ -229,20 +248,18 @@ class WP_Update{
 				break;
 			}
 		}
+		return $plugin;
 	}
 	function checkPluginUpdateWordpressOrg($pluginData,$wordpressInfo){
 		$wordpressPluginInfo = $this->getPluginInformationWordPressOrg($wordpressInfo['Uri']);
 		if( ! $wordpressPluginInfo['Version'] ){
-			echo "Not Available";
-			return;
+			return null;
 		}
 		if( version_compare($wordpressPluginInfo['Version'] , $pluginData['Version'], '>') ){
-			echo 'New Version: '.$wordpressPluginInfo['Version'] . '<br />';
-			echo '<a href="#">'.__('Install').'</a>';
+			return $wordpressPluginInfo['Version'];
 		} else {
-			echo 'Latest Installed';
+			return false;
 		}
-		return;
 	}
 	function getPluginInformationWordPressOrg( $pluginurl ){
 		if ( ! $pluginurl ) return false;
@@ -292,6 +309,10 @@ class WP_Update{
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 		$data = unserialize($snoopy->results);
+	}
+	/** PLUGIN UNUPDATABLE **/
+	function registerNoUpdatePlugin($file,$plugin){
+		return;
 	}
 }
 ?>

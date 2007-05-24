@@ -127,6 +127,11 @@ if (empty($plugins)) {
 	echo '</p>';
 } else {
 ?>
+<style type="text/css">
+	.update{
+		font-weight:bold;
+	}
+</style>
 <table class="widefat plugins">
 	<thead>
 	<tr>
@@ -174,7 +179,7 @@ if (empty($plugins)) {
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>Checking Update..{$plugin_data['Update']}</td>
+		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>Checking Update..{$plugin_data['Update']}</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') )
