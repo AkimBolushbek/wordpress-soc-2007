@@ -1,6 +1,8 @@
 <?php
 class WP_Update{
-
+	function WP_Update(){
+		require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
+	}
 	function search($item='themes',$tags=array(),$output='array',$offset=0,$limit=15){
 		if('themes' == $item){
 			if(0 == count($tags)) return false; //Must specify search terms.
@@ -25,7 +27,6 @@ class WP_Update{
 		}
 	}
 	function searchThemes($tags, $offset, $limit){
-		require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 		$urlpart = array();
 		foreach($_POST as $postname=>$postvalue){
 			if(is_array($postvalue)){
@@ -62,6 +63,35 @@ class WP_Update{
 							'testrun'=>'http://themes.wordpress.net/testrun/?wptheme='.$id
 							);
 		}
+		return $ret;
+	}
+	function getPluginSearchTags(){
+		$snoopy = new Snoopy();
+		$snoopy->fetch('http://wordpress.org/extend/plugins/tags/');
+		return $this->parseTagHTML($snoopy->results);
+	}
+	function parseTagHTML($html){
+		$ret = array();//array('popular'=>array(),'all'=>array());
+		preg_match_all("#<a href='(.*)' title='(\d+) topics' rel='tag' style='font-size: ([\d\.]+)pt;'>(.*)</a>#i",$html,$tags);
+		//preg_match_all("#<li><a href='(.*)'>(.*) \((\d+)\)</a></li>#i",$html,$populartags); //Popular tags is not needed.. Its include in the tagmap
+		
+		for($i=0;$i<count($tags[0]);$i++){
+			$ret[] = array(
+						'name' => $tags[4][$i],
+						'url'  => $tags[1][$i],
+						'number'  => $tags[2][$i],
+						'pointsize' => $tags[3][$i]
+						);
+		}
+		
+	/*	for($i=0;$i<count($populartags[0]);$i++){
+			$ret['popular'][] = array(
+								'name' => $populartags[2][$i],
+								'url'  => $populartags[1][$i],
+								'number'  => $populartags[3][$i]
+								);
+		}
+		print_r($ret); */
 		return $ret;
 	}
 }
