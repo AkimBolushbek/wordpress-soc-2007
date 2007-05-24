@@ -65,6 +65,10 @@ $wpupdate = new WP_Update;
 		<?php _e('Enable of Auto-Installing of Plugin and Theme updates'); ?><br />
 		<input type="checkbox" name="update_check_inactive" <?php if(get_option('update_check_inactive')){ echo 'checked="checked"'; } ?> />
 		<?php _e('Enable checking for Plugins which are NOT Activated'); ?><br />
+		<input type="checkbox" name="update_plugin_search_enable" <?php if(get_option('update_plugin_search_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Plugin Search'); ?><br />
+		<input type="checkbox" name="update_theme_search_enable" <?php if(get_option('update_theme_search_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Theme Search'); ?><br />
 	</p>
 	<p>
 		<h3>Plugin/Theme Update Options</h3>
@@ -81,12 +85,7 @@ $wpupdate = new WP_Update;
 		<?php _e('Check for Plugin updated Nightly'); ?><br />
 		<input type="checkbox" name="update_email_enable" <?php if(get_option('update_email_enable')){ echo 'checked="checked"'; } ?> />
 		<?php _e('Email Blog Owner when updates are available:'); ?>
-		<input type="textbox" name="update_email_email" <?php if(false !== ($email = get_option('update_email_email')) ){ echo 'value="'.$email.'"'; } ?> /><br />
-		
-		<input type="checkbox" name="update_plugin_search_enable" <?php if(get_option('update_plugin_search_enable')){ echo 'checked="checked"'; } ?> />
-		<?php _e('Enable Plugin Search'); ?><br />
-		<input type="checkbox" name="update_theme_search_enable" <?php if(get_option('update_theme_search_enable')){ echo 'checked="checked"'; } ?> />
-		<?php _e('Enable Theme Search'); ?><br />
+		<input type="textbox" name="update_email_email" <?php if(false !== ($email = get_option('update_email_email')) ){ echo 'value="'.$email.'"'; } ?> />
 	</p>
 	<p class="submit">
 		<input type="submit" name="submit_general" value="<?php _e('Save Options &raquo;'); ?>" />

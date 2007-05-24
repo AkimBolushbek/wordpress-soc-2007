@@ -1,4 +1,8 @@
 <?php
+if( !get_option('update_install_enable') ){
+	echo '<div class="error"><h1>Not Enabled</h1></div>';
+	return;
+}
 require_once('includes/wp-update-class.php');
 require_once('includes/pclzip.lib.php');
 global $wpupdate;
