@@ -71,6 +71,26 @@ if ( isset($_GET['action']) ) {
 	exit;
 }
 
+add_action('admin_head','wpupdate_header');
+
+function wpupdate_header(){ ?>
+<style type="text/css">
+	.update{
+		font-weight:bold;
+	}
+</style>
+<script type="text/javascript">
+//<![CDATA[
+function checkUpdate(file){
+	var update = 'td#wpupdate-' + file.replace('/','').replace('.','');
+	$(update).html('Checking Update..');
+	$(update).load('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=checkPluginUpdate&file='+file);
+}
+//]]>
+</script>
+<?php
+}
+
 $title = __('Manage Plugins++');
 $parent_file = 'plugins.php';
 
@@ -130,11 +150,6 @@ if (empty($plugins)) {
 	echo '</p>';
 } else {
 ?>
-<style type="text/css">
-	.update{
-		font-weight:bold;
-	}
-</style>
 <table class="widefat plugins">
 	<thead>
 	<tr>
@@ -178,12 +193,35 @@ if (empty($plugins)) {
 			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\'); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
 		else
 			$forceupdate = '';
-		
-		if( !get_option('update_notification_enable') ||
-			( !get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins) ) )
+		//TODO: Add some commenting to explain weird layering here
+		if( !get_option('update_notification_enable') ){
 			$updatetext = __('Not Checked');
-		else
-			$updatetext = __('Please Wait');
+		} else {
+			$updateStat = $wpupdate->checkPluginUpdate($plugin_file,false,false);
+			//TODO: Seems to be firing for disabled plugins regardless
+			if( ( isset($updateStat['Errors']) && in_array('Not Cached',$updateStat['Errors']) )
+				|| (get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins)  ) ){
+				//Plugin info not cached.
+				$updatetext = __('Please Wait');
+				$updatetext .= "<script type='text/javascript'>checkUpdate('$plugin_file');</script>";
+			} elseif ( !isset($updateStat['Update']) && !get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins) ){
+				$updatetext = __('Not Checked');
+			} else {
+				//Update is available; display it.
+				if( $updateStat['Update'] ){
+					$updatetext = __('Update Available').':<br/>';
+					$updatetext .= $updateStat['Version'];
+					$updatetext .= '<br/><a href="#">'.__('Install').'</a>';
+					if( isset($updateStat['Errors']) ){
+						$updatetext .= '<br/><span class="updateerror">';
+						$updatetext .= implode('<br/>',$updateStat['Errors']);
+						$updatetext .= '</span>';
+					}
+				} else {
+					$updatetext = __('Latest Installed');
+				} //updatestat
+			} //isset()
+		}// !get_option
 		
 		
 		echo "
@@ -215,24 +253,6 @@ if ( current_user_can('edit_plugins') ){
  </tr>
  <?php } ?>
 </table>
-<script type="text/javascript">
-//<![CDATA[
-function checkUpdate(file){
-	var update = 'td#wpupdate-' + file.replace('/','').replace('.','');
-	$(update).html('Checking Update..');
-	$(update).load('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=checkPluginUpdate&file='+file);
-}
-
-<?php
-if( get_option('update_notification_enable') ){
-	foreach($plugins as $plugin_file => $plugin_data){
-		if ( get_option('update_check_inactive') || in_array($plugin_file, $current_plugins) )
-			echo "checkUpdate('$plugin_file');\n";
-	}
-}
-?>
-//]]>
-</script>
 <?php
 }
 ?>
@@ -246,5 +266,7 @@ if( get_option('update_notification_enable') ){
 </div>
 
 <?php
+global $wp_object_cache;
+$wp_object_cache->stats();
 include('admin-footer.php');
 ?>
