@@ -185,12 +185,19 @@ if (empty($plugins)) {
 	</tr>";
 	}
 ?>
+<?php 
+if ( current_user_can('edit_plugins') ){
+?>
  <tr>
-	<td colspan="6" align="right">
-		<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>"><?php _e('Deactivate All Plugins'); ?></a><br />
+	<td colspan="4">&nbsp;</td>
+	<td align="right">
+		<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>" class="delete"><?php _e('Deactivate All Plugins'); ?></a>
+	</td>
+	<td colspan="2" align="center">
 		<a href="<?php echo wp_nonce_url('plugins.php?action=reactivate-previous', 'reactivate-previous'); ?>"><?php _e('Reactivate Deactivated Plugins'); ?></a>
 	</td>
  </tr>
+ <?php } ?>
 </table>
 <script type="text/javascript">
 //<![CDATA[
