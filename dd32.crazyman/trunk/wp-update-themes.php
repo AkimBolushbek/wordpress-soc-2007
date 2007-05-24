@@ -38,7 +38,7 @@ $ct = current_theme_info();
 ?>
 
 <div class="wrap">
-<h2><?php _e('Current Theme++'); ?></h2>
+<h2><?php _e('Current Theme'); ?></h2>
 <div id="currenttheme">
 <?php if ( $ct->screenshot ) : ?>
 <img src="<?php echo get_option('siteurl') . '/' . $ct->stylesheet_dir . '/' . $ct->screenshot; ?>" alt="<?php _e('Current theme preview'); ?>" />
