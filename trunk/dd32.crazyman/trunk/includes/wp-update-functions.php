@@ -1,7 +1,9 @@
 <?php
 //Having this here causes a bug.... it matches itself.
 function wpupdate_get_plugin_data( $plugin_file ) {
-	$plugin_data = implode( '', file( $plugin_file ));
+	$plugin_data = implode( '', @file( $plugin_file ));
+	if(!$plugin_data)
+		return;
 	preg_match( "|Plugin Name:(.*)|i", $plugin_data, $plugin_name );
 	preg_match( "|Plugin URI:(.*)|i", $plugin_data, $plugin_uri );
 	preg_match( "|Description:(.*)|i", $plugin_data, $description );
@@ -48,15 +50,13 @@ function wpupdate_get_plugins() {
 	$plugins_dir = @ dir( $plugin_root);
 	if ( $plugins_dir ) {
 		while (($file = $plugins_dir->read() ) !== false ) {
-			if ( preg_match( '|^\.+$|', $file ))
+			if ( '.' == $file || '..' == $file )
 				continue;
 			if ( is_dir( $plugin_root.'/'.$file ) ) {
 				$plugins_subdir = @ dir( $plugin_root.'/'.$file );
-				if ( $plugins_subdir ) {
-					while (($subfile = $plugins_subdir->read() ) !== false ) {
-						if ( preg_match( '|^\.+$|', $subfile ))
-							continue;
-						if ( preg_match( '|\.php$|', $subfile ))
+				if ( $plugins_subdir ){
+					while (($subfile = $plugins_subdir->read() ) !== false ){
+						if ( preg_match( '|\.php$|', $subfile ) )
 							$plugin_files[] = "$file/$subfile";
 					}
 				}
@@ -71,14 +71,10 @@ function wpupdate_get_plugins() {
 		return $wp_plugins;
 
 	foreach ( $plugin_files as $plugin_file ) {
-		if ( !is_readable( "$plugin_root/$plugin_file" ) )
-			continue;
-		if ( 'wp-update/wp-update-functions.php' == $plugin_file ) //Prevent it from finding this file
-			continue;
 
 		$plugin_data = wpupdate_get_plugin_data( "$plugin_root/$plugin_file" );
 
-		if ( empty ( $plugin_data['Name'] ) )
+		if ( empty($plugin_data) || empty ( $plugin_data['Name'] ) )
 			continue;
 
 		$wp_plugins[plugin_basename( $plugin_file )] = $plugin_data;
