@@ -178,31 +178,35 @@ class WP_Update{
 	/** PLUGIN UPDATE FUNCTIONS **/
 	function checkPluginUpdate($pluginfile){
 		$data = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $pluginfile);
-		if( '' != $data['Update'] ){
+		if ( '' != $data['Update'] && get_option('update_location_custom') ){
 			//We have a custom update URL.
 			return $this->checkPluginUpdateCustom($pluginfile,$data);
 		}
 		//Else, We check wordpress.org.. 
-		//Find the plugin:
-		$plugins = $this->searchPlugins($data['Name']);
-		if( isset($plugins['titlematch']) ){
-			foreach( (array)$plugins['titlematch'] as $result){
-				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
-					//Return information:
-					return $this->checkPluginUpdateWordpressOrg($data,$result);
+		if( get_option('update_location_wordpressorg') ){
+			//Find the plugin:
+			$plugins = $this->searchPlugins($data['Name']);
+			if( isset($plugins['titlematch']) ){
+				foreach( (array)$plugins['titlematch'] as $result){
+					if( 0 === strcasecmp($result['Name'],$data['Name']) ){
+						//Return information:
+						return $this->checkPluginUpdateWordpressOrg($data,$result);
+					}
 				}
 			}
-		}
-		if( isset($plugins['relevant']) ){
-			foreach( (array)$plugins['relevant'] as $result){
-				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
-					//return information:
-					return $this->checkPluginUpdateWordpressOrg($data,$result);
+			if( isset($plugins['relevant']) ){
+				foreach( (array)$plugins['relevant'] as $result){
+					if( 0 === strcasecmp($result['Name'],$data['Name']) ){
+						//return information:
+						return $this->checkPluginUpdateWordpressOrg($data,$result);
+					}
 				}
 			}
-		}
+		}//end get_option('update_location_wordpressorg')
+		
 		//Else, We check wp-plugins.net
-		$status = $this->checkPluginUpdateWpPluginsNet($data);
+		if( get_option('update_location_wppluginsnet') )
+			$status = $this->checkPluginUpdateWpPluginsNet($data);
 		if( $status)
 			return $status;
 		//We have a plugin that we cant find a home for.
