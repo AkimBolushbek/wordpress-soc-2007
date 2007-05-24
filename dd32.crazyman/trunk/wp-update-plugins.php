@@ -1,7 +1,7 @@
 <?php
 require_once('admin.php');
-require_once('wp-update-class.php');
-require_once('wp-update-functions.php');
+require_once('includes/wp-update-class.php');
+require_once('includes/wp-update-functions.php');
 global $wpupdate;
 $wpupdate = new WP_Update;
 

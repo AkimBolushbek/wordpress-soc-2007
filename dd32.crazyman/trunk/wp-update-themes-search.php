@@ -1,5 +1,5 @@
 <?php
-require_once('wp-update-class.php');
+require_once('includes/wp-update-class.php');
 global $wpupdate;
 $wpupdate = new WP_Update;
 
