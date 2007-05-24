@@ -8,6 +8,12 @@ Author: Dion Hulse
 Author URI: http://dd32.id.au/
 */
 
+/*
+NOTES:
+wp_opbjexT_cache ignores expiration time, everything is for 900 seconds.
+*/
+
+
 function wpupdate_init() {
 	add_action('admin_menu', 'wpupdate_admin_init');
 }
