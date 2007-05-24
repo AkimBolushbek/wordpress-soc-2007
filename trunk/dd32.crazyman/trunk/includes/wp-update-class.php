@@ -129,7 +129,7 @@ class WP_Update{
 		}
 		return $tags;
 	}
-	function getPluginsByTag($tag=false,$page){
+	function getPluginsByTag($tag=false,$page=1){
 		if(!$tag) return;
 		
 	}
@@ -151,7 +151,7 @@ class WP_Update{
 	/** PLUGIN SEARCH FUNCTIONS **/
 	function searchPlugins($term){
 		$searchresults = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
-		if( ! $searchresults ){
+		if( !$searchresults ){
 			$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
 			$snoopy = new Snoopy();
 			$snoopy->fetch($url);
@@ -187,29 +187,62 @@ class WP_Update{
 		$plugins = $this->searchPlugins($data['Name']);
 		if( isset($plugins['titlematch']) ){
 			foreach($plugins['titlematch'] as $result){
-				if( $result['Name'] == $data['Name'] ){
+				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
 					//Return information:
-					return $this->checkPluginUpdateWordpressOrg($data,$result);
+					$this->checkPluginUpdateWordpressOrg($data,$result);
+					return;
 				}
 			}
 		}
 		if( isset($plugins['relevant']) ){
 			foreach($plugins['relevant'] as $result){
-				if( $result['Name'] == $data['Name'] ){
+				if( 0 === strcasecmp($result['Name'],$data['Name']) ){
 					//return information:
-					return $this->checkPluginUpdateWordpressOrg($data,$result);
+					$this->checkPluginUpdateWordpressOrg($data,$result);
+					return;
 				}
 			}
 		}
+		echo "Not found on wordpress.org";
 		//Else, We check wordpressplugins.net
+	}
+	function checkPluginUpdateWpPluginsNet($pluginData){
+		$snoopy = new Snoopy();
+		$snoopy->fetch('http://wp-plugins.net/get_plugin_data.php?wp_version=any&filter='.$pluginData['Name']);
+		$WPInfo = unserialize($snoopy->results);
+		foreach($WPInfo as $plugin){
+			if( 0 === strcasecmp($plugin['plugin_name'],$pluginData['Name']){
+				//We have a match.
+				$plugin = array(
+						'Name' 		=>	$plugin['plugin_name'],
+						'Version'	=>	$plugin['version_major'].'.'.$plugin['version_minor'],
+						'LastUpdate'=>	$plugin['date_updated'],
+						'Download'	=>	( '' != $plugin['oneclick_url']) ? $plugin['oneclick_url'] : $plugin['download_url'],
+						'Author'	=>	$plugin['author'],
+						'WPAuthor'	=>	'',
+						'AuthorHome'=>	$plugin['author_url'],
+						'PluginHome'=>	$plugin['plugin_url'],
+						'Rating'	=>	0,
+						'Tags'		=>	array($plugin['top_cat'],$plugin['cat_name'],$plugin['parent_name'],$plugin['dir_name']),
+						'Related'	=>	array()
+						);
+				break;
+			}
+		}
 	}
 	function checkPluginUpdateWordpressOrg($pluginData,$wordpressInfo){
 		$wordpressPluginInfo = $this->getPluginInformationWordPressOrg($wordpressInfo['Uri']);
-		if( version_compare($wordpressPluginInfo['Version'] , $pluginData['Version'], '>') ){
-			echo 'There is a newer version available: '.$wordpressPluginInfo['Version'];
-		} else {
-			echo 'You have the latest version';
+		if( ! $wordpressPluginInfo['Version'] ){
+			echo "Not Available";
+			return;
 		}
+		if( version_compare($wordpressPluginInfo['Version'] , $pluginData['Version'], '>') ){
+			echo 'New Version: '.$wordpressPluginInfo['Version'] . '<br />';
+			echo '<a href="#">'.__('Install').'</a>';
+		} else {
+			echo 'Latest Installed';
+		}
+		return;
 	}
 	function getPluginInformationWordPressOrg( $pluginurl ){
 		if ( ! $pluginurl ) return false;
