@@ -30,6 +30,40 @@ if ( isset($_GET['action']) ) {
 		update_option('active_plugins', $current);
 		do_action('deactivate_' . trim( $_GET['plugin'] ));
 		wp_redirect('plugins.php?deactivate=true');
+	} elseif ($_GET['action'] == 'deactivate-all') {
+		check_admin_referer('deactivate-all');
+		$current = get_option('active_plugins');
+		update_option('wpupdate_previousplugins',$current);
+		
+		foreach ( (array)$current as $plugin) {
+			if( 'wp-update/wp-update.php' == $plugin)
+				continue;
+			array_splice($current, array_search($plugin, $current), 1);
+			do_action('deactivate_' . $plugin);
+		}
+		
+		update_option('active_plugins', array('wp-update/wp-update.php'));
+		wp_redirect('plugins.php?deactivate-all=true');
+	} elseif ($_GET['action'] == 'reactivate-previous') {
+		check_admin_referer('reactivate-previous');
+		$current = get_option('active_plugins');
+		$previous = get_option('wpupdate_previousplugins');
+
+		foreach ( (array)$previous as $plugin ) {
+			if ( validate_file($plugin) )
+				continue;
+			if ( ! file_exists(ABSPATH . PLUGINDIR . '/' . $plugin) )
+				continue;
+			if ( ! in_array($plugin, $current) ) {
+				@include(ABSPATH . PLUGINDIR . '/' . $plugin);
+				$current[] = $plugin;
+				sort($current);
+				do_action('activate_' . $plugin);
+			}
+		}
+		update_option('active_plugins', $current);
+		update_option('wpupdate_previousplugins',array());
+		wp_redirect('plugins.php?reactivate-previous=true');
 	}
 	exit;
 }
@@ -71,6 +105,10 @@ foreach ($check_plugins as $check_plugin) {
 	<div id="message" class="updated fade"><p><?php _e('Plugin <strong>activated</strong>.') ?></p></div>
 <?php elseif ( isset($_GET['deactivate']) ) : ?>
 	<div id="message" class="updated fade"><p><?php _e('Plugin <strong>deactivated</strong>.') ?></p></div>
+<?php elseif (isset($_GET['deactivate-all'])) : ?>
+	<div id="message" class="updated fade"><p><?php _e('All plugins <strong>deactivated</strong>.'); ?></p></div>
+<?php elseif (isset($_GET['reactivate-previous'])) : ?>
+	<div id="message" class="updated fade"><p><?php _e('All previous activated plugins <strong>activated</strong>.'); ?></p></div>
 <?php endif; ?>
 
 <div class="wrap">
@@ -142,7 +180,12 @@ if (empty($plugins)) {
 	</tr>";
 	}
 ?>
-
+ <tr>
+	<td colspan="6" align="right">
+		<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>"><?php _e('Deactivate All Plugins'); ?></a><br />
+		<a href="<?php echo wp_nonce_url('plugins.php?action=reactivate-previous', 'reactivate-previous'); ?>"><?php _e('Reactivate Deactivated Plugins'); ?></a>
+	</td>
+ </tr>
 </table>
 <?php
 }
