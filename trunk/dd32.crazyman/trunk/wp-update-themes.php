@@ -1,5 +1,8 @@
 <?php
 require_once('admin.php');
+require_once('wp-update-class.php');
+global $wpupdate;
+$wpupdate = new WP_Update;
 
 if ( isset($_GET['action']) ) {
 	check_admin_referer('switch-theme_' . $_GET['template']);
@@ -123,8 +126,8 @@ if ( count($broken_themes) ) {
 }
 ?>
 
-<h2><?php _e('Get More Themes'); ?></h2>
-<p><?php _e('You can find additional themes for your site in the <a href="http://wordpress.org/extend/themes/">WordPress theme directory</a>. To install a theme you generally just need to upload the theme folder into your <code>wp-content/themes</code> directory. Once a theme is uploaded, you should see it on this page.'); ?></p>
+<h2><?php _e('Featured Themes'); ?></h2>
+<iframe name="themes" id="themes" src ="http://wordpress.org/extend/themes/themes.php" width="100%" height="382" frameborder="0"></iframe>
 
 </div>
 
