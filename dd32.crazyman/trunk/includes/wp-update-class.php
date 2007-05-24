@@ -116,7 +116,7 @@ class WP_Update{
 		}
 		return $ret;
 	}
-	/*** PLUGIN SEARCH FUNCTIONS ***/
+	/*** PLUGIN FUNCTIONS ***/
 	
 	/** PLUGIN TAG FUNCTIONS **/
 	function getPluginSearchTags(){
@@ -146,6 +146,100 @@ class WP_Update{
 						);
 		}
 		return $ret;
+	}
+	
+	/** PLUGIN SEARCH FUNCTIONS **/
+	function searchPlugins($term){
+		$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
+		$snoopy = new Snoopy();
+		$snoopy->fetch($url);
+		$ret = array();
+		preg_match_all('#<h2>(Plugin title matches|Relevant plugins)</h2>(.*?)</ol>#ims',$snoopy->results,$mat);
+		for( $i=0; $i < count($mat[1]); $i++){
+			$regex = ('Plugin title matches' == $mat[1][$i]) ? 
+						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small><p>(.*?)</p></small>#ims' : 
+						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
+						
+			preg_match_all($regex,$mat[2][$i],$matPlugins);
+			
+			$type = ('Plugin title matches' == $mat[1][$i]) ? 'titlematch' : 'relevant';
+			
+			for( $j=0; $j < count($matPlugins[1]); $j++){
+				$ret[ $type ][] = array('Uri'=>$matPlugins[1][$j], 'Name'=>$matPlugins[2][$j], 'Desc'=>$matPlugins[3][$j]);
+			}
+		}
+		return $ret;
+	}
+	
+	/** PLUGIN UPDATE FUNCTIONS **/
+	function checkPluginUpdate($pluginfile){
+		$data = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $pluginfile);
+		if( '' != $data['Update'] ) //We have a custom update URL.
+			return $this->checkPluginUpdateCustom($pluginfile,$data);
+		//Else, We check wordpress.org.. 
+		//Check via search:
+		$plugins = $this->searchPlugins($data['Name']);
+		if( isset($plugins['titlematch']) ){
+			foreach($plugins['titlematch'] as $result){
+				if( $result['Name'] == $data['Name'] ){
+					return $this->checkPluginUpdateWordpressOrg($data,$result);
+				}
+			}
+		}
+		foreach($plugins as $result){
+		
+		}
+		//I think i need to do a search.. and then check the corresp. page..?
+		//$wp_name = str_replace(' ','-',strtolower($data['Name']));
+		//$wp_name = preg_replace("#![\w\-]#",'',$wp_name);
+		//echo $wp_name;
+		//Else, We check wordpressplugins.net
+	}
+	function checkPluginUpdateWordpressOrg($pluginData,$wordpressInfo){
+		return $this->getPluginInformationWordPressOrg($wordpressInfo['url']);
+		//version_compare
+	}
+	function getPluginInformationWordPressOrg( $pluginurl ){
+		$plugin = wp_cache_get('wpupdate_'.$pluginurl, 'wpupdate');
+		if( ! $plugin ){
+			$snoopy = new Snoopy();
+			$snoopy->fetch($pluginurl);
+			preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
+			preg_match('#<strong>Version:<\/strong> ([\d\.]+)#',$snoopy->results,$version);
+			preg_match('#<strong>Last Updated:</strong> ([\d\-]+)#',$snoopy->results,$lastupdate);
+			preg_match("#<a href='(.*?)'>Download#",$snoopy->results,$download);
+			preg_match("#<a href='(.*?)'>Author Homepage#",$snoopy->results,$authorhomepage);
+			preg_match("#<\/li>.*<li><a href='(.*?)'>Plugin Homepage#",$snoopy->results,$pluginhomepage);
+			preg_match("#<a href='http:\/\/wordpress.org\/extend\/plugins\/profile\/(.*?)'>(.*?)<\/a>#",$snoopy->results,$authordetails);
+			preg_match('#star-rating" style="width: ([\d\.]+)px"#',$snoopy->results,$rating);
+			preg_match('#<div id="plugin-tags">(.*?)</div>#s',$snoopy->results,$tag_section);
+				preg_match_all("#<a href='http:\/\/wordpress.org\/extend\/plugins\/tags\/(.*?)'>(.*?)<\/a>#",$tag_section[1],$tags);
+			preg_match('#<div id="related">(.*?)</div>#s',$snoopy->results,$related_section);
+				preg_match_all("#<a href='http:\/\/wordpress.org\/extend\/plugins\/plugin\/(.*?)\/'>(.*?)<\/a>#",$related_section[1],$relatedplugins);
+			
+		
+			for($i=0; $i<count($tags[0]); $i++)
+				$final_tags[ $tags[1][$i] ] = $tags[2][$i];
+			
+			for($i=0; $i<count($relatedplugins[0]); $i++)
+				$final_related[ $relatedplugins[1][$i] ] = $relatedplugins[2][$i];
+			
+			$plugin = array(
+						'Name' 		=>	trim($name[1]),
+						'Version'	=>	trim($version[1]),
+						'LastUpdate'=>	trim($lastupdate[1]),
+						'Download'	=>	trim($download[1]),
+						'Author'	=>	trim($authordetails[2]),
+						'WPAuthor'	=>	trim($authordetails[1]),
+						'AuthorHome'=>	trim($authorhomepage[1]),
+						'PluginHome'=>	trim($pluginhomepage[1]),
+						'Rating'	=>	trim($rating[1]),
+						'Tags'		=>	$final_tags,
+						'Related'	=>	$final_related
+						);
+			wp_cache_set('wpupdate_'.$pluginurl, $plugin, 'wpupdate', 43200); //24*60*60=43200
+		}
+		return $plugin;
 	}
 }
 ?>

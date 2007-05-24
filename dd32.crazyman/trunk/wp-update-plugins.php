@@ -174,7 +174,7 @@ if (empty($plugins)) {
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers' id='wpupdate-".str_replace(array('/'),'',$plugin_file)."'>Checking Update..{$plugin_data['Update']}</td>
+		<td class='vers' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>Checking Update..{$plugin_data['Update']}</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') )
@@ -194,7 +194,6 @@ if (empty($plugins)) {
 </table>
 <script type="text/javascript">
 //<![CDATA[
-$("#wpupdate-akismetakismet.php").html("TEST");
 <?php
 $updatefile = get_settings('home').'/wp-content/plugins/wp-update/wp-update-ajax.php';
 
@@ -205,7 +204,7 @@ foreach($plugins as $plugin_file => $plugin_data) {
 					}
 		);
 		";*/
-	//echo "$('wpupdate-".str_replace(array('/'),'',$plugin_file)."').load('$updatefile?action=checkPluginUpdate&file=".str_replace(array('/'),'',$plugin_file)."');\n";
+	echo "$('td#wpupdate-".str_replace(array('/','.'),'',$plugin_file)."').load('$updatefile?action=checkPluginUpdate&file=".$plugin_file."');\n";
 }
 ?>
 //]]>
