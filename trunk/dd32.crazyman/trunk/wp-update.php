@@ -22,7 +22,8 @@ function wpupdate_admin_init(){
 	add_submenu_page('themes.php','Theme search','Theme Search','edit_themes','wp-update/wp-update-themes-search.php'); //Possibly hard-code this.
 	
 	//Enqueue jQuery
-	if('themes.php' == $pagenow || 'plugins.php' == $pagenow)
+	if(	'themes.php' == $pagenow || 
+		'plugins.php' == $pagenow)
 		wp_enqueue_script('interface'); //jQuery
 }
 function wpupdate_plugins($arg = ''){
