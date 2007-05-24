@@ -220,12 +220,17 @@ class WP_Update{
 			//Update cache:
 			//If Expire is not set, or Expire is not valid
 			if( !empty($pluginUpdateInfo) && !isset($pluginUpdateInfo['Expire']) && ! (int) $pluginUpdateInfo['Expire'] > 0) $pluginUpdateInfo['Expire'] = 7*24*60*60;
+			if( empty($pluginUpdateInfo) )
+				$pluginUpdateInfo = array('Errors'=>array('Not Found','(Will check again in 1 week)'), 'Expire' =>7*24*60*60);
+			
 			wp_cache_set('wpupdate_'.$pluginfile, $pluginUpdateInfo, 'wpupdate', $pluginUpdateInfo['Expire']);
 		}// get cache
-		
+		if( isset($pluginUpdateInfo['Errors']) ){
+			return array( 'Errors' => $pluginUpdateInfo['Errors']);
+		}
 		if( !$pluginUpdateInfo || !$pluginUpdateInfo['Version'] ){
 			//We cant help with this particular plugin as it doesnt specify a version.
-			return array('Errors'=>array('Not Compatible'));
+			return array('Errors'=>array('Not Compatible','(No Version specified on update page)'));
 		}
 
 		if( version_compare($pluginUpdateInfo['Version'] , $pluginData['Version'], '>') ){
@@ -284,8 +289,9 @@ class WP_Update{
 					default:
 				} //end switch()
 			} //end foreach()
-			if( !empty($errors) ) return array('Update'=>true,'Compatible'=>$pluginCompatible,'Version'=>$pluginUpdateInfo['Version'],'Errors'=>$errors);
-			return array('Update'=>true,'Compatible'=>$pluginCompatible,'Version'=>$pluginUpdateInfo['Version']);
+			$updateReturn = array('Update'=>true,'Compatible'=>$pluginCompatible,'Version'=>$pluginUpdateInfo['Version'], 'PluginInfo' => $pluginUpdateInfo);
+			if( !empty($errors) ) $updateReturn = array_merge($updateReturn, array('Errors'=>$errors));
+			return $updateReturn;
 		} else {
 			//The currently installed version is the latest availaable.
 			return array('Update'=>false);
