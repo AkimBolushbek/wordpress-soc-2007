@@ -10,7 +10,14 @@ include_once('includes/wp-update-functions.php');
 switch($_GET['action']){
 	case 'checkPluginUpdate':
 		$wpupdate = new WP_Update;
-		echo $wpupdate->checkPluginUpdate($_GET['file']);
+		$status = $wpupdate->checkPluginUpdate($_GET['file']);
+		if( null === $status ) {
+			echo 'Not Available';
+		} elseif ( false === $status){
+			echo 'Latest Installed';
+		} else {
+			echo 'New Version: '.$status.'<br><a href="#">Install</a>';
+		}
 		break;
 }
 
