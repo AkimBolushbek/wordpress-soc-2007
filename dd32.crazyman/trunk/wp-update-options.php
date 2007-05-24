@@ -52,13 +52,8 @@ $wpupdate = new WP_Update;
 
 <?php
 	if( is_writable(ABSPATH . '/wp-content/cache/') ){
-		$testfile = ABSPATH . '/wp-content/cache/test.file';
-		if( false !== ($fp = @fopen($testfile,'w')) ){
-			fclose($fp);
-			if( fileowner($testfile) == fileowner(__FILE__) ) //If owner of this current file is the same as the user who we just created a file with
-				_e('<div class="updated"><p><strong>Note:</strong>FTP is NOT needed due to the current server configuration. You <strong>MAY</strong> still use this if you wish.</p></div>');	
-			unlink($testfile); //Delete test file.
-		}
+		if( getmyuid() == fileowner(__FILE__) ) //If owner of this current file is the same as the user who we just created a file with
+			_e('<div class="updated"><p><strong>Note:</strong>FTP is NOT needed due to the current server configuration. You <strong>MAY</strong> still use this if you wish.</p></div>');	
 	}
 	
 	if( isset($_POST['submit_ftp']) ){
