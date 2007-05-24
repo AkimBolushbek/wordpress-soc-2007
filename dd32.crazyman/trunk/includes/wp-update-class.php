@@ -1,7 +1,7 @@
 <?php
 class WP_Update{
 	function WP_Update(){
-		require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
+		include_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 	}
 	function search($item='themes',$tags=array(),$output='array',$page=1){
 		if('themes' == $item){
@@ -47,10 +47,8 @@ class WP_Update{
 		return $ret;
 	}
 	/** THEME SEARCH **/
-	function searchThemes($tags,$page,$maxPage=5){
-		if( $page > $maxPage)
-			return false;
-			
+	function searchThemes($tags,$page,$items=25){
+		
 		$urlpart = array();
 		foreach($_POST as $postname=>$postvalue){
 			if(is_array($postvalue)){
@@ -67,11 +65,15 @@ class WP_Update{
 		$snoopy->fetch($url);
 		$html = $snoopy->results;
 		$themes = $this->parseThemeHTML($html);
+		
 		/* Check if this is the last page, if not, grab the next page too */
 		if ( preg_match('#<div id="bottompagenav">.*>(\d+)</a></p></div>#',$html,$pages) ){
-			$themes2 = $this->searchThemes($tags,++$page);
-			if( $themes2 )
-				$themes = array_merge($themes, $themes2 );
+			if( count($themes) < $items ){
+				$themes2 = $this->searchThemes($tags,++$page, ($items - count($themes)) );
+				if( $themes2 )
+					$themes = array_merge($themes, $themes2 );
+			}
+			
 		}
 		return $themes;
 	}
@@ -85,7 +87,7 @@ class WP_Update{
 		if( false == $mat1 )
 			return false;
 		
-		for($i=0;$i<$totalItems;$i++){
+		for($i = 0; $i < $totalItems; $i++){
 			$id = $mat1[3][$i];
 			$ret[] = array(
 							'name'=>$mat1[2][$i],
@@ -124,7 +126,7 @@ class WP_Update{
 		$ret = array();
 		preg_match_all("#<a href='(.*)' title='(\d+) topics' rel='tag' style='font-size: ([\d\.]+)pt;'>(.*)</a>#i",$html,$tags);
 				
-		for($i=0;$i<count($tags[0]);$i++){
+		for( $i = 0; $i < count($tags[0]); $i++){
 			$ret[] = array(
 						'name' => $tags[4][$i],
 						'url'  => $tags[1][$i],
@@ -315,7 +317,7 @@ class WP_Update{
 		for($i=0; $i<count($relatedplugins[0]); $i++)
 			$final_related[ $relatedplugins[1][$i] ] = $relatedplugins[2][$i];
 		
-		$plugin = array(
+		return array(
 					'Name' 		=>	trim($name[1]),
 					'Version'	=>	trim($version[1]),
 					'LastUpdate'=>	trim($lastupdate[1]),
@@ -330,7 +332,6 @@ class WP_Update{
 					'Requirements' => $requirements,
 					'Expire'	=> 7*24*60*60
 					);
-		return $plugin;
 	}
 	function checkPluginUpdateCustom($pluginfile,$plugindata){
 		$url = $plugindata['Update'];

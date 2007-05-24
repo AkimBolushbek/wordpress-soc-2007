@@ -1,18 +1,8 @@
 <?php
-require_once('includes/wp-update-class.php');
-global $wpupdate;
-$wpupdate = new WP_Update;
-
-?>
-<?php
 	/* Warnings for possible bad things */
 	//Enable WP_CACHE
 	if( !defined('ENABLE_CACHE') || !ENABLE_CACHE){
 		_e('<div class="error"><p><strong>WARNING:</strong> WordPress\'s built-in Object cache is not Enabled, You may find a performance increase if you are running on a reliable webhost.</p></div>');
-	}
-	//Cache folder server writable? I guess i can rely on the TMP folders..
-	if( !is_writable(ABSPATH . '/wp-content/cache/') ){
-		_e('<div class="error"><p><strong>WARNING:</strong>Your wp-content/cache/ directory is NOT writable, WordPress relies on this folder for storing Cache data.</p></div>');
 	}
 	
 	if( isset($_POST['submit_general']) ){
