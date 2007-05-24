@@ -3,11 +3,41 @@
 //		- Determine the best layout of the file(ie. what functions WILL return what
 //		- Perhaps $ = new WP_Filesystem('ftp'); .. if(extneions exists) return new WP_Filesystem_Ftp_ext
 class WP_Filesystem{
+
+	function WP_Filesystem($method='',$arg=''){
+		$method = $this->bestOption($method);
+		if( ! $method ) return false;
+
+		@require('wp-update-filesystem-'.$method.'-class.php');
+		return new "WP_Filesystem_$method"($arg);
+	}
+	function bestOption($preference='direct'){
+		//No Breaks here, we want to go through each item.
+		switch($preference){
+			default:
+			case 'direct':
+				//Likely suPHP
+				if( getmyuid() == fileowner(__FILE__) ) return 'direct';
+			case 'ftp':
+				if( extension_loaded('ftp') ) return 'ftp';
+			case 'ftpsocket':
+				if( function_exists('socket_create') ) return 'ftpsocket';
+		}
+		if( getmyuid() == fileowner(__FILE__) ) return 'direct';
+		if( extension_loaded('ftp')) return 'ftp';
+		if( function_exists('socket_create') ) return 'ftpsocket';
+		return false;
+	}
+	
+}
+
+
+class WP_Filesystem_Combination{
 	var $method = 'direct';
 	var $ftp = array('host'=>false,'post'=>21,'username'=>false,'password'=>false,'base'=>'./');
 	var $link;
 	
-	function WP_Filesystem($method = false, $info=''){
+	function WP_Filesystem_Combination($method = false, $info=''){
 		if($method) $this->method = $method;
 		if('ftp' == $method && !function_exists('ftp_connect'))
 			$this->method = 'direct';
