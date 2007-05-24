@@ -1,4 +1,9 @@
 <?php
+if( !get_option('update_theme_search_enable') ){
+	echo '<div class="error"><h1>Not Enabled</h1></div>';
+	return;
+}
+	
 require_once('includes/wp-update-class.php');
 global $wpupdate;
 $wpupdate = new WP_Update;
