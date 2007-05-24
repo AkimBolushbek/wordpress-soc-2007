@@ -134,7 +134,7 @@ if (empty($plugins)) {
 		<th style="text-align: center"><?php _e('Version'); ?></th>
 		<th style="text-align: center"><?php _e('Update Status'); ?></th>
 		<th><?php _e('Description'); ?></th>
-		<th style="text-align: center"<?php if ( current_user_can('edit_plugins') ) echo ' colspan="2"'; ?>><?php _e('Action'); ?></th>
+		<th style="text-align: center"<?php if ( current_user_can('edit_plugins') ) echo ' colspan="3"'; ?>><?php _e('Action'); ?></th>
 	</tr>
 	</thead>
 <?php
@@ -161,21 +161,26 @@ if (empty($plugins)) {
 
 		if ( $style != '' )
 			$style = 'class="' . $style . '"';
-		if ( is_writable(ABSPATH . PLUGINDIR . '/' . $plugin_file) )
+		if ( is_writable(ABSPATH . PLUGINDIR . '/' . $plugin_file) && current_user_can('edit_plugins') )
 			$edit = "<a href='plugin-editor.php?file=$plugin_file' title='".__('Open this file in the Plugin Editor')."' class='edit'>".__('Edit')."</a>";
 		else
 			$edit = '';
-		
+		if( current_user_can('edit_plugins') )
+			$forceupdate = "<a href='#' onclick='checkPluginUpdate(\"$plugin_file\")' title='".__('Check for Plugin Update')."' class='edit'>".__('Check for Update')."</a>";
+		else
+			$forceupdate = '';
+			
 		echo "
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers'>Update Status Here{$plugin_data['Update']}</td>
+		<td class='vers' id='wpupdate-".str_replace(array('/'),'',$plugin_file)."'>Checking Update..{$plugin_data['Update']}</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') )
 		echo "
-		<td>$edit</td>";
+		<td>$edit</td>
+		<td>$forceupdate</td>";
 		echo"
 	</tr>";
 	}
@@ -187,6 +192,24 @@ if (empty($plugins)) {
 	</td>
  </tr>
 </table>
+<script type="text/javascript">
+//<![CDATA[
+$("#wpupdate-akismetakismet.php").html("TEST");
+<?php
+$updatefile = get_settings('home').'/wp-content/plugins/wp-update/wp-update-ajax.php';
+
+foreach($plugins as $plugin_file => $plugin_data) {
+	/*echo "$.get('$updatefile', {action: 'checkPluginUpdate', file: '$plugin_file'}, 
+				function(data) { 
+					$('td#wpupdate-$plugin_file').html(data);
+					}
+		);
+		";*/
+	//echo "$('wpupdate-".str_replace(array('/'),'',$plugin_file)."').load('$updatefile?action=checkPluginUpdate&file=".str_replace(array('/'),'',$plugin_file)."');\n";
+}
+?>
+//]]>
+</script>
 <?php
 }
 ?>
