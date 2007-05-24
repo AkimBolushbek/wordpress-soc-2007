@@ -161,7 +161,7 @@ if(!$items){
 				<span>
 					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
 					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
-					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='#' onclick='return false;' target='_blank'>".__('Install')."</a>
+					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='themes.php?page=wp-update/wp-update-themes-install.php&url={$theme['download']}' target='_blank'>".__('Install')."</a>
 				</span>
 			</div>\n";
 	}
