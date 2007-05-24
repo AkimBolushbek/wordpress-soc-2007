@@ -270,7 +270,7 @@ if ( current_user_can('edit_plugins') ){
 </div>
 
 <?php
-global $wp_object_cache;
-$wp_object_cache->stats();
+//global $wp_object_cache;
+//$wp_object_cache->stats();
 include('admin-footer.php');
 ?>
