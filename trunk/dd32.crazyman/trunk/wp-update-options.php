@@ -14,12 +14,40 @@ $wpupdate = new WP_Update;
 	if( !is_writable(ABSPATH . '/wp-content/cache/') ){
 		echo '<div class="error"><p><strong>WARNING:</strong>Your wp-content/cache/ directory is NOT writable, WordPress relies on this folder for storing Cache data.</p></div>';
 	}
+	
+	if( isset($_POST['submit_general']) ){
+		
+	}
 ?>
 <div class="wrap">
 	<h2>General Options</h2>
-	<p class="submit">
-		<input type="submit" name="submit_general" value="Save Options &raquo;" />
+	<form method="post">
+	<p>
+		<h3>General Options</h3>
+		<input type="checkbox" name="update_enable" checked="checked" /> <?php _e('Enable Plugin Notifications'); ?><br />
+		<input type="checkbox" name="install_enable" checked="checked" /> <?php _e('Enable Installing of Plugins and Themes'); ?><br />
+		<input type="checkbox" name="upgrade_enable" checked="checked" /> <?php _e('Enable Upgrading of Plugins and Themes'); ?><br />
+		<input type="checkbox" name="autoinstall_enable" disabled="disabled" /> <?php _e('Enable of Auto-Installing of Plugin and Theme updates'); ?><br />
+		<input type="checkbox" name="update_check_inactive" checked="checked" /> <?php _e('Enable checking for Plugins which are NOT Activated'); ?><br />
 	</p>
+	<p>
+		<h3>Plugin/Theme Update Options</h3>
+		<input type="checkbox" name="update_location_wordpressorg" checked="checked" /> <?php _e('Enable Update notifications from Wordpres.Org/extend/'); ?><br />
+		<input type="checkbox" name="update_location_wppluginsnet" checked="checked" /> <?php _e('Enable Update notifications from wp-plugins.net'); ?><br />
+		<input type="checkbox" name="update_location_custom" checked="checked" /> <?php _e('Enable Update notifications from Plugin-Specific sites'); ?><br />
+	</p>
+	<p>
+		<h3>Update Options</h3>
+		<input type="checkbox" name="update_autocheck_nightly" checked="checked" /> <?php _e('Check for Plugin updated Nightly'); ?><br />
+		<input type="checkbox" name="install_enable" checked="checked" /> <?php _e('Email Blog Owner when updates are available'); ?><br />
+		<input type="checkbox" name="upgrade_enable" checked="checked" /> <?php _e('Enable Upgrading of Plugins and Themes'); ?><br />
+		<input type="checkbox" name="plugin_search_enable"  /> <?php _e('Enable Plugin Search'); ?><br />
+		<input type="checkbox" name="theme_search_enable"  /> <?php _e('Enable Theme Search'); ?><br />
+	</p>
+	<p class="submit">
+		<input type="submit" name="submit_general" value="<?php _e('Save Options &raquo;'); ?>" />
+	</p>
+	</form>
 </div>
 
 <?php
@@ -28,7 +56,7 @@ $wpupdate = new WP_Update;
 		if( false !== ($fp = @fopen($testfile,'w')) ){
 			fclose($fp);
 			if( fileowner($testfile) == fileowner(__FILE__) ) //If owner of this current file is the same as the user who we just created a file with
-				echo '<div class="updated"><p><strong>Note:</strong>FTP is NOT needed due to the current server configuration. You <strong>MAY</strong> still use this if you wish.</p></div>';	
+				_e('<div class="updated"><p><strong>Note:</strong>FTP is NOT needed due to the current server configuration. You <strong>MAY</strong> still use this if you wish.</p></div>');	
 			unlink($testfile); //Delete test file.
 		}
 	}
