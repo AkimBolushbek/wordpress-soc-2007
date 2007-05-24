@@ -25,6 +25,7 @@ function wpupdate_admin_init(){
 	}
 	if( get_option('update_plugin_search_enable') )
 		add_submenu_page('plugins.php','Plugin Search','Plugin Search','edit_plugins','wp-update/wp-update-plugins-search.php');
+		
 	if( get_option('update_theme_search_enable') )
 		add_submenu_page('themes.php','Theme Search','Theme Search','edit_themes','wp-update/wp-update-themes-search.php');
 	

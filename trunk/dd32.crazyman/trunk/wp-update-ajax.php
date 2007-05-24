@@ -10,13 +10,25 @@ include_once('includes/wp-update-functions.php');
 switch($_GET['action']){
 	case 'checkPluginUpdate':
 		$wpupdate = new WP_Update;
-		$status = $wpupdate->checkPluginUpdate($_GET['file']);
-		if( null === $status ) {
-			echo 'Not Available';
-		} elseif ( false === $status){
-			echo 'Latest Installed';
+		$updateStat = $wpupdate->checkPluginUpdate($_GET['file'],true,true);
+		
+		if( ! isset($updateStat['Update']) ){
+			_e('Not Available');
 		} else {
-			echo 'New Version: '.$status.'<br><a href="#">Install</a>';
+			if( $updateStat['Update'] ){
+				_e('Update Available');
+				echo ':<br/>'.$updateStat['Version'];
+				echo ' <a href="#">';
+				_e('Install');
+				echo '</a>';
+				if( isset($updateStat['Errors']) ){
+					echo '<br/><span class="updateerror">';
+					echo implode('<br/>',$updateStat['Errors']);
+					echo '</span>';
+				}
+			} else {
+				_e('Latest Installed');
+			}
 		}
 		break;
 }
