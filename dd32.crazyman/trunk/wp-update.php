@@ -7,6 +7,7 @@ Version: 0.1
 Author: Dion Hulse
 Author URI: http://dd32.id.au/
 */
+
 function wpupdate_init() {
 	add_action('admin_menu', 'wpupdate_admin_init');
 }
