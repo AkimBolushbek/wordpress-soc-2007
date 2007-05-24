@@ -174,7 +174,7 @@ if (empty($plugins)) {
 		else
 			$edit = '';
 		if( current_user_can('edit_plugins') )
-			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\'); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
+			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
 		else
 			$forceupdate = '';
 			
@@ -189,7 +189,7 @@ if (empty($plugins)) {
 		echo "
 		<td>$edit</td>
 		<td>$forceupdate</td>";
-		echo"
+		echo "
 	</tr>";
 	}
 ?>
@@ -218,15 +218,6 @@ function checkUpdate(file){
 <?php
 foreach($plugins as $plugin_file => $plugin_data)
 	echo "checkUpdate('$plugin_file');\n";
-	//echo "checkUpdate('".str_replace(array('/','.'),'',$plugin_file)."');\n";
-	
-	/*echo "$.get('$updatefile', {action: 'checkPluginUpdate', file: '$plugin_file'}, 
-				function(data) { 
-					$('td#wpupdate-$plugin_file').html(data);
-					}
-		);
-		";*/
-	//echo "$('td#wpupdate-".str_replace(array('/','.'),'',$plugin_file)."').load('$updatefile?action=checkPluginUpdate&file=".$plugin_file."');\n";
 ?>
 //]]>
 </script>
@@ -244,5 +235,4 @@ foreach($plugins as $plugin_file => $plugin_data)
 
 <?php
 include('admin-footer.php');
-exit; //Prevent normal plugin page
 ?>
