@@ -23,7 +23,6 @@ $wpupdate = new WP_Update;
 		$update_check_inactive 		= isset($_POST['update_check_inactive']) ? true : false;
 		
 		$update_location_wordpressorg = isset($_POST['update_location_wordpressorg']) ? true : false;
-		$update_location_wppluginsnet = isset($_POST['update_location_wppluginsnet']) ? true : false;
 		$update_location_custom 	= isset($_POST['update_location_custom']) ? true : false;
 		
 		$update_autocheck_nightly	= isset($_POST['update_autocheck_nightly']) ? true : false;
@@ -74,8 +73,6 @@ $wpupdate = new WP_Update;
 		<h3>Plugin/Theme Update Options</h3>
 		<input type="checkbox" name="update_location_wordpressorg" <?php if(get_option('update_location_wordpressorg')){ echo 'checked="checked"'; } ?> />
 		<?php _e('Enable Update notifications from Wordpres.Org/extend/'); ?><br />
-		<input type="checkbox" name="update_location_wppluginsnet" <?php if(get_option('update_location_wppluginsnet')){ echo 'checked="checked"'; } ?> />
-		<?php _e('Enable Update notifications from wp-plugins.net'); ?><br />
 		<input type="checkbox" name="update_location_custom" <?php if(get_option('update_location_custom')){ echo 'checked="checked"'; } ?> />
 		<?php _e('Enable Update notifications from Plugin-Specific sites'); ?><br />
 	</p>
