@@ -7,19 +7,6 @@ class WP_Update{
 		if('themes' == $item){
 			if(0 == count($tags)) return false; //Must specify search terms.
 			if('array' == $output) return $this->searchThemes($tags,$page);
-			if('html' == $output){ //Format it for HTML output.
-				$items = $this->searchThemes($tags,$page);
-				$ret = '';
-				foreach( (array)$items as $theme){
-					$ret .="&nbsp;<div class='themeinfo'><span>
-							<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
-							<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' 
-							title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
-							<a href='{$theme['testrun']}' target='_blank'>Test Run</a> | <a href='#' onclick='return false;' target='_blank'>Install</a>
-						</span></div>\n";
-				}
-				return $ret;
-			}//end html
 			//Format for.. JSSI? XML?
 			return;
 		} elseif('plugins' == $item){
@@ -213,10 +200,6 @@ class WP_Update{
 				}
 			}//end get_option('update_location_wordpressorg')
 			
-			//Else, We check wp-plugins.net
-			if( !$pluginUpdateInfo && get_option('update_location_wppluginsnet') )
-				$pluginUpdateInfo = $this->checkPluginUpdateWpPluginsNet($pluginData);
-			
 			//Update cache:
 			//If Expire is not set, or Expire is not valid
 			if( !empty($pluginUpdateInfo) && !isset($pluginUpdateInfo['Expire']) && ! (int) $pluginUpdateInfo['Expire'] > 0) $pluginUpdateInfo['Expire'] = 7*24*60*60;
@@ -297,43 +280,10 @@ class WP_Update{
 			return array('Update'=>false);
 		}
 	}
-	function checkPluginUpdateWpPluginsNet($pluginData){
-		$plugin = false;
-		$snoopy = new Snoopy();
-		$snoopy->fetch('http://wp-plugins.net/get_plugin_data.php?wp_version=any&filter='.$pluginData['Name']);
-		if( ! $snoopy->results )
-			return false;
-		$WPInfo = unserialize($snoopy->results);
-		foreach( (array)$WPInfo as $plugin){
-			if( 0 === strcasecmp($plugin['plugin_name'],$pluginData['Name']) ){
-				//We have a match.
-				$plugin = array(
-						'Name' 		=>	$plugin['plugin_name'],
-						'Version'	=>	$plugin['version_major'].'.'.$plugin['version_minor'],
-						'LastUpdate'=>	$plugin['date_updated'],
-						'Download'	=>	( '' != $plugin['oneclick_url']) ? $plugin['oneclick_url'] : $plugin['download_url'],
-						'Author'	=>	$plugin['author'],
-						'WPAuthor'	=>	'',
-						'AuthorHome'=>	$plugin['author_url'],
-						'PluginHome'=>	$plugin['plugin_url'],
-						'Rating'	=>	0,
-						'Tags'		=>	array($plugin['top_cat'],$plugin['cat_name'],$plugin['parent_name'],$plugin['dir_name']),
-						'Related'	=>	array(),
-						'Requirements' => array(),
-						'Expire'	=> 7*24*60*60
-						);
-						//Expire in 1 week
-				break;
-			}
-		}
-		if( $plugin )
-			return $plugin;
-		else 
-			return false;
-	}
 
 	function checkPluginUpdateWordpressOrg($pluginData,$wordpressInfo){
 		if ( ! $wordpressInfo['Uri'] ) return false;
+		
 		$snoopy = new Snoopy();
 		$snoopy->fetch($wordpressInfo['Uri']);
 		preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
@@ -386,7 +336,8 @@ class WP_Update{
 		$url = $plugindata['Update'];
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
-		//TODO: If Is serialised data, then return, else return null
+		//TODO: If Is serialised data, then return, else return null.. 
+		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
 		return unserialize($snoopy->results);
 	}
 }
