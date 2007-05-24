@@ -98,7 +98,7 @@ $tags = array( 	1 => '1 column',
 				<option value='DESC' <?php if(isset($_POST['order']) && 'DESC' == $_POST['order']) { echo 'selected="selected"'; } ?>>DESC</option>
 			</select>
 			<select name='andor' class='postform'>
-				<option value='OR'>ANY or ALL</option>
+				<option value='AND'>ANY or ALL</option>
 				<option value='OR' <?php if(isset($_POST['andor']) && 'OR' == $_POST['andor']) { echo 'selected="selected"'; } ?>>ANY</option>
 				<option value='AND' <?php if(isset($_POST['andor']) && 'AND' == $_POST['andor']) { echo 'selected="selected"'; } ?>>ALL</option>
 			</select>
@@ -130,7 +130,7 @@ $taglist = array();
 foreach( (array)$_POST['cats'] as $id){
 	$taglist[] = __($tags[$id]);
 }
-$taglist = implode(', ',$taglist);
+$taglist = implode(', '.$_POST['andor'].' ',$taglist);
 ?>
 <h2><?php _e('Search Results') ?></h2>
 <p><?php _e('Search results for Themes tagged with ') ?><strong><span id='taglist'><?php _e($taglist) ?></span></strong></p>
