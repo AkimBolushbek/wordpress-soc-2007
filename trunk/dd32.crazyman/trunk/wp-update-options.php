@@ -8,41 +8,85 @@ $wpupdate = new WP_Update;
 	/* Warnings for possible bad things */
 	//Enable WP_CACHE
 	if( !defined('ENABLE_CACHE') || !ENABLE_CACHE){
-		echo '<div class="error"><p><strong>WARNING:</strong> WordPress\'s built-in Object cache is not Enabled, You may find a performance increase if you are running on a reliable webhost.</p></div>';
+		_e('<div class="error"><p><strong>WARNING:</strong> WordPress\'s built-in Object cache is not Enabled, You may find a performance increase if you are running on a reliable webhost.</p></div>');
 	}
 	//Cache folder server writable? I guess i can rely on the TMP folders..
 	if( !is_writable(ABSPATH . '/wp-content/cache/') ){
-		echo '<div class="error"><p><strong>WARNING:</strong>Your wp-content/cache/ directory is NOT writable, WordPress relies on this folder for storing Cache data.</p></div>';
+		_e('<div class="error"><p><strong>WARNING:</strong>Your wp-content/cache/ directory is NOT writable, WordPress relies on this folder for storing Cache data.</p></div>');
 	}
 	
 	if( isset($_POST['submit_general']) ){
+		$update_notification_enable = isset($_POST['update_notification_enable']) ? true : false;
+		$update_install_enable 		= isset($_POST['update_install_enable']) ? true : false;
+		$update_upgrade_enable 		= isset($_POST['update_upgrade_enable']) ? true : false;
+		$update_autoinstall_enable 	= isset($_POST['update_autoinstall_enable']) ? true : false;
+		$update_check_inactive 		= isset($_POST['update_check_inactive']) ? true : false;
 		
+		$update_location_wordpressorg = isset($_POST['update_location_wordpressorg']) ? true : false;
+		$update_location_wppluginsnet = isset($_POST['update_location_wppluginsnet']) ? true : false;
+		$update_location_custom 	= isset($_POST['update_location_custom']) ? true : false;
+		
+		$update_autocheck_nightly	= isset($_POST['update_autocheck_nightly']) ? true : false;
+		$update_email_enable 		= isset($_POST['update_email_enable']) ? true : false;
+		$update_email_email 		= isset($_POST['update_email_email']) ? $_POST['update_email_email'] : get_option('update_email_email');
+		
+		$update_plugin_search_enable = isset($_POST['update_plugin_search_enable']) ? true : false;
+		$update_theme_search_enable = isset($_POST['update_theme_search_enable']) ? true : false;
+
+		update_option('update_notification_enable',$update_notification_enable);
+		update_option('update_install_enable',$update_install_enable);
+		update_option('update_upgrade_enable',$update_upgrade_enable);
+		update_option('update_autoinstall_enable',$update_autoinstall_enable);
+		update_option('update_check_inactive',$update_check_inactive);
+		update_option('update_location_wordpressorg',$update_location_wordpressorg);
+		update_option('update_location_wppluginsnet',$update_location_wppluginsnet);
+		update_option('update_location_custom',$update_location_custom);
+		update_option('update_autocheck_nightly',$update_autocheck_nightly);
+		update_option('update_email_enable',$update_email_enable);
+		update_option('update_email_email',$update_email_email);
+		update_option('update_plugin_search_enable',$update_plugin_search_enable);
+		update_option('update_theme_search_enable',$update_theme_search_enable);
+		_e('<div class="updated"><p>General Options Saved.</p></div>');
 	}
+	
 ?>
 <div class="wrap">
 	<h2>General Options</h2>
 	<form method="post">
 	<p>
 		<h3>General Options</h3>
-		<input type="checkbox" name="update_enable" checked="checked" /> <?php _e('Enable Plugin Notifications'); ?><br />
-		<input type="checkbox" name="install_enable" checked="checked" /> <?php _e('Enable Installing of Plugins and Themes'); ?><br />
-		<input type="checkbox" name="upgrade_enable" checked="checked" /> <?php _e('Enable Upgrading of Plugins and Themes'); ?><br />
-		<input type="checkbox" name="autoinstall_enable" disabled="disabled" /> <?php _e('Enable of Auto-Installing of Plugin and Theme updates'); ?><br />
-		<input type="checkbox" name="update_check_inactive" checked="checked" /> <?php _e('Enable checking for Plugins which are NOT Activated'); ?><br />
+		<input type="checkbox" name="update_notification_enable" <?php if(get_option('update_notification_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Plugin Notifications'); ?><br />
+		<input type="checkbox" name="update_install_enable" <?php if(get_option('update_install_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Installing of Plugins and Themes'); ?><br />
+		<input type="checkbox" name="update_upgrade_enable" <?php if(get_option('update_upgrade_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Upgrading of Plugins and Themes'); ?><br />
+		<input type="checkbox" name="update_autoinstall_enable" <?php if(get_option('update_autoinstall_enable')){ echo 'checked="checked"'; } ?> disabled="disabled" />
+		<?php _e('Enable of Auto-Installing of Plugin and Theme updates'); ?><br />
+		<input type="checkbox" name="update_check_inactive" <?php if(get_option('update_check_inactive')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable checking for Plugins which are NOT Activated'); ?><br />
 	</p>
 	<p>
 		<h3>Plugin/Theme Update Options</h3>
-		<input type="checkbox" name="update_location_wordpressorg" checked="checked" /> <?php _e('Enable Update notifications from Wordpres.Org/extend/'); ?><br />
-		<input type="checkbox" name="update_location_wppluginsnet" checked="checked" /> <?php _e('Enable Update notifications from wp-plugins.net'); ?><br />
-		<input type="checkbox" name="update_location_custom" checked="checked" /> <?php _e('Enable Update notifications from Plugin-Specific sites'); ?><br />
+		<input type="checkbox" name="update_location_wordpressorg" <?php if(get_option('update_location_wordpressorg')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Update notifications from Wordpres.Org/extend/'); ?><br />
+		<input type="checkbox" name="update_location_wppluginsnet" <?php if(get_option('update_location_wppluginsnet')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Update notifications from wp-plugins.net'); ?><br />
+		<input type="checkbox" name="update_location_custom" <?php if(get_option('update_location_custom')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Update notifications from Plugin-Specific sites'); ?><br />
 	</p>
 	<p>
 		<h3>Update Options</h3>
-		<input type="checkbox" name="update_autocheck_nightly" checked="checked" /> <?php _e('Check for Plugin updated Nightly'); ?><br />
-		<input type="checkbox" name="install_enable" checked="checked" /> <?php _e('Email Blog Owner when updates are available'); ?><br />
-		<input type="checkbox" name="upgrade_enable" checked="checked" /> <?php _e('Enable Upgrading of Plugins and Themes'); ?><br />
-		<input type="checkbox" name="plugin_search_enable"  /> <?php _e('Enable Plugin Search'); ?><br />
-		<input type="checkbox" name="theme_search_enable"  /> <?php _e('Enable Theme Search'); ?><br />
+		<input type="checkbox" name="update_autocheck_nightly" <?php if(get_option('update_autocheck_nightly')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Check for Plugin updated Nightly'); ?><br />
+		<input type="checkbox" name="update_email_enable" <?php if(get_option('update_email_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Email Blog Owner when updates are available:'); ?>
+		<input type="textbox" name="update_email_email" <?php if(false !== ($email = get_option('update_email_email')) ){ echo 'value="'.$email.'"'; } ?> /><br />
+		
+		<input type="checkbox" name="update_plugin_search_enable" <?php if(get_option('update_plugin_search_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Plugin Search'); ?><br />
+		<input type="checkbox" name="update_theme_search_enable" <?php if(get_option('update_theme_search_enable')){ echo 'checked="checked"'; } ?> />
+		<?php _e('Enable Theme Search'); ?><br />
 	</p>
 	<p class="submit">
 		<input type="submit" name="submit_general" value="<?php _e('Save Options &raquo;'); ?>" />
@@ -67,23 +111,22 @@ $wpupdate = new WP_Update;
 		}
 		
 		update_option('wpupdate_ftp',$ftpinfo);
+		_e('<div class="updated"><p>FTP Options Saved.</p></div>');
 	}
 	$ftpinfo = get_option('wpupdate_ftp');
-	var_dump($ftpinfo);
-	var_dump($_POST);
 ?>
 <div class="wrap">
 	<h2>FTP Options</h2>
 	<form method="POST">
 	<fieldset>
 		<p>
-		<label for="ftp_host"><strong>Hostname:</strong></label><input type="text" name="ftp_host" value="<?php echo $ftpinfo['host']; ?>" /><br />
-		<label for="ftp_user"><strong>Username:</strong></label><input type="text" name="ftp_user" value="<?php echo $ftpinfo['user']; ?>" /><br />
-		<label for="ftp_dir"><strong>Directory:</strong></label><input type="text" name="ftp_dir" value="<?php echo $ftpinfo['dir']; ?>" /><br />
-		<label for="ftp_pass"><strong>Password:</strong></label><input type="password" name="ftp_pass" value="<?php if('' != $ftpinfo['pass']){ echo '*********"'; } ?>" /> &nbsp; ( <label for="ftp_pass_save">Save Password:</label>&nbsp;<input type="checkbox" name="ftp_pass_save" <?php if('' != $ftpinfo['pass']){ echo 'checked="checked"'; } ?> />)<br />
+		<label for="ftp_host"><strong><?php _e('Hostname:') ?></strong></label><input type="text" name="ftp_host" value="<?php echo $ftpinfo['host']; ?>" /><br />
+		<label for="ftp_user"><strong><?php _e('Username:') ?></strong></label><input type="text" name="ftp_user" value="<?php echo $ftpinfo['user']; ?>" /><br />
+		<label for="ftp_dir"><strong><?php _e('Directory:') ?></strong></label><input type="text" name="ftp_dir" value="<?php echo $ftpinfo['dir']; ?>" /><br />
+		<label for="ftp_pass"><strong><?php _e('Password:') ?></strong></label><input type="password" name="ftp_pass" value="<?php if('' != $ftpinfo['pass']){ echo '*********"'; } ?>" /> &nbsp; ( <label for="ftp_pass_save"><?php _e('Save Password:') ?></label>&nbsp;<input type="checkbox" name="ftp_pass_save" <?php if('' != $ftpinfo['pass']){ echo 'checked="checked"'; } ?> />)<br />
 		</p>
 		<p class="submit">
-			<input type="submit" name="submit_ftp" value="Save FTP Information &raquo;" />
+			<input type="submit" name="submit_ftp" value="<?php _e('Save FTP Information &raquo;') ?>" />
 		</p>
 	</fieldset>
 	</form>
