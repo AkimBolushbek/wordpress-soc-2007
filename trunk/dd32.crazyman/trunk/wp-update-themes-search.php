@@ -170,6 +170,7 @@ if(!$items){
 				</span>
 			</div>\n";
 	}
+	//TODO: Add link to load more items.
 }
 ?>
 </div>

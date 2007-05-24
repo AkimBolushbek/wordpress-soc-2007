@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- This is a early idea, A PHP serialised array would probably have a similar structure too.. -->
+<plugin name="test">
+	<name>test</name>
+	<id>11151</id>
+	<version>1.5</version>
+	<released>1/12/06</released>
+	<firstreleased>1/08/06</firstreleased>
+	<rating>4.5</rating>
+	
+	<description>A &lt;strong&gt; Simple &lt;/strong&gt; Test Plugin</description>
+	
+	<homepage>http://dd32.id.au/plugins/test/</homepage>
+	<author>DD32</author>
+	<authorhomepage>http://dd32.id.au/</authorhomepage>
+	
+	<download>http://dd32.id.au/plugins/test/download</download>
+	<downloadcount>419</downloadcount>
+	
+	<screenshots>
+		<screenshot>
+			<url>http://dd32.id.au/themes/test/preview.jpg</url>
+			<description>The Screenshot</description>
+		</screenshot>
+	</screenshots>
+	
+	<requirements>
+		<require>
+			<name>WordPress</name>
+			<version>2.2.0</version>
+			<maxversion>2.5.0</maxversion>
+		</require>
+		<require>
+			<name>PHP</name>
+			<version>4.4.2</version>
+		</require>
+		<require>
+			<type>plugin</type>
+			<name>utw</name>
+		</require>
+	</requirements>
+	
+	<update>
+		<from>0.2</from>
+		<from>1.0</from>
+	</update>
+</theme>

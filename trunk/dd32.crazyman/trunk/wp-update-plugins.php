@@ -6,6 +6,7 @@ global $wpupdate;
 $wpupdate = new WP_Update;
 
 if ( isset($_GET['action']) ) {
+
 	if ('activate' == $_GET['action']) {
 		check_admin_referer('activate-plugin_' . $_GET['plugin']);
 		$current = get_option('active_plugins');
@@ -15,7 +16,7 @@ if ( isset($_GET['action']) ) {
 		if ( ! file_exists(ABSPATH . PLUGINDIR . '/' . $plugin) )
 			wp_die(__('Plugin file does not exist.'));
 		if (!in_array($plugin, $current)) {
-			wp_redirect('plugins.php?error=true'); // we'll override this later if the plugin can be included without fatal error
+			wp_redirect('plugins.php?error=true&plugin='.urlencode($plugin)); // we'll override this later if the plugin can be included without fatal error
 			ob_start();
 			@include(ABSPATH . PLUGINDIR . '/' . $plugin);
 			$current[] = $plugin;
@@ -32,42 +33,57 @@ if ( isset($_GET['action']) ) {
 		update_option('active_plugins', $current);
 		do_action('deactivate_' . trim( $_GET['plugin'] ));
 		wp_redirect('plugins.php?deactivate=true');
-	} elseif ($_GET['action'] == 'deactivate-all') {
+	} elseif ('deactivate-all' == $_GET['action']) {
 		check_admin_referer('deactivate-all');
 		$current = get_option('active_plugins');
-		update_option('wpupdate_previousplugins',$current);
+		update_option('deactivated_plugins', $current); 
 		
 		foreach ( (array)$current as $plugin) {
-			if( 'wp-update/wp-update.php' == $plugin)
+			if( 'wp-update/wp-update.php' == $plugin) //Slip this in to prevent this script being disabled by a mass-sweep
 				continue;
 			array_splice($current, array_search($plugin, $current), 1);
 			do_action('deactivate_' . $plugin);
 		}
 		
-		update_option('active_plugins', array('wp-update/wp-update.php'));
-		wp_redirect('plugins.php?deactivate-all=true');
-	} elseif ($_GET['action'] == 'reactivate-previous') {
-		check_admin_referer('reactivate-previous');
-		$current = get_option('active_plugins');
-		$previous = get_option('wpupdate_previousplugins');
-		ob_start();
-		foreach ( (array)$previous as $plugin ) {
-			if ( validate_file($plugin) )
-				continue;
-			if ( ! file_exists(ABSPATH . PLUGINDIR . '/' . $plugin) )
-				continue;
-			if ( ! in_array($plugin, $current) ) {
-				@include(ABSPATH . PLUGINDIR . '/' . $plugin);
-				$current[] = $plugin;
-				sort($current);
-				do_action('activate_' . $plugin);
-			}
-		}
-		ob_end_clean();
 		update_option('active_plugins', $current);
-		update_option('wpupdate_previousplugins',array());
-		wp_redirect('plugins.php?reactivate-previous=true');
-	}
+		wp_redirect('plugins.php?deactivate-all=true');
+	} elseif ('reactivate-all' == $_GET['action']) { 
+		//switched to this reactivate-all instead of own implementation: http://trac.wordpress.org/ticket/4176
+		check_admin_referer('reactivate-all'); 
+		$prev_plugins = get_option('deactivated_plugins'); 
+		$current = get_option('active_plugins');
+		$errors = array();
+		 
+		// We'll keep track of errors in the $errors array, 
+		// and report them after we're done. 
+		foreach ($prev_plugins as $plugin) { 
+			if ( validate_file($plugin) ) {
+				$errors[$plugin] = __('Invalid plugin.'); 
+			} elseif ( ! file_exists(ABSPATH . PLUGINDIR . '/' . $plugin) )  {
+				$errors[$plugin] = __('Plugin file does not exist.'); 
+			} elseif (!in_array($plugin, $current)) { 
+				// A fatal error in any one plugin means NO 
+				// plugins will be reactivated. Sorry, but that's 
+				// just the way it is. :-/ 
+				wp_redirect('plugins.php?error=true&plugin='.urlencode($plugin)); // we'll override this later if the plugin can be included without fatal error 
+				$errors[$plugin] = __('Plugin generated a fatal error.'); // we'll override this later if the plugin can be included without fatal error 
+				ob_start(); 
+				@include(ABSPATH . PLUGINDIR . '/' . $plugin); 
+				$current[] = $plugin; 
+				do_action('activate_' . $plugin); 
+				unset($errors[$plugin]); 
+				ob_end_clean(); 
+			} 
+		} 
+		 
+		sort($current); 
+		 
+		update_option('deactivated_plugins', array()); 
+		update_option('active_plugins', $current); 
+		update_option('problem_plugins', $errors); 
+		wp_redirect('plugins.php?reactivate-all=true'); // overrides the ?error=true one above 
+	     
+	} 
 	exit;
 }
 
@@ -122,16 +138,35 @@ foreach ($check_plugins as $check_plugin) {
 }
 ?>
 
-<?php if ( isset($_GET['error']) ) : ?>
-	<div id="message" class="updated fade"><p><?php _e('Plugin could not be activated because it triggered a <strong>fatal error</strong>.') ?></p></div>
+<?php if ( isset($_GET['error']) ) : ?> 
+     <div id="message" class="updated fade"><p><?php _e('Plugin could not be activated because it triggered a <strong>fatal error</strong>. ('. wp_specialchars($_GET['plugin']) . ')') ?></p></div> 
 <?php elseif ( isset($_GET['activate']) ) : ?>
 	<div id="message" class="updated fade"><p><?php _e('Plugin <strong>activated</strong>.') ?></p></div>
 <?php elseif ( isset($_GET['deactivate']) ) : ?>
 	<div id="message" class="updated fade"><p><?php _e('Plugin <strong>deactivated</strong>.') ?></p></div>
 <?php elseif (isset($_GET['deactivate-all'])) : ?>
 	<div id="message" class="updated fade"><p><?php _e('All plugins <strong>deactivated</strong>.'); ?></p></div>
-<?php elseif (isset($_GET['reactivate-previous'])) : ?>
-	<div id="message" class="updated fade"><p><?php _e('All previous activated plugins <strong>activated</strong>.'); ?></p></div>
+<?php elseif (isset($_GET['reactivate-all'])) : ?> 
+    <div id="message" class="updated fade"> 
+	<p><?php _e('All plugins <strong>reactivated</strong>.'); ?></p> 
+	<?php 
+	$errors = get_option('problem_plugins'); 
+	if (! empty($errors)) { 
+		// Display any errors: 
+		?> 
+		<p><?php _e('The following plugins generated errors:'); ?></p> 
+		<ul> 
+		<?php foreach ($errors as $plugin => $errmsg) { 
+			?> 
+			<li><?php echo $plugin . ': ' . $errmsg ?></li> 
+			<?php 
+		} 
+		?> 
+		</ul> 
+		<?php 
+	} 
+	?> 
+    </div> 
 <?php endif; ?>
 
 <div class="wrap">
@@ -142,13 +177,14 @@ foreach ($check_plugins as $check_plugin) {
 if ( get_option('active_plugins') )
 	$current_plugins = get_option('active_plugins');
 
-$plugins = wpupdate_get_plugins();
+$inactive = get_option('deactivated_plugins');
 
+$plugins = wpupdate_get_plugins();
 if (empty($plugins)) {
 	echo '<p>';
 	_e("Couldn&#8217;t open plugins directory or there are no plugins available."); // TODO: make more helpful
 	echo '</p>';
-} else {
+} else { 
 ?>
 <table class="widefat plugins">
 	<thead>
@@ -242,6 +278,7 @@ if (empty($plugins)) {
 		echo "
 	</tr>";
 	}
+}
 ?>
 <?php 
 if ( current_user_can('edit_plugins') ){
@@ -249,10 +286,14 @@ if ( current_user_can('edit_plugins') ){
  <tr>
 	<td colspan="4">&nbsp;</td>
 	<td align="right">
+		<?php if ( !empty($plugins) ) { ?>
 		<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>" class="delete"><?php _e('Deactivate All Plugins'); ?></a>
+		<? } ?>
 	</td>
 	<td colspan="2" align="center">
-		<a href="<?php echo wp_nonce_url('plugins.php?action=reactivate-previous', 'reactivate-previous'); ?>"><?php _e('Reactivate Deactivated Plugins'); ?></a>
+		<?php if ( !empty($inactive) ) {  ?>
+		<a href="<?php echo wp_nonce_url('plugins.php?action=reactivate-all', 'reactivate-all'); ?>" class="delete"><?php _e('Reactivate All Plugins'); ?></a>
+		<?php } ?>
 	</td>
  </tr>
  <?php } ?>
@@ -269,7 +310,7 @@ if ( current_user_can('edit_plugins') ){
 
 </div>
 
-<?php
+<?php 
 //global $wp_object_cache;
 //$wp_object_cache->stats();
 include('admin-footer.php');

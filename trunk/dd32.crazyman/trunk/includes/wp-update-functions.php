@@ -1,19 +1,24 @@
 <?php
-//Having this here causes a bug.... it matches itself.
+/* Notes:
+	Some items have been changed from the default wordpress Install:
+		- removed is_readable check; Unneeded IO operations, if error occures while opening file, return false to signify it, 
+		- added Update URI: entry
+		- maybe a few other items
+*/
 function wpupdate_get_plugin_data( $plugin_file ) {
 	$plugin_data = implode( '', @file( $plugin_file ));
 	if(!$plugin_data)
 		return;
-	preg_match( "|Plugin Name:(.*)|i", $plugin_data, $plugin_name );
-	preg_match( "|Plugin URI:(.*)|i", $plugin_data, $plugin_uri );
-	preg_match( "|Description:(.*)|i", $plugin_data, $description );
-	preg_match( "|Author:(.*)|i", $plugin_data, $author_name );
-	preg_match( "|Author URI:(.*)|i", $plugin_data, $author_uri );
-	if ( preg_match( "|Version:(.*)|i", $plugin_data, $version ))
+	preg_match( '|Plugin Name:(.*)|i', $plugin_data, $plugin_name );
+	preg_match( '|Plugin URI:(.*)|i', $plugin_data, $plugin_uri );
+	preg_match( '|Description:(.*)|i', $plugin_data, $description );
+	preg_match( '|Author:(.*)|i', $plugin_data, $author_name );
+	preg_match( '|Author URI:(.*)|i', $plugin_data, $author_uri );
+	if ( preg_match( '|Version:(.*)|i', $plugin_data, $version ))
 		$version = trim( $version[1] );
 	else
 		$version = '';
-	if ( preg_match( "|Update URI:(.*)|i", $plugin_data, $update_uri ))
+	if ( preg_match( '|Update URI:(.*)|i', $plugin_data, $update_uri ))
 		$update_uri = trim( $update_uri[1] );
 	else
 		$update_uri = '';
