@@ -50,7 +50,7 @@ if ( isset($_GET['action']) ) {
 		check_admin_referer('reactivate-previous');
 		$current = get_option('active_plugins');
 		$previous = get_option('wpupdate_previousplugins');
-
+		ob_start();
 		foreach ( (array)$previous as $plugin ) {
 			if ( validate_file($plugin) )
 				continue;
@@ -63,6 +63,7 @@ if ( isset($_GET['action']) ) {
 				do_action('activate_' . $plugin);
 			}
 		}
+		ob_end_clean();
 		update_option('active_plugins', $current);
 		update_option('wpupdate_previousplugins',array());
 		wp_redirect('plugins.php?reactivate-previous=true');
