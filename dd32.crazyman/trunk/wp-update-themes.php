@@ -162,5 +162,4 @@ if ( count($broken_themes) ) {
 
 <?php 
 	require('admin-footer.php'); 
-	exit;
 ?>
