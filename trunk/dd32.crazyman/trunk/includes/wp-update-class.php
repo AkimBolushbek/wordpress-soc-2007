@@ -390,10 +390,11 @@ class WP_Update{
 			//Yes
 			//Create it:
 			$fs->mkdir($base.$archiveFiles[0]['filename']);
+			echo __('<Strong>Installing to</strong>: ').$base.$archiveFiles[0]['filename'].'<br/>';
 		} else {
 			$base .= $fileinfo['name'];
+			echo __('<Strong>Installing to</strong>: ').$base.'<br/>';
 		}
-		echo __('<Strong>Installing to</strong>: ').$base.'<br/>';
 
 		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
 		
@@ -406,6 +407,18 @@ class WP_Update{
 				else
 					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
 			} else {
+				$tmppath = '';
+				$path = explode('/',$files[$i]['filename']);
+				for($j=0;$j<count($path)-1;$j++){
+					$tmppath .= $path[$j] . '/';
+					if( ! $fs->is_dir($base . $tmppath) ){
+						echo __('<strong>Creating folder</strong>: ') . $tmppath;
+						if( $fs->mkdir($base . $tmppath) )
+							echo ' <span style="color: green;">['.__('OK').']</span><br>';
+						else
+							echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
+					}
+				}
 				echo __('<strong>Inflating File</strong>: ') . $archiveFiles[$i]['filename'];
 		  		if( $fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']) )
 					echo ' <span style="color: green;">['.__('OK').']</span><br>';
