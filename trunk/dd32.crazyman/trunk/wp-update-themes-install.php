@@ -4,7 +4,6 @@ if( !get_option('update_install_enable') ){
 	return;
 }
 require_once('includes/wp-update-class.php');
-require_once('includes/pclzip.lib.php');
 global $wpupdate;
 $wpupdate = new WP_Update;
 $step = isset($_GET['step']) ? (int)$_GET['step'] : ( isset($_POST['step']) ? (int)$_POST['step'] : 1);
@@ -19,25 +18,9 @@ if( isset($_POST['submit']) || isset($_GET['url']) ){
 				//Download file
 			} else {
 				//Handle file upload
-				if( strpos($_FILES['themefile']['type'],'zip') > 0 ){
-					//potentially Valid.
-					$archive = new PclZip($_FILES['themefile']['tmp_name']);
-					if( false === ($archiveFiles = $archive->listContent()) ){
-						$step = 1;
-						echo '<div class="error">Invalid Archive uploaded<br/>'.$archive->errorInfo(true).'</div>';
-					} else {
-						//Seems its OK!
-						//Extract to temporary folder, we'll loose the uploaded file once this page is loaded.
-						//via Direct access, or FTP? That is the question!..
-						echo '<div class="error">';
-						var_dump($archiveFiles);
-						echo '</div>';
-					}
-				} else {
-					//Invalid File given.
-					$step = 1;
-					echo '<div class="error">Invalid Archive uploaded</div>';
-				}
+				var_dump($_FILES);
+				if( $_FILES['themefile']['tmp_name'] )
+					$wpupdate->installTheme($_FILES['themefile']['tmp_name'],$_FILES['themefile'] );
 			}
 			break;	
 		case 2:
