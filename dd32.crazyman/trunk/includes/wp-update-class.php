@@ -341,5 +341,65 @@ class WP_Update{
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
 		return unserialize($snoopy->results);
 	}
+	/** INSTALL FUNCITONS **/
+	function installTheme($file,$fileinfo=array()){
+		require_once('pclzip.lib.php');
+		if( ! strpos($_FILES['themefile']['type'],'zip') > 0 ){
+			//Invalid File given.
+			$step = 1;
+			echo '<div class="error">Invalid Archive uploaded</div>';
+		} else {
+			//potentially Valid.
+			$archive = new PclZip($file);
+			if( false === ($archiveFiles = $archive->listContent()) ){
+				$step = 1;
+				echo '<div class="error">Invalid Archive uploaded<br/>'.$archive->errorInfo(true).'</div>';
+			} else {
+				//Seems its OK!
+				echo '<div class="error">';
+				var_dump($archiveFiles);
+				echo '</div>';
+				$this->installThemeStep2($archive,$fileinfo);
+			}
+		}
+	}
+	function installThemeStep2($archive,$info=array()){
+		if( ! $archive) return false;
+		if( false === ($archiveFiles = $archive->listContent()) ) return false;
+		
+		/* Filesystem */
+		require_once('wp-update-filesystem-class.php');
+		$fs = WP_Filesystem('direct');
+		
+		//First of all, Does the zip file contain a base folder?
+		$base = ABSPATH . 'wp-content/themes/';
+		
+		if( $archiveFiles[0]['folder'] ){
+			//Yes
+			//Create it:
+			$fs->mkdir($base.$archiveFiles[0]['filename']);
+		} else {
+			$base .= $fileinfo['name'];
+		}
+		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
+		var_dump($files);
+		for( $i=1; $i<=count($files); $i++){
+			/*'filename' => string 'ambient-glo-1/l_sidebar.php' (length=27)
+      'stored_filename' => string 'ambient-glo-1/l_sidebar.php' (length=27)
+      'size' => int 1045
+      'compressed_size' => int 527
+      'mtime' => int 1179959676
+      'comment' => string '' (length=0)
+      'folder' => boolean false
+      'index' => int 2
+      'status' => string 'ok' (length=2)
+      'content'*/
+	  		$fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']);
+			//echo "\$fs->put_contents({$files[$i]['filename']}, {$files[$i]['content']});";
+		}
+		
+//PCLZIP_OPT_EXTRACT_AS_STRING		
+		
+	}
 }
 ?>
