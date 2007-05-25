@@ -342,23 +342,35 @@ class WP_Update{
 		return unserialize($snoopy->results);
 	}
 	/** INSTALL FUNCITONS **/
+	function installThemeFromURL($url){
+		$snoopy = new Snoopy();
+		$snoopy->fetch($url);
+		
+		$tmpfname = tempnam("/tmp", "theme");
+
+		$handle = fopen($tmpfname, "w");
+		fwrite($handle, $snoopy->results);
+		fclose($handle);
+
+		$this->installTheme($tmpfname, array('name'=>basename($url)));
+		
+		unlink($tmpfname);
+	}
 	function installTheme($file,$fileinfo=array()){
 		require_once('pclzip.lib.php');
-		if( ! strpos($_FILES['themefile']['type'],'zip') > 0 ){
+		if( isset($_FILES['themefile']) && ! strpos($_FILES['themefile']['type'],'zip') > 0 ){
 			//Invalid File given.
 			$step = 1;
-			echo '<div class="error">Invalid Archive uploaded</div>';
+			echo '<strong>Invalid Archive uploaded</strong><br/>';
 		} else {
 			//potentially Valid.
 			$archive = new PclZip($file);
 			if( false === ($archiveFiles = $archive->listContent()) ){
 				$step = 1;
-				echo '<div class="error">Invalid Archive uploaded<br/>'.$archive->errorInfo(true).'</div>';
+				echo '<strong>Invalid Archive uploaded<br/>'.$archive->errorInfo(true).'</strong><br/>';
 			} else {
 				//Seems its OK!
-				echo '<div class="error">';
-				var_dump($archiveFiles);
-				echo '</div>';
+				echo '<strong>Valid Archive uploaded</strong><br/>';
 				$this->installThemeStep2($archive,$fileinfo);
 			}
 		}
@@ -381,24 +393,26 @@ class WP_Update{
 		} else {
 			$base .= $fileinfo['name'];
 		}
+		echo __('<Strong>Installing to</strong>: ').$base.'<br/>';
+
 		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
-		var_dump($files);
-		for( $i=1; $i<=count($files); $i++){
-			/*'filename' => string 'ambient-glo-1/l_sidebar.php' (length=27)
-      'stored_filename' => string 'ambient-glo-1/l_sidebar.php' (length=27)
-      'size' => int 1045
-      'compressed_size' => int 527
-      'mtime' => int 1179959676
-      'comment' => string '' (length=0)
-      'folder' => boolean false
-      'index' => int 2
-      'status' => string 'ok' (length=2)
-      'content'*/
-	  		$fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']);
-			//echo "\$fs->put_contents({$files[$i]['filename']}, {$files[$i]['content']});";
-		}
 		
-//PCLZIP_OPT_EXTRACT_AS_STRING		
+		for( $i=1; $i<count($files); $i++){
+
+	  		if( $files[$i]['folder'] ){
+				echo __('<strong>Creating folder</strong>: ') . $archiveFiles[$i]['filename'];
+				if( $fs->mkdir($base.$archiveFiles[$i]['filename']) )
+					echo ' <span style="color: green;">['.__('OK').']</span><br>';
+				else
+					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
+			} else {
+				echo __('<strong>Inflating File</strong>: ') . $archiveFiles[$i]['filename'];
+		  		if( $fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']) )
+					echo ' <span style="color: green;">['.__('OK').']</span><br>';
+				else
+					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
+			}
+		}	
 		
 	}
 }

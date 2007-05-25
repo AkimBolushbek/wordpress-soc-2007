@@ -152,7 +152,7 @@ if ( count($broken_themes) ) {
 		echo "<div class='theme' id='{$theme['id']}'>";
 		echo "<img src='{$theme['thumbnail']}' height='320' width='450' /><br />";
 		echo "{$theme['name']} By <a href='{$theme['authorhomepage']}' target='_blank'>{$theme['author']}</a> | ";
-		echo "<a href='#'>Install</a>";
+		echo "<a href='themes.php?page=wp-update/wp-update-themes-install.php&step=2&url=".urlencode($theme['download'])."'>Install</a>";
 		echo '</div>';
 	}
 ?>
