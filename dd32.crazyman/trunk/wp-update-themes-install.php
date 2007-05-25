@@ -14,23 +14,12 @@ if( isset($_POST['submit']) || isset($_GET['url']) ){
 		case 0:
 			break;
 		case 1:
-			if( isset($_GET['url']) ){
-				//Download file
-			} else {
-				//Handle file upload
-				var_dump($_FILES);
-				if( $_FILES['themefile']['tmp_name'] )
-					$wpupdate->installTheme($_FILES['themefile']['tmp_name'],$_FILES['themefile'] );
-			}
+			if( ! ( isset($_GET['url']) || $_FILES['themefile']['tmp_name'] ) )
+				$step--;
 			break;	
 		case 2:
 			break;
 	}
-	//Install from Local File
-	echo '<div class="error fade">';
-	var_dump($_POST);
-	var_dump($_FILES);
-	echo '</div>';
 }
 ?>
 <style>
@@ -42,12 +31,6 @@ if( isset($_POST['submit']) || isset($_GET['url']) ){
 	<h2>Install a Theme</h2>
 <?php
 	switch($step){
-		case 4:
-			step4();
-			break;
-		case 3:
-			step3();
-			break;
 		case 2:
 			step2();
 			break;
@@ -79,12 +62,28 @@ function step1(){
 <?php 
 function step2(){ 
 	global $wpupdate;
+	if( isset($_GET['url']) ){
+		//Download file
+		$filename = attribute_escape($_GET['url']);
+	} elseif ( $_FILES['themefile']['tmp_name'] ) {
+		$filename = $_FILES['themefile']['name'];
+	}
+
 ?>
 	<h3>Step 2: Installing</h3>
 	<div class="section">
 		<p>
 			<strong>Filename:</strong> <?php echo $filename; ?><br />
-			<strong>Valid Theme:</strong> <?php echo $validtheme; ?><br />
+			<?php
+			if( $_FILES['themefile']['tmp_name'] )
+				$wpupdate->installTheme($_FILES['themefile']['tmp_name'],$_FILES['themefile'] );
+			elseif( isset($_GET['url']) )
+				$wpupdate->installThemeFromURL(urldecode($_GET['url']));
+			?>
+		</p>
+		<p>
+			If there are no <span style="color:red">[FAILED]</span> items above, Then the theme has been installed correctly.<br/>
+			You may activate it via the <a href="themes.php">Themes page</a> now.
 		</p>
 	</div>
 <?php } ?>
