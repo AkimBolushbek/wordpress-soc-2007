@@ -15,8 +15,14 @@ Author URI: http://cavemonkey50.com/
 function add_podcasting_pages() {
 	add_options_page('Podcasting Options', 'Podcasting', 8, basename(__FILE__), 'podcasting_options_page');
 }
-
 add_action('admin_menu', 'add_podcasting_pages');
+
+// Add the podcast feed
+add_action('do_feed_podcast', 'do_feed_podcast');
+add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
+
+// Add podcasting information to feeds
+//add_filter('the_title_rss', 'test');
 
 
 /* ------------------------------------ OPTIONS ------------------------------------ */
@@ -44,5 +50,27 @@ function podcasting_options_page() {
 
 
 /* ------------------------------------- WORK -------------------------------------- */
+
+// Create a custom feed
+function do_feed_podcast() {
+	global $wp_query;
+	$wp_query->get_posts();
+	load_template(ABSPATH . 'wp-rss2.php');
+}
+
+// Pretty permalinks for the custom feed
+function podcasting_rewrite_rules($wp_rewrite) {
+    $feed_rules = array(
+		'feed/podcast' => 'index.php?feed=podcast',
+	);
+	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
+}
+
+/* function test($title) {
+	if ( 'podcast' == get_query_var('feed') )
+		return 'Podcast: ' . $title . get_query_var('feed');
+	else
+		return $title;
+} */
 
 ?>
