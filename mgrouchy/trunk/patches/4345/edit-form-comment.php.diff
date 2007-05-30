@@ -1,0 +1,17 @@
+Index: edit-form-comment.php
+===================================================================
+--- edit-form-comment.php	(revision 5599)
++++ edit-form-comment.php	(working copy)
+@@ -17,6 +17,12 @@
+ }
+ addLoadEvent(focusit);
+ </script>
++<?php
++    $post = get_post($comment->comment_post_ID); //get the post
++    $post_title = $post->post_title; // and its title
++?>
++ <a href="<?php echo get_permalink($comment->comment_post_ID); ?>" class="view-comment-post-link" target="_blank"><?php _e($post_title .' &raquo;'); ?></a>
++<br/><br/>
+ <fieldset id="namediv">
+     <legend><label for="name"><?php _e('Name:') ?></label></legend>
+ 	<div>
