@@ -1,0 +1,15 @@
+Index: wp-admin.css
+===================================================================
+--- wp-admin.css	(revision 5599)
++++ wp-admin.css	(working copy)
+@@ -1337,3 +1337,10 @@
+ 	margin-right: 220px;
+ 	text-decoration:underline;
+ }
++
++ a.view-comment-post-link {
++	position:absolute;
++	right: 5%;
++	margin-right: 60px;
++	text-decoration:underline;
++ }
