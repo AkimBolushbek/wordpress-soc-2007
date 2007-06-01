@@ -17,16 +17,22 @@ class EzTags
 	function processTemplate()
 	{
 		global $template_name;
-		if ( $template_name !== '' ) {
-			update_option('template', 'zooplah');
-			//return null;
-		}
-	        $template_name = get_option('template');
+		if ( empty($template_name) )
+			$template_name = get_option('template');
+		else
+			update_option('template', $template_name);
+
+		if ( is_admin() ) return $template_name;
+
 		$_template = ABSPATH . 'wp-content/themes/' . $template_name;
+
 		if (file_exists($_template . '/index.php')) $_template_home_file = $_template . '/index.php';
 		else if (file_exists($_template . '/home.php')) $_template_home_file = $_template . '/home.php';
+
 		$contents = file_get_contents($_template_home_file);
-		echo $contents;
+		$contents = preg_replace('/^(.*)<\?(php)?/', '$1', $contents);
+		eval($contents);
+
 		return null;
 	}
 }
