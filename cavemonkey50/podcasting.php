@@ -68,7 +68,18 @@ function podcasting_options_page() {
 		// Update the iTunes options
 		update_option('pod_itunes_summary', $_POST[pod_itunes_summary]);
 		update_option('pod_itunes_author', $_POST[pod_itunes_author]);
+		update_option('pod_itunes_image', $_POST[pod_itunes_image]);
+		update_option('pod_itunes_cat1', $_POST[pod_itunes_cat1]);
+		update_option('pod_itunes_cat2', $_POST[pod_itunes_cat2]);
+		update_option('pod_itunes_cat3', $_POST[pod_itunes_cat3]);
 	}
+	
+	// iTunes category options
+	$pod_itunes_cats = array(
+		'Test',
+		'Test &amp; Test2',
+		'Main Cat', 'Main Cat||Subcat'
+		);
 	?>
 	
 	<form method="post" action="options-general.php?page=podcasting.php">
@@ -127,7 +138,7 @@ function podcasting_options_page() {
 					</th>
 					<td>
 						<textarea cols="40" rows="4" style="width: 95%" name="pod_itunes_summary" id="pod_itunes_summary"><?php echo stripslashes(get_option('pod_itunes_summary')); ?></textarea>
-						<br />A long, detailed description of your podcast. iTunes allows up to 4,000 characters and the tagline will be used if no summary is entered.
+						<br />A detailed description of your podcast. iTunes allows up to 4,000 characters and the tagline will be used if no summary is entered.
 					</td>
 				</tr>
 				<tr valign="top">
@@ -137,6 +148,75 @@ function podcasting_options_page() {
 					<td>
 						<input type="text" size="40" name="pod_itunes_author" id="pod_itunes_author" value="<?php echo stripslashes(get_option('pod_itunes_author')); ?>" />
 						<br />The default author of your podcast.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_image">Podcast Art (URL):</label>
+					</th>
+					<td>
+						<input type="text" size="40" name="pod_itunes_image" id="pod_itunes_image" value="<?php echo stripslashes(get_option('pod_itunes_image')); ?>" />
+						<br />An image which represents your podcast. iTunes uses this image on your podcast directory page and a smaller version in searches. iTunes prefers square .jpg images that are at least 300 x 300 pixels, but any jpg or png will work.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_cat1">Primary Category:</label>
+					</th>
+					<td>
+						<select name="pod_itunes_cat1" id="pod_itunes_cat1">
+							<option value=""></option>
+							<?php foreach ( $pod_itunes_cats as $pod_itunes_cat ) {
+								// Deal with subcategories
+								$pod_category = explode("||", $pod_itunes_cat);
+								$pod_category_display = ( $pod_category[1] ) ? '&nbsp;&nbsp;&nbsp;' . $pod_category[1] : $pod_category[0];
+								// If selected category
+								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option('pod_itunes_cat1'))) ) ? ' selected="selected"' : '';
+
+								echo '<option value="' . $pod_itunes_cat . '"' . $pod_selected . '>' . $pod_category_display . '</option>';
+							} ?>
+						</select>
+						<br />The category which most fits your podcast. The primary category is used in Top Podcasts lists and directory pages which include podcast art.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_cat2">Secondary Category 1:</label>
+					</th>
+					<td>
+						<select name="pod_itunes_cat2" id="pod_itunes_cat2">
+							<option value=""></option>
+							<?php foreach ( $pod_itunes_cats as $pod_itunes_cat ) {
+								// Deal with subcategories
+								$pod_category = explode("||", $pod_itunes_cat);
+								$pod_category_display = ( $pod_category[1] ) ? '&nbsp;&nbsp;&nbsp;' . $pod_category[1] : $pod_category[0];
+								// If selected category
+								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option('pod_itunes_cat2'))) ) ? ' selected="selected"' : '';
+
+								echo '<option value="' . $pod_itunes_cat . '"' . $pod_selected . '>' . $pod_category_display . '</option>';
+							} ?>
+						</select>
+						<br />An optional additional category which is only used on directory pages without podcast art.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_cat3">Secondary Category 2:</label>
+					</th>
+					<td>
+						<select name="pod_itunes_cat3" id="pod_itunes_cat3">
+							<option value=""></option>
+							<?php foreach ( $pod_itunes_cats as $pod_itunes_cat ) {
+								// Deal with subcategories
+								$pod_category = explode("||", $pod_itunes_cat);
+								$pod_category_display = ( $pod_category[1] ) ? '&nbsp;&nbsp;&nbsp;' . $pod_category[1] : $pod_category[0];
+								// If selected category
+								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option('pod_itunes_cat3'))) ) ? ' selected="selected"' : '';
+
+								echo '<option value="' . $pod_itunes_cat . '"' . $pod_selected . '>' . $pod_category_display . '</option>';
+							} ?>
+						</select>
+						<br />An optional additional category which is only used on directory pages without podcast art.
 					</td>
 				</tr>
 			</table>
@@ -199,6 +279,39 @@ function podcasting_add_itunes_feed() {
 		// iTunes author
 		if ( '' != get_option('pod_itunes_author') )
 			echo '<itunes:author>' . stripslashes(get_option('pod_itunes_author')) . '</itunes:author>' . "\n	";
+		// iTunes image
+		if ( '' != get_option('pod_itunes_image') )
+			echo '<itunes:image href="' . stripslashes(get_option('pod_itunes_image')) . '" />' . "\n	";
+		// iTunes category 1
+		if ( '' != get_option('pod_itunes_cat1') ) {
+			$pod_category = explode('||', htmlspecialchars(stripslashes(get_option('pod_itunes_cat1'))));
+			if ( $pod_category[1] ) {
+				echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
+				echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
+				echo '</itunes:category>' . "\n	";
+			} else
+				echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
+		}
+		// iTunes category 2
+		if ( '' != get_option('pod_itunes_cat2') ) {
+			$pod_category = explode('||', htmlspecialchars(stripslashes(get_option('pod_itunes_cat2'))));
+			if ( $pod_category[1] ) {
+				echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
+				echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
+				echo '</itunes:category>' . "\n	";
+			} else
+				echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
+		}
+		// iTunes category 3
+		if ( '' != get_option('pod_itunes_cat3') ) {
+			$pod_category = explode('||', htmlspecialchars(stripslashes(get_option('pod_itunes_cat3'))));
+			if ( $pod_category[1] ) {
+				echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
+				echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
+				echo '</itunes:category>' . "\n	";
+			} else
+				echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
+		}
 	}
 }
 
