@@ -72,13 +72,27 @@ function podcasting_options_page() {
 		update_option('pod_itunes_cat1', $_POST[pod_itunes_cat1]);
 		update_option('pod_itunes_cat2', $_POST[pod_itunes_cat2]);
 		update_option('pod_itunes_cat3', $_POST[pod_itunes_cat3]);
+		update_option('pod_itunes_keywords', $_POST[pod_itunes_keywords]);
 	}
 	
 	// iTunes category options
 	$pod_itunes_cats = array(
-		'Test',
-		'Test &amp; Test2',
-		'Main Cat', 'Main Cat||Subcat'
+		'Arts', 'Arts||Design', 'Arts||Fashion &amp; Beauty', 'Arts||Food', 'Arts||Literature', 'Arts||Performing Arts', 'Arts||Visual Arts',
+		'Business', 'Business||Business News', 'Business||Careers', 'Business||Investing', 'Business||Management &amp; Marketing', 'Business||Shopping',
+		'Comedy',
+		'Education', 'Education||Education Technology', 'Education||Higher Education', 'Education||K-12', 'Education||Language Courses', 'Education||Training',
+		'Games &amp; Hobbies', 'Games &amp; Hobbies||Automotive', 'Games &amp; Hobbies||Aviation', 'Games &amp; Hobbies||Hobbies', 'Games &amp; Hobbies||Other Games', 'Games &amp; Hobbies||Video Games',
+		'Government &amp; Organizations', 'Government &amp; Organizations||Local', 'Government &amp; Organizations||National', 'Government &amp; Organizations||Non-Profit', 'Government &amp; Organizations||Regional',
+		'Health', 'Health||Alternative Health', 'Health||Fitness &amp; Nutrition', 'Health||Self-Help', 'Health||Sexuality',
+		'Kids &amp; Family',
+		'Music',
+		'News &amp; Politics',
+		'Religion &amp; Spirituality', 'Religion &amp; Spirituality||Buddhism', 'Religion &amp; Spirituality||Christianity', 'Religion &amp; Spirituality||Hinduism', 'Religion &amp; Spirituality||Islam', 'Religion &amp; Spirituality||Judaism', 'Religion &amp; Spirituality||Other', 'Religion &amp; Spirituality||Spirituality',
+		'Science &amp; Medicine', 'Science &amp; Medicine||Medicine', 'Science &amp; Medicine||Natural Sciences', 'Science &amp; Medicine||Social Sciences',
+		'Society &amp; Culture', 'Society &amp; Culture||History', 'Society &amp; Culture||Personal Journals', 'Society &amp; Culture||Philosophy', 'Society &amp; Culture||Places &amp Travel',
+		'Sports &amp; Recreation', 'Sports &amp; Recreation||Amateur', 'Sports &amp; Recreation||College &amp; High School', 'Sports &amp; Recreation||Outdoor', 'Sports &amp; Recreation||Professional',
+		'Technology', 'Technology||Gadgets', 'Technology||Tech News', 'Technology||Podcasting', 'Technology||Software How-To',
+		'TV &amp; Film'
 		);
 	?>
 	
@@ -159,64 +173,39 @@ function podcasting_options_page() {
 						<br />An image which represents your podcast. iTunes uses this image on your podcast directory page and a smaller version in searches. iTunes prefers square .jpg images that are at least 300 x 300 pixels, but any jpg or png will work.
 					</td>
 				</tr>
+				<?php for ($i = 1; $i <= 3; $i++) {
+				$pod_cat_option = 'pod_itunes_cat' . $i;
+				$pod_cat_label = ( 1 == $i ) ? 'Primary Category' : 'Category ' . $i;
+				$pod_cat_summary = ( 1 == $i ) ? 'The category which most fits your podcast. The primary category is used in Top Podcasts lists and directory pages which include podcast art.' : 'An optional additional category which is only used on directory pages without podcast art.';
+				?>
 				<tr valign="top">
 					<th scope="row">
-						<label for="pod_itunes_cat1">Primary Category:</label>
+						<label for="<?php echo $pod_cat_option; ?>"><?php echo $pod_cat_label; ?>:</label>
 					</th>
 					<td>
-						<select name="pod_itunes_cat1" id="pod_itunes_cat1">
+						<select name="<?php echo $pod_cat_option; ?>" id="<?php echo $pod_cat_option; ?>">
 							<option value=""></option>
 							<?php foreach ( $pod_itunes_cats as $pod_itunes_cat ) {
 								// Deal with subcategories
 								$pod_category = explode("||", $pod_itunes_cat);
 								$pod_category_display = ( $pod_category[1] ) ? '&nbsp;&nbsp;&nbsp;' . $pod_category[1] : $pod_category[0];
 								// If selected category
-								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option('pod_itunes_cat1'))) ) ? ' selected="selected"' : '';
+								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option($pod_cat_option))) ) ? ' selected="selected"' : '';
 
 								echo '<option value="' . $pod_itunes_cat . '"' . $pod_selected . '>' . $pod_category_display . '</option>';
 							} ?>
 						</select>
-						<br />The category which most fits your podcast. The primary category is used in Top Podcasts lists and directory pages which include podcast art.
+						<br /><?php echo $pod_cat_summary; ?>
 					</td>
 				</tr>
+				<?php } ?>
 				<tr valign="top">
 					<th scope="row">
-						<label for="pod_itunes_cat2">Secondary Category 1:</label>
+						<label for="pod_itunes_keywords">Keywords:</label>
 					</th>
 					<td>
-						<select name="pod_itunes_cat2" id="pod_itunes_cat2">
-							<option value=""></option>
-							<?php foreach ( $pod_itunes_cats as $pod_itunes_cat ) {
-								// Deal with subcategories
-								$pod_category = explode("||", $pod_itunes_cat);
-								$pod_category_display = ( $pod_category[1] ) ? '&nbsp;&nbsp;&nbsp;' . $pod_category[1] : $pod_category[0];
-								// If selected category
-								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option('pod_itunes_cat2'))) ) ? ' selected="selected"' : '';
-
-								echo '<option value="' . $pod_itunes_cat . '"' . $pod_selected . '>' . $pod_category_display . '</option>';
-							} ?>
-						</select>
-						<br />An optional additional category which is only used on directory pages without podcast art.
-					</td>
-				</tr>
-				<tr valign="top">
-					<th scope="row">
-						<label for="pod_itunes_cat3">Secondary Category 2:</label>
-					</th>
-					<td>
-						<select name="pod_itunes_cat3" id="pod_itunes_cat3">
-							<option value=""></option>
-							<?php foreach ( $pod_itunes_cats as $pod_itunes_cat ) {
-								// Deal with subcategories
-								$pod_category = explode("||", $pod_itunes_cat);
-								$pod_category_display = ( $pod_category[1] ) ? '&nbsp;&nbsp;&nbsp;' . $pod_category[1] : $pod_category[0];
-								// If selected category
-								$pod_selected = ( $pod_itunes_cat == htmlspecialchars(stripslashes(get_option('pod_itunes_cat3'))) ) ? ' selected="selected"' : '';
-
-								echo '<option value="' . $pod_itunes_cat . '"' . $pod_selected . '>' . $pod_category_display . '</option>';
-							} ?>
-						</select>
-						<br />An optional additional category which is only used on directory pages without podcast art.
+						<input type="text" style="width: 95%" name="pod_itunes_keywords" id="pod_itunes_keywords" value="<?php echo stripslashes(get_option('pod_itunes_keywords')); ?>" />
+						<br />Up to 12 comma-separated words which iTunes uses for search placement. 
 					</td>
 				</tr>
 			</table>
@@ -229,7 +218,7 @@ function podcasting_options_page() {
 	</form>
 	
 	<?php
-} // End podcasting_options_page()
+} // podcasting_options_page()
 
 
 /* ------------------------------------- WORK -------------------------------------- */
@@ -276,43 +265,32 @@ function podcasting_add_itunes_feed() {
 		// iTunes summary
 		if ( '' != get_option('pod_itunes_summary') )
 			echo '<itunes:summary>' . stripslashes(get_option('pod_itunes_summary')) . '</itunes:summary>' . "\n	";
+		// iTunes subtitle
+		if ( '' != get_option('pod_tagline') )
+			echo '<itunes:subtitle>' . stripslashes(get_option('pod_tagline')) . '</itunes:subtitle>' . "\n	";
 		// iTunes author
 		if ( '' != get_option('pod_itunes_author') )
 			echo '<itunes:author>' . stripslashes(get_option('pod_itunes_author')) . '</itunes:author>' . "\n	";
 		// iTunes image
 		if ( '' != get_option('pod_itunes_image') )
 			echo '<itunes:image href="' . stripslashes(get_option('pod_itunes_image')) . '" />' . "\n	";
-		// iTunes category 1
-		if ( '' != get_option('pod_itunes_cat1') ) {
-			$pod_category = explode('||', htmlspecialchars(stripslashes(get_option('pod_itunes_cat1'))));
-			if ( $pod_category[1] ) {
-				echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
-				echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
-				echo '</itunes:category>' . "\n	";
-			} else
-				echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
+		// iTunes categories
+		for ($i = 1; $i <= 3; $i++) {
+			$pod_cat_option = 'pod_itunes_cat' . $i;
+			if ( '' != get_option($pod_cat_option) ) {
+				$pod_category = explode('||', htmlspecialchars(stripslashes(get_option($pod_cat_option))));
+				if ( $pod_category[1] ) {
+					echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
+					echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
+					echo '</itunes:category>' . "\n	";
+				} else
+					echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
+			}
 		}
-		// iTunes category 2
-		if ( '' != get_option('pod_itunes_cat2') ) {
-			$pod_category = explode('||', htmlspecialchars(stripslashes(get_option('pod_itunes_cat2'))));
-			if ( $pod_category[1] ) {
-				echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
-				echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
-				echo '</itunes:category>' . "\n	";
-			} else
-				echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
-		}
-		// iTunes category 3
-		if ( '' != get_option('pod_itunes_cat3') ) {
-			$pod_category = explode('||', htmlspecialchars(stripslashes(get_option('pod_itunes_cat3'))));
-			if ( $pod_category[1] ) {
-				echo '<itunes:category text="' . $pod_category[0] . '">' . "\n		";
-				echo '<itunes:category text="' . $pod_category[1] . '" />' . "\n	";
-				echo '</itunes:category>' . "\n	";
-			} else
-				echo '<itunes:category text="' . $pod_category[0] . '" />' . "\n	";
-		}
+		// iTunes keywords
+		if ( '' != get_option('pod_itunes_keywords') )
+			echo '<itunes:keywords>' . stripslashes(get_option('pod_itunes_keywords')) . '</itunes:keywords>' . "\n	";
 	}
-}
+} // podcasting_add_itunes_feed()
 
 ?>
