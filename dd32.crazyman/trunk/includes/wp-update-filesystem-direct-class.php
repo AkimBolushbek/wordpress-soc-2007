@@ -4,13 +4,19 @@ class WP_Filesystem_Direct{
 	function WP_Filesystem_Direct($arg){
 		
 	}
+	function find_base_dir($base = '.'){
+		return ABSPATH;
+	}
+	function get_base_dir($base = '.'){
+		return ABSPATH;
+	}
 	function get_contents($file){
 		return @file_get_contents($file);
 	}
 	function get_contents_array($file){
 		return @file($file);
 	}
-	function put_contents($file,$contents,$mode=''){
+	function put_contents($file,$contents,$type=''){
 		$fp=@fopen($file,'w'.$mode);
 		if (!$fp)
 			return false;

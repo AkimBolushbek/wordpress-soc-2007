@@ -1,156 +1,124 @@
 <?php
-class WP_Filesystem_Combination{
-	var $method = 'direct';
-	var $ftp = array('host'=>false,'post'=>21,'username'=>false,'password'=>false,'base'=>'./');
+
+class WP_Filesystem_FTP{
 	var $link;
+	var $timeout = 5;
 	
-	function WP_Filesystem_Combination($method = false, $info=''){
-		if($method) $this->method = $method;
-		if('ftp' == $method && !function_exists('ftp_connect'))
-			$this->method = 'direct';
-		if('ftp' == $this->method){
-			if(isset($info['host']))
-				$this->ftp['host'] = $info['host'];
-			if(isset($info['port']))
-				$this->ftp['port'] = (int)$info['port'];
-			if(isset($info['username']))
-				$this->ftp['username'] = $info['username'];
-			if(isset($info['password']))
-				$this->ftp['password'] = $info['password'];
-			if(isset($info['base']))
-				$this->ftp['base'] = $info['base'];
-			if( !$this->ftp['host'] || !$this->ftp['username'] || !$this->ftp['password'] ){
-				$this->method = 'direct';
-			} else {
-				if( false !== ($this->link = ftp_connect($this->ftp['host'], $this->ftp['port']) ) && 
-								ftp_login($this->link,$this->ftp['username'], $this->ftp['password'] ) ){
-					$this->ftp['password'] = false;
-					if( './' == $this->ftp['base'] ) $this->ftp['base'] = ftp_pwd($this->link);
-					return;
-				} else {
-					$this->link = false;
-					$this->ftp['password'] = false;
-					$this->method = 'direct';
-				}
-			}
+	var $wp_base;
+	
+	var $filetypes = array(
+							'php'=>FTP_ASCII,
+							'css'=>FTP_ASCII,
+							'txt'=>FTP_ASCII,
+							'js'=>FTP_ASCII,
+							'html'=>FTP_ASCII,
+							'htm'=>FTP_ASCII,
+							
+							'jpg'=>FTP_BINARY,
+							'png'=>FTP_BINARY,
+							'gif'=>FTP_BINARY,
+							'bmp'=>FTP_BINARY
+							);
+	
+	function WP_Filesystem_FTP($opt=''){
+		//Check if possible to use ftp functions.
+		if( ! function_exists('ftp_connect') )
+			return false;
+		//Check if options provided
+		//if( ! is_array($opt) );
+		//	return false;
+
+		//Set defaults:
+		if( ! isset($opt['port']) || empty($opt['port']) )
+			$opt['port'] = 21;
+		if( ! isset($opt['host']) || empty($opt['host']) )
+			$opt['host'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
+		
+		//Check if the options provided are OK.
+		if( ! isset($opt['username']) || ! isset($opt['password']) ||
+			 empty ($opt['username']) ||  empty ($opt['password']) ){
+			 echo 'no auth details';
+			 return false;
 		}
-			
+		
+		//All is A-OK.
+		if( false == ($this->link = ftp_connect($opt['host'], $opt['post'],$this->timeout) ) ){
+			echo 'no connect';
+			return false;
+		}
+		
+		if( false == (ftp_login($this->link,$opt['username'], $opt['password']) ) ){
+			echo 'no login';
+			return false;
+		}
+		
 	}
-	function get_contents($file){
-		if('direct' == $this->method){
-			return @file_get_contents($file);
-		} else {
-			
+	function find_base_dir($base = '.'){
+		$this->wp_base = ABSPATH;
+		return $this->wp_base;
+	}
+	function get_base_dir($base = '.'){
+		return $this->wp_base;
+	}
+	function get_contents($file,$type='',$resumepos=0){
+		if( empty($type) ){
+			$extension = substr(strrchr($filename, "."), 1);
+			$type = isset($this->filetypes[ $extension ]) ? $this->filetypes[ $extension ] : FTP_ASCII;
 		}
+		$temp = tmpfile();
+		if( ! @ftp_fget($this->link,$temp,$file,$type,$resumepos) )
+			return false;
+		fseek($temp, 0); //Skip back to the start of the file being written to
+		$contents = '';
+		while (!feof($temp)) {
+			$contents .= fread($temp, 8192);
+		}
+		fclose($temp);
+		return $contents;
 	}
 	function get_contents_array($file){
-		if('direct' == $this->method){
-			return @file($file);
-		} else {
-		
-		}
+		return explode("\n",$this->get_contents($file));
 	}
-	function put_contents($file,$contents,$mode=''){
-		if('direct' == $this->method){
-			$fp=@fopen($file,'w'.$mode);
-			if (!$fp)
-				return false;
-			@fwrite($fp,$contents);
-			@fclose($fp);
-			return true;
-		} else {
-			
+	function put_contents($file,$contents,$type=''){
+		if( empty($type) ){
+			$extension = substr(strrchr($filename, "."), 1);
+			$type = isset($this->filetypes[ $extension ]) ? $this->filetypes[ $extension ] : FTP_ASCII;
 		}
+		$temp = tmpfile();
+		fwrite($temp,$contents);
+		fseek($temp, 0); //Skip back to the start of the file being written to
+		$ret = @ftp_fput($this->link,$file,$temp,$type);
+		fclose($temp);
+		return $ret;
 	}
-	
 	function chgrp($file,$group,$recursive=false){
-		if('direct' == $this->method){
-			if( ! $this->exists($file) )
-				return false;
-			if( ! $recursive )
-				return @chgrp($file,$group);
-			if( ! $this->is_dir($file) )
-				return @chgrp($file,$group);
-			//Is a directory, and we want recursive
-			$filelist = $this->dirlist($file);
-			foreach($filelist as $filename){
-				$this->chgrp($file.'/'.$filename,$group,$recursive);
-			}
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 	function chmod($file,$mode,$recursive=false){
-		if('direct' == $this->method){
-			if( ! $this->exists($file) )
-				return false;
-			if( ! $recursive )
-				return @chmod($file,$mode);
-			if( ! $this->is_dir($file) )
-				return @chmod($file,$mode);
-			//Is a directory, and we want recursive
-			$filelist = $this->dirlist($file);
-			foreach($filelist as $filename){
-				$this->chmod($file.'/'.$filename,$mode,$recursive);
-			}
-			return true;
-		} else {
-			if( ! $this->exists($file) )
-				return false;
-			if( ! $recursive )
-				return ftp_chmod($this->link,$mode,$file);
-			if( ! $this->is_dir($file) ){
-				if (!function_exists('ftp_chmod'))
-					return ftp_site($this->link, sprintf('CHMOD %o %s', $mode, $file));
-				return ftp_chmod($this->link,$mode,$file);
-			}
-			//Is a directory, and we want recursive
-			$filelist = $this->dirlist($file);
-			foreach($filelist as $filename){
-				$this->chmod($file.'/'.$filename,$mode,$recursive);
-			}
-			return true;
-			
+		if( ! $this->exists($file) )
+			return false;
+		if( ! $recursive || ! $this->is_dir($file) ){
+			if (!function_exists('ftp_chmod'))
+				return ftp_site($this->link, sprintf('CHMOD %o %s', $mode, $file));
+			return ftp_chmod($this->link,$mode,$file);
 		}
+		//Is a directory, and we want recursive
+		$filelist = $this->dirlist($file);
+		foreach($filelist as $filename){
+			$this->chmod($file.'/'.$filename,$mode,$recursive);
+		}
+		return true;
 	}
 	function chown($file,$owner,$recursive=false){
-		if('direct' == $this->method){
-			if( ! $this->exists($file) )
-				return false;
-			if( ! $recursive )
-				return @chown($file,$owner);
-			if( ! $this->is_dir($file) )
-				return @chown($file,$owner);
-			//Is a directory, and we want recursive
-			$filelist = $this->dirlist($file);
-			foreach($filelist as $filename){
-				$this->chown($file.'/'.$filename,$owner,$recursive);
-			}
-			return true;
-		} else {
-			return false;
-		}
+		return false;
 	}
 	function owner($file){
-		if('direct' == $this->method){
-			$owneruid=@fileowner($file);
-			if( ! $owneruid )
-				return false;
-			if( !function_exists('posix_getpwuid') )
-				return $owneruid;
-			$ownerarray=posix_getpwuid($owneruid); 
-			return $ownerarray['name'];
-		} else {
-			
-		}
+		$dir = $this->dirlist($file);
+		return $dir[$file]['owner'];
 	}
 	function getchmod($file){
-		if('direct' == $this->method){
-			return @fileperms($file);
-		} else {
-			
-		}
+		$dir = $this->dirlist($file);
+		return $dir[$file]['permsn'];
 	}
 	function gethchmod($file){
 		//From the PHP.net page for ...?
@@ -222,264 +190,119 @@ class WP_Filesystem_Combination{
 		return $newmode;
 	}
 	function group($file){
-		if('direct' == $this->method){
-			$gid=@filegroup($file);
-			if( ! $gid )
-				return false;
-			if( !function_exists('posix_getgrgid') )
-				return $gid;
-			$grouparray=posix_getgrgid($gid); 
-			return $grouparray['name'];
-		} else {
-		
-		}
+		$dir = $this->dirlist($file);
+		return $dir[$file]['group'];
 	}
-	
 	function copy($source,$destination,$overwrite=false){
-		if('direct' == $this->method){
-			if( $overwrite && $this->exists($destination) )
-				return false;
-			return copy($source,$destination);
-		} else {
-		
-		}
+		if( ! $overwrite && $this->exists($destination) )
+			return false;
+		$content = $this->get_content($source);
+		$this->put_contents($destination,$content);
 	}
 	function move($source,$destination,$overwrite=false){
-		if('direct' == $this->method){
-			if( $this->copy($source,$destination,$overwrite) && $this->exists($destination) ){
-				$this->delete($source);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return ftp_rename($this->link,$source,$destination);
-		}
+		return ftp_rename($this->link,$source,$destination);
 	}
 	function delete($file,$recursive=false){
-		if('direct' == $this->method){
-			if( $this->is_file($file) )
-				return @unlink($file);
-			if( !$recursive )
-				return @rmdir($file);
-			$filelist = $this->dir($file.'/');
-			foreach($filelist as $filename){
-				$this->delete($file.'/'.$filename,$recursive);
-			}
-		} else {
-			if( $this->is_file($file) )
-				return ftp_delete($this->link,$file);
-			if( !$recursive )
-				return ftp_rmdir($this->link,$file);
-			$filelist = $this->dir($file.'/');
-			foreach($filelist as $filename){
-				$this->delete($file.'/'.$filename,$recursive);
-			}
-			
+		if( $this->is_file($file) )
+			return ftp_delete($this->link,$file);
+		if( !$recursive )
+			return ftp_rmdir($this->link,$file);
+		$filelist = $this->dirlist($file);
+		foreach($filelist as $filename){
+			$this->delete($file.'/'.$filename,$recursive);
 		}
 	}
-	
 	function exists($file){
-		if('direct' == $this->method){
-			return file_exists($file);
-		} else {
+		//TODO: Do not feel this is the best way.
+		return (bool)$this->dirlist($file);
 			
-		}
 	}
 	function is_file($file){
-		if('direct' == $this->method){
-			return is_file($file);
-		} else {
-		
-		}
+		return $this->exists($file);
 	}
 	function is_dir($path){
-		if('direct' == $this->method){
-			return is_dir($path);
-		} else {
-		
-		}
+		return $this->exists($file);
 	}
 	function is_readable($file){
-		if('direct' == $this->method){
-			return is_readable($file);
-		} else {
-		
-		}
+		//Get dir list, Check if the file is writable by the current user??
+		return true;
 	}
 	function is_writable($file){
-		if('direct' == $this->method){
-			return is_writable($file);
-		} else {
-		
-		}
+		//Get dir list, Check if the file is writable by the current user??
+		return true;
 	}
-	
 	function atime($file){
-		if('direct' == $this->method){
-			return fileatime($file);
-		} else {
-		
-		}
+		return false;
 	}
 	function mtime($file){
-		if('direct' == $this->method){
-			return filemtime($file);
-		} else {
-		
-		}
+		return ftp_mdtm($this->link, $file);
 	}
 	function size($file){
-		if('direct' == $this->method){
-			return filesize($file);
-		} else {
-		
-		}
+		return ftp_size($this->link, $file);
 	}
 	function touch($file,$time=0,$atime=0){
-		if($time==0)
-			$time = time();
-		if($atime==0)
-			$atime = time();
-			
-		if('direct' == $this->method){
-			return touch($file,$time,$atime);
-		} else {
-		
-		}
+		return false;
 	}
-	
 	function mkdir($path,$chmod=false,$chown=false,$chgrp=false){
-		if( false == $chmod)
-			$chmod = umask();
-		if('direct' == $this->method){
-			if( !mkdir($path,$chmod) )
-				return false;
-			if( $chown )
-				$this->chown($path,$chown);
-			if( $chgrp )
-				$this->chgrp($path,$chgrp);
-			return true;
-		} else {
-		
-		}
+		if( !ftp_mkdir($this->link, $path) )
+			return false;
+		if( $chmod )
+			$this->chmod($chmod);
+		if( $chown )
+			$this->chown($chown);
+		if( $chgrp )
+			$this->chgrp($chgrp);
+		return true;
 	}
 	function rmdir($path,$recursive=false){
-		if('direct' == $this->method){
-			if( ! $recursive )
-				return rmdir($path);
-			//recursive:
-			$filelist = $this->dirlist($path);
-			foreach($filelist as $filename=>$det){
-				if ( '/' == substr($filename,-1,1) )
-					$this->rmdir($path.'/'.$filename,$recursive);
-				rmdir($entry);
-			}
-			return rmdir($path);
-		} else {
+		if( ! $recursive )
+			return ftp_rmdir($this->link, $file);
 		
-		}
+		//TODO: Recursive Directory delete, Have to delete files from the folder first.
+		//$dir = $this->dirlist($path);
+		//foreach($dir as $file)
+			
 	}
-	
-	function dirlist($path,$incdot=false,$recursive=false){
-	/* $f array ( 
-	*			'file' => array ($f,$f),
-	*			'owner' => 'test',
-	*			'group' => 'group',
-	*			'permissions' => array( 'human' =>,'mode' => 0000 ),
-	*			'filezise' => Bytes,
-	*			'modified' => Date
-	*/
-		if('direct' == $this->method){
-			$ret = array();
-			$dir = dir($path);
-			while (false !== ($entry = $dir->read())) {
-				if( ! $incdot && ($entry == '.' || $entry == '..') )
-					continue;
-				$struc = array();
-				$struc['perms'] 	= $this->gethchmod($path.'/'.$entry);
-				$struc['permsn']	= $this->getnumchmodfromh($struc['perms']);
-				$struc['number'] 	= false;
-				$struc['owner']    	= $this->owner($path.'/'.$entry);
-				$struc['group']    	= $this->group($path.'/'.$entry);
-				$struc['size']    	= $this->size($path.'/'.$entry);
-				$struc['lastmodunix']= $this->mtime($path.'/'.$entry);
-				$struc['lastmod']   = date('M j',$struc['lastmodunix']);
-				$struc['time']    	= date('h:i:s',$struc['lastmodunix']);
-				$struc['name'] 		= $entry;
-				$struc['type']		= $this->is_dir($path.'/'.$entry) ? 'folder' : 'file';
-				if('folder' == $struc['type'] ){
-					if( '.' == $struc['name'] || '..' == $struc['name']){
-						//Dots
-						if($incdot) {
-							$struc['files'] = array();
-							$ret[$struc['name']] = $struc;
-						}
-					} else {
-						//No dots
-						if ($recursive){
-							$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
-						} else {
-							$struc['files'] = array();
-						}
+	function dirlist($path='.',$incdot=false,$recursive=false){
+		$list = ftp_rawlist($this->link,'-a '.$path,false); //We'll do the recursive part ourseves...
+		if($list == false)
+			return false;
+		$ret = array();
+		foreach($list as $line){
+			$struc = array();
+			$current = preg_split("/[\s]+/",$line,9);
+			$struc['perms']    	= $current[0];
+			$struc['permsn']	= $this->getnumchmodfromh($current[0]);
+			$struc['number']	= $current[1];
+			$struc['owner']    	= $current[2];
+			$struc['group']    	= $current[3];
+			$struc['size']    	= $current[4];
+			$struc['lastmod']   = $current[5].' '.$current[6];
+			$struc['time']    	= $current[7];
+			$struc['name']    	= str_replace('//','',$current[8]);
+			$struc['type']		= ('d' == substr($struc['perms'], 0, 1) || 'l' == substr($struc['perms'], 0, 1) ) ? 'folder' : 'file';
+			if('folder' == $struc['type'] ){
+				if( '.' == $struc['name'] || '..' == $struc['name']){
+					//Dots
+					if($incdot) {
+						$struc['files'] = array();
 						$ret[$struc['name']] = $struc;
 					}
 				} else {
-					//File
-					$ret[$struc['name']] = $struc;
-				}
-			}
-			return $ret;
-		} else {
-			$list = ftp_rawlist($this->link,'-a '.$path,false); //We'll do the recursive part ourseves...
-			$ret = array();
-			foreach($list as $line){
-				$struc = array();
-				$current = preg_split("/[\s]+/",$line,9);
-				$struc['perms']    	= $current[0];
-				$struc['permsn']	= $this->getnumchmodfromh($current[0]);
-				$struc['number']	= $current[1];
-				$struc['owner']    	= $current[2];
-				$struc['group']    	= $current[3];
-				$struc['size']    	= $current[4];
-				$struc['lastmod']   = $current[5].' '.$current[6];
-				$struc['time']    	= $current[7];
-				$struc['name']    	= str_replace('//','',$current[8]);
-				$struc['type']		= ('d' == substr($struc['perms'], 0, 1) || 'l' == substr($struc['perms'], 0, 1) ) ? 'folder' : 'file';
-				if('folder' == $struc['type'] ){
-					if( '.' == $struc['name'] || '..' == $struc['name']){
-						//Dots
-						if($incdot) {
-							$struc['files'] = array();
-							$ret[$struc['name']] = $struc;
-						}
+					//No dots
+					if ($recursive){
+						$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
 					} else {
-						//No dots
-						if ($recursive){
-							$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
-						} else {
-							$struc['files'] = array();
-						}
-						$ret[$struc['name']] = $struc;
+						$struc['files'] = array();
 					}
-				} else {
-					//File
 					$ret[$struc['name']] = $struc;
 				}
+			} else {
+				//File
+				$ret[$struc['name']] = $struc;
 			}
-			return $ret;
 		}
-	}
-	/*function (){
-		if('direct' == $this->method){
-		
-		} else {
-		
-		}
-	}*/
-	function __destruct(){
-		if($this->link) 
-			@ftp_close($this->link);
+		return $ret;
 	}
 }
 ?>
