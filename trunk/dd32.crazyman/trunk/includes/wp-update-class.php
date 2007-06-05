@@ -375,25 +375,43 @@ class WP_Update{
 			}
 		}
 	}
-	function installThemeStep2($archive,$info=array()){
+	function installThemeStep2($archive,$fileinfo=array()){
 		if( ! $archive) return false;
-		if( false === ($archiveFiles = $archive->listContent()) ) return false;
-		
+		if( false === ($files = $archive->listContent()) ) return false;
+
 		/* Filesystem */
 		require_once('wp-update-filesystem-class.php');
 		$fs = WP_Filesystem('direct');
 		
 		//First of all, Does the zip file contain a base folder?
-		$base = ABSPATH . 'wp-content/themes/';
+		$base = $fs->get_base_dir() . 'wp-content/themes/';
+		$baseFolderName = false;
+		foreach($files as $thisFileInfo){
+			if( false === strpos($thisFileInfo['filename'],'/') ){
+				$baseFolderName = true;
+				break;
+			}
+		}
 		
-		if( $archiveFiles[0]['folder'] ){
-			//Yes
-			//Create it:
-			$fs->mkdir($base.$archiveFiles[0]['filename']);
-			echo __('<Strong>Installing to</strong>: ').$base.$archiveFiles[0]['filename'].'<br/>';
+		if( $baseFolderName ){
+			//The theme file files's are not contained within a single folder, So we need to put them into a subfolder:
+			echo __('<Strong>Installing</strong>: ').$base.'<br/>';
+			
+			echo __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip');
+			if( $fs->mkdir( $base . basename($fileinfo['name'],'.zip') ) )
+				echo ' <span style="color: green;">['.__('OK').']</span><br>';
+			else
+				echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
+				
+			$base .= basename($fileinfo['name'],'.zip') . '/';				
 		} else {
-			$base .= $fileinfo['name'];
-			echo __('<Strong>Installing to</strong>: ').$base.'<br/>';
+			echo __('<Strong>Installing to</strong>: ').$base.$files[0]['filename'].'<br/>';
+
+			echo __('<strong>Creating folder</strong>: ') . $files[0]['filename'];
+			if( $fs->mkdir( $base . $files[0]['filename'] ) )
+				echo ' <span style="color: green;">['.__('OK').']</span><br>';
+			else
+				echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
 		}
 
 		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
@@ -401,8 +419,8 @@ class WP_Update{
 		for( $i=1; $i<count($files); $i++){
 
 	  		if( $files[$i]['folder'] ){
-				echo __('<strong>Creating folder</strong>: ') . $archiveFiles[$i]['filename'];
-				if( $fs->mkdir($base.$archiveFiles[$i]['filename']) )
+				echo __('<strong>Creating folder</strong>: ') . $files[$i]['filename'];
+				if( $fs->mkdir($base.$files[$i]['filename']) )
 					echo ' <span style="color: green;">['.__('OK').']</span><br>';
 				else
 					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
@@ -419,7 +437,7 @@ class WP_Update{
 							echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
 					}
 				}
-				echo __('<strong>Inflating File</strong>: ') . $archiveFiles[$i]['filename'];
+				echo __('<strong>Inflating File</strong>: ') . $files[$i]['filename'];
 		  		if( $fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']) )
 					echo ' <span style="color: green;">['.__('OK').']</span><br>';
 				else
