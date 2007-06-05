@@ -24,7 +24,6 @@ add_option('pod_itunes_keywords', '', 'iTunes keywords');
 add_option('pod_itunes_explicit', '', 'iTunes explicit');
 add_option('pod_itunes_ownername', '', 'iTunes owner name');
 add_option('pod_itunes_owneremail', '', 'iTunes owner email');
-add_option('pod_itunes_block', '', 'Block iTunes');
 
 // Add Podcasting to the options menu
 function add_podcasting_pages() {
@@ -73,6 +72,9 @@ function podcasting_options_page() {
 		update_option('pod_itunes_cat2', $_POST[pod_itunes_cat2]);
 		update_option('pod_itunes_cat3', $_POST[pod_itunes_cat3]);
 		update_option('pod_itunes_keywords', $_POST[pod_itunes_keywords]);
+		update_option('pod_itunes_explicit', $_POST[pod_itunes_explicit]);
+		update_option('pod_itunes_ownername', $_POST[pod_itunes_ownername]);
+		update_option('pod_itunes_owneremail', $_POST[pod_itunes_owneremail]);
 	}
 	
 	// iTunes category options
@@ -208,6 +210,37 @@ function podcasting_options_page() {
 						<br />Up to 12 comma-separated words which iTunes uses for search placement. 
 					</td>
 				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_explicit">Explicit:</label>
+					</th>
+					<td>
+						<select name="pod_itunes_explicit" id="pod_itunes_explicit">
+							<option value="">No</option>
+							<option value="yes"<?php echo ( 'yes' == get_option(pod_itunes_explicit) ) ? ' selected="selected"' : ''; ?>>Yes</option>
+							<option value="clean"<?php echo ( 'clean' == get_option(pod_itunes_explicit) ) ? ' selected="selected"' : ''; ?>>Clean</option>
+						</select>
+						<br />Notifies readers your podcast contains explicit material. Select clean if your podcast removed any explicit content. Note: iTunes requires all explicit podcast to mark themself as one. Failure to do so can result in removal from the iTunes podcast directory.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_ownername">Owner Name:</label>
+					</th>
+					<td>
+						<input type="text" size="40" name="pod_itunes_ownername" id="pod_itunes_ownername" value="<?php echo stripslashes(get_option('pod_itunes_ownername')); ?>" />
+						<br />Your podcast's owner's name. The owner name will not be publically displayed and is used only by iTunes in the event they need to contact your podcast.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_itunes_owneremail">Owner E-mail Address:</label>
+					</th>
+					<td>
+						<input type="text" size="40" name="pod_itunes_owneremail" id="pod_itunes_owneremail" value="<?php echo stripslashes(get_option('pod_itunes_owneremail')); ?>" />
+						<br />Your podcast's owner's e-mail address. The owner e-mail address will not be publically displayed and is used only by iTunes in the event they need to contact your podcast.
+					</td>
+				</tr>
 			</table>
 		</fieldset>
 		
@@ -290,6 +323,18 @@ function podcasting_add_itunes_feed() {
 		// iTunes keywords
 		if ( '' != get_option('pod_itunes_keywords') )
 			echo '<itunes:keywords>' . stripslashes(get_option('pod_itunes_keywords')) . '</itunes:keywords>' . "\n	";
+		// iTunes keywords
+		if ( '' != get_option('pod_itunes_explicit') )
+			echo '<itunes:explicit>' . get_option('pod_itunes_explicit') . '</itunes:explicit>' . "\n	";
+		// iTunes owner information
+		if ( ( '' != get_option('pod_itunes_ownername') ) || ( '' != get_option('pod_itunes_owneremail') ) ) {
+			echo '<itunes:owner>' . "\n	";
+			if ( '' != get_option('pod_itunes_ownername') )
+				echo '	<itunes:name>' . get_option('pod_itunes_ownername') . '</itunes:name>' . "\n	";
+			if ( '' != get_option('pod_itunes_owneremail') )
+				echo '	<itunes:email>' . get_option('pod_itunes_owneremail') . '</itunes:email>' . "\n	";
+			echo '</itunes:owner>' . "\n	";
+		}
 	}
 } // podcasting_add_itunes_feed()
 
