@@ -34,6 +34,9 @@ add_action('admin_menu', 'add_podcasting_pages');
 // Add the podcast feed
 add_action('do_feed_podcast', 'do_feed_podcast');
 add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
+add_filter('posts_join', 'podcasting_feed_join');
+add_filter('posts_where', 'podcasting_feed_where');
+add_filter('posts_groupby', 'podcasting_feed_groupby');
 
 // Add podcasting information to feeds
 add_action('rss2_ns', 'podcasting_add_itunes_xml');
@@ -269,6 +272,30 @@ function podcasting_rewrite_rules($wp_rewrite) {
 		'feed/podcast' => 'index.php?feed=podcast',
 	);
 	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
+}
+
+// Add the join needed for enclosures only
+function podcasting_feed_join($join) {
+	global $wpdb;
+	if ( 'podcast' == get_query_var('feed') )
+		$join .= "INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
+	return $join;
+}
+
+// Add the where needed for enclosures only
+function podcasting_feed_where($where) {
+	global $wpdb;
+	if ( 'podcast' == get_query_var('feed') )
+		$where .= "AND {$wpdb->postmeta}.meta_key = 'enclosure'";
+	return $where;
+}
+
+// Add the groupby needed for enclosures only
+function podcasting_feed_groupby($groupby) {
+	global $wpdb;
+	if ( 'podcast' == get_query_var('feed') )
+		$groupby = "{$wpdb->posts}.ID";
+	return $groupby;
 }
 
 // Add the iTunes xml information
