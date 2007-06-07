@@ -31,6 +31,10 @@ function add_podcasting_pages() {
 }
 add_action('admin_menu', 'add_podcasting_pages');
 
+// Add post page information
+add_action('simple_edit_form', 'podcasting_edit_form');
+add_action('edit_form_advanced', 'podcasting_edit_form');
+
 // Add the podcast feed
 add_action('do_feed_podcast', 'do_feed_podcast');
 add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
@@ -255,6 +259,21 @@ function podcasting_options_page() {
 	
 	<?php
 } // podcasting_options_page()
+
+
+/* ------------------------------------- EDIT -------------------------------------- */
+
+function podcasting_edit_form() { ?>
+	<div id="podcasting" class="dbx-group" >
+	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
+	<div class="dbx-h-andle-wrapper">
+		<h3 class="dbx-handle">Podcasting</h3>
+	</div>
+	<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
+		Test
+	</div></div>
+	</fieldset></div><br /></div>
+<?php }
 
 
 /* ------------------------------------- WORK -------------------------------------- */
