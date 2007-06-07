@@ -280,9 +280,7 @@ if (empty($plugins)) {
 	}
 }
 ?>
-<?php 
-if ( current_user_can('edit_plugins') ){
-?>
+ <?php  if ( current_user_can('edit_plugins') ){ ?>
  <tr>
 	<td colspan="4">&nbsp;</td>
 	<td align="right">
