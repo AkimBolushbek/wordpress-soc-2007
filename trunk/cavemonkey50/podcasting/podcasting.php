@@ -32,6 +32,7 @@ function add_podcasting_pages() {
 add_action('admin_menu', 'add_podcasting_pages');
 
 // Add post page information
+add_action('admin_head', 'podcasting_admin_head');
 add_action('simple_edit_form', 'podcasting_edit_form');
 add_action('edit_form_advanced', 'podcasting_edit_form');
 
@@ -263,7 +264,15 @@ function podcasting_options_page() {
 
 /* ------------------------------------- EDIT -------------------------------------- */
 
+// Required information needed for post form
+function podcasting_admin_head() {
+	echo '<script type="text/javascript" src="/wp-content/plugins/podcasting/admin.js"></script>';
+	echo '<link rel="stylesheet" href="/wp-content/plugins/podcasting/admin.css" type="text/css" />';
+}
+
+// Podcasting post form
 function podcasting_edit_form() { ?>
+	<script type="text/javascript" src="/wp-content/plugins/podcasting/admin.js.php"></script>
 	<div id="podcasting" class="dbx-group" >
 	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
 	<div class="dbx-h-andle-wrapper">
@@ -272,7 +281,7 @@ function podcasting_edit_form() { ?>
 	<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
 		Test
 	</div></div>
-	</fieldset></div><br /></div>
+	</fieldset></div></div>
 <?php }
 
 
