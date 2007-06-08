@@ -1,5 +1,32 @@
 <?php
+/*
+include 'C:/www/wordpress/wp-content/plugins/wp-update/includes/wp-update-filesystem-ftp-class.php';
 
+$details = array(
+'host'=>'10.10.10.30',
+'username'=>'dd32',
+'password'=>''
+);
+
+$ftp = new WP_Filesystem_FTP($details);
+
+var_dump($ftp);
+
+echo time();
+
+//var_dump($ftp->put_contents('testfile.txt','Contents'));
+
+//var_dump($ftp->get_contents('test'));
+//var_dump($ftp->dirlist('test'));
+
+//var_dump($ftp->owner('vx/jess_usb_all'));
+//var_dump($ftp->group('vx/jess_usb_all'));
+//var_dump($ftp->getchmod('vx/jess_usb_all'));
+
+var_dump($ftp->exists('vx/jess_usb_all'));
+var_dump($ftp->exists('vx/jess_usb_allsd'));
+
+*/
 class WP_Filesystem_FTP{
 	var $link;
 	var $timeout = 5;
@@ -33,6 +60,8 @@ class WP_Filesystem_FTP{
 			$opt['port'] = 21;
 		if( ! isset($opt['host']) || empty($opt['host']) )
 			$opt['host'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
+		if( isset($opt['base']) )
+			$this->wp_base = $opt['base'];
 		
 		//Check if the options provided are OK.
 		if( ! isset($opt['username']) || ! isset($opt['password']) ||

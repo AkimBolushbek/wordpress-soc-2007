@@ -10,7 +10,7 @@ include_once('includes/wp-update-functions.php');
 switch($_GET['action']){
 	case 'checkPluginUpdate':
 		$wpupdate = new WP_Update;
-		$updateStat = $wpupdate->checkPluginUpdate($_GET['file'],true,true);
+		$updateStat = $wpupdate->checkPluginUpdate($_GET['file'],false,true,true);
 		//TODO: Seems to be firing for disabled plugins regardless
 		if( isset($updateStat['Errors']) && in_array('Not Found',$updateStat['Errors']) ){
 			$updatetext = '';
@@ -28,7 +28,7 @@ switch($_GET['action']){
 			if( $updateStat['Update'] ){
 				$updatetext = __('Update Available').':<br/>';
 				$updatetext .= $updateStat['Version'];
-				$updatetext .= '<br/><a href="'.$updateStat['PluginInfo']['Download'].'">'.__('Install').'</a>';
+				$updatetext .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'">'.__('Install').'</a>';
 				if( isset($updateStat['Errors']) ){
 					$updatetext .= '<br/><span class="updateerror">';
 					$updatetext .= implode('<br/>',$updateStat['Errors']);

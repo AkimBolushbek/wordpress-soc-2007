@@ -165,7 +165,7 @@ class WP_Update{
 	}
 	
 	/** PLUGIN UPDATE FUNCTIONS **/
-	function checkPluginUpdate($pluginfile=false,$skipcache=false,$forcecheck=false){
+	function checkPluginUpdate($pluginfile=false,$return=false,$skipcache=false,$forcecheck=false){
 		if( ! $pluginfile ) return array('Errors'=>array('Invalid File'));
 		$pluginUpdateInfo = false;
 		
@@ -386,7 +386,7 @@ class WP_Update{
 		//First of all, Does the zip file contain a base folder?
 		$base = $fs->get_base_dir() . 'wp-content/themes/';
 		$baseFolderName = false;
-		foreach($files as $thisFileInfo){
+		foreach((array)$files as $thisFileInfo){
 			if( false === strpos($thisFileInfo['filename'],'/') ){
 				$baseFolderName = true;
 				break;
