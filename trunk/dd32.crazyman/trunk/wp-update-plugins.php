@@ -233,14 +233,14 @@ if (empty($plugins)) {
 		if( !get_option('update_notification_enable') ){
 			$updatetext = __('Not Checked');
 		} else {
-			$updateStat = $wpupdate->checkPluginUpdate($plugin_file,false,false);
+			$updateStat = $wpupdate->checkPluginUpdate($plugin_file,false,false,false);
 			//TODO: Seems to be firing for disabled plugins regardless
 			if( isset($updateStat['Errors']) && in_array('Not Found',$updateStat['Errors']) ){
 				$updatetext = '';
 				foreach($updateStat['Errors'] as $error)
 					$updatetext .= __($error)."<br/>";
 			} elseif( ( isset($updateStat['Errors']) && in_array('Not Cached',$updateStat['Errors']) )
-				|| (get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins)  ) ){
+					|| (get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins)  ) ){
 				//Plugin info not cached.
 				$updatetext = __('Please Wait');
 				$updatetext .= "<script type='text/javascript'>checkUpdate('$plugin_file');</script>";
@@ -251,7 +251,7 @@ if (empty($plugins)) {
 				if( $updateStat['Update'] ){
 					$updatetext = __('Update Available').':<br/>';
 					$updatetext .= $updateStat['Version'];
-					$updatetext .= '<br/><a href="'.$updateStat['PluginInfo']['Download'].'">'.__('Install').'</a>';
+					$updatetext .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'">'.__('Install').'</a>';
 					if( isset($updateStat['Errors']) ){
 						$updatetext .= '<br/><span class="updateerror">';
 						$updatetext .= implode('<br/>',$updateStat['Errors']);
