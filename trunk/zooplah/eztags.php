@@ -37,10 +37,12 @@ class EzTags
 		return $template_name;
 	}
 
+	function gtl(){echo "Yeah";$title = get_the_title();if ( empty ($title) ){static $id = 0;$post = &get_post($id);$title = $post->post_title; $id = $post->ID; } return $title;}
 	/* Replace the tags with PHP */
 	function replace(&$contents)
 	{
-		$contents = str_replace('<$Loop$>', '<?php echo "Hello World<br>\n"; ?>', $contents);
+		$contents = str_replace('<$Loop$>', eval('return "Hello World<br/>\n";'), $contents);
+		$contents = str_replace('<$EntryTitle$>', eval('the_author();'), $contents);
 	}
 
 	/* Just process the template and fill the content */
@@ -59,10 +61,19 @@ class EzTags
 		else if ( file_exists($_template . '/home.php') )
 			$_template_home_file = $_template . '/home.php';
 
+		if (TRUE) {
 		$contents = file_get_contents($_template_home_file);
 		$contents = preg_replace('/^(.*)<\?(php)?/', '$1', $contents);
 		EzTags::replace($contents);
-		eval($contents);
+		eval($contents);}
+		else
+		{
+			ob_start();
+			$contents = ob_get_contents();
+			ob_end_clean();
+			EzTags::replace($contents);
+			echo strlen($contents);;
+		}
 
 		return NULL;
 	}
@@ -93,12 +104,22 @@ class EzTags
 		return $title;
 
 	}
+	function init()
+	{
+
+	}
 }
 
-EzTags::initialize();
+function _eztags_init($content)
+{
+	EzTags::replace($content);
+	return $content;
+}
 
+//error_reporting(E_ERROR|E_PARSE);
 add_filter('template', array(EzTags, 'processTemplate'));
 add_filter('stylesheet', array(EzTags, 'getStylesheet'));
-add_filter('the_title', array(EzTags, 'getTitle'), 3);
+//add_filter('loop_end', @ob_flush());
+//ob_start('_ezTags_init');
 
 ?>
