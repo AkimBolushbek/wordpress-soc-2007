@@ -271,18 +271,50 @@ function podcasting_admin_head() {
 }
 
 // Podcasting post form
-function podcasting_edit_form() { ?>
-	<script type="text/javascript" src="/wp-content/plugins/podcasting/admin.js.php"></script>
+function podcasting_edit_form() {
+	global $post;
+	$enclosures = get_post_meta($post->ID, 'enclosure'); ?>
 	<div id="podcasting" class="dbx-group" >
 	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
 	<div class="dbx-h-andle-wrapper">
 		<h3 class="dbx-handle">Podcasting</h3>
 	</div>
 	<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
-		Test
+		<?php foreach ($enclosures as $enclosure) {
+			$enclosure = explode("\n", $enclosure); ?>
+			<table cellpadding="3" class="pod_enclosure">
+				<tr>
+					<td class="pod-title">File</td>
+					<td colspan="6"><input type="text" name="pod_file" class="pod_file" value="<?php echo $enclosure[0]; ?>" /></td>
+				</tr>
+				<tr>
+					<td class="pod-title">Format</td>
+					<td><select name="pod_format" class="pod_format">
+						<option value="">Main Feed</option>
+					</select></td>
+					<td class="pod-title">Keywords</td>
+					<td colspan="4"><input type="text" name="pod_keywords" class="pod_keywords" value="" /></td>
+				</tr>
+				<tr>
+					<td class="pod-title">Author</td>
+					<td><input type="text" name="pod_author" class="pod_author" value="" /></td>
+					<td class="pod-title">Length</td>
+					<td class="pod-length"><input type="text" name="pod_length" class="pod_length" value="" /></td>
+					<td class="pod-title">Explicit</td>
+					<td class="pod-explicit"><select name="pod_format" class="pod_format">
+						<option value=""></option>
+						<option value="no">No</option>
+						<option value="yes">Yes</option>
+						<option value="clean">Clean</option>
+					</select></td>
+					<td class="pod-update"><input name="" type="submit" class="" value="Update"/> <input name="" type="submit" class="" value="Delete"/></td>
+				</tr>
+			</table>
+		<?php } ?>
+		<h3>Add a new podcast:</h3>
 	</div></div>
 	</fieldset></div></div>
-<?php }
+<?php } // podcasting_edit_form()
 
 
 /* ------------------------------------- WORK -------------------------------------- */
