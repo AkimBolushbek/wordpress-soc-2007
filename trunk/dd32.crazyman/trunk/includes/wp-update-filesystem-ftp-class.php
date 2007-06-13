@@ -1,32 +1,4 @@
 <?php
-/*
-include 'C:/www/wordpress/wp-content/plugins/wp-update/includes/wp-update-filesystem-ftp-class.php';
-
-$details = array(
-'host'=>'10.10.10.30',
-'username'=>'dd32',
-'password'=>''
-);
-
-$ftp = new WP_Filesystem_FTP($details);
-
-var_dump($ftp);
-
-echo time();
-
-//var_dump($ftp->put_contents('testfile.txt','Contents'));
-
-//var_dump($ftp->get_contents('test'));
-//var_dump($ftp->dirlist('test'));
-
-//var_dump($ftp->owner('vx/jess_usb_all'));
-//var_dump($ftp->group('vx/jess_usb_all'));
-//var_dump($ftp->getchmod('vx/jess_usb_all'));
-
-var_dump($ftp->exists('vx/jess_usb_all'));
-var_dump($ftp->exists('vx/jess_usb_allsd'));
-
-*/
 class WP_Filesystem_FTP{
 	var $link;
 	var $timeout = 5;
@@ -82,9 +54,32 @@ class WP_Filesystem_FTP{
 		}
 		
 	}
-	function find_base_dir($base = '.'){
-		$this->wp_base = ABSPATH;
-		return $this->wp_base;
+	function find_base_dir($base = ''){
+		if( $base == '' ) $base = $this->cwd();
+		if( empty( $base ) ) $base = '/';
+		echo "Changing to $base;<br>";
+		if( false === ftp_chdir($this->link, $base) )
+			return false;
+		if( $this->exists($base . '/wp-settings.php') ){
+			$this->wp_base = $base;
+			return $this->wp_base;
+		}
+		
+		if( strpos(ABSPATH, $base) > 0){
+			$arrPath = split('/',substr(ABSPATH,strpos(ABSPATH, $base)));
+		} else {
+			$arrPath = split('/',ABSPATH);
+		}
+		for($i = 0; $i <= count($arrPath); $i++)
+			if( $arrPath[ $i ] == '' ) unset( $arrPath[ $i ] );
+		var_dump($arrPath);
+		foreach($arrPath as $key=>$folder){
+			if( $this->is_dir($base . $folder) ){
+				echo "Found $folder; Changing to $base$folder/<br>";
+				return $this->find_base_dir($base . $folder . '/');
+			}
+		}
+
 	}
 	function get_base_dir($base = '.'){
 		return $this->wp_base;
@@ -119,6 +114,9 @@ class WP_Filesystem_FTP{
 		$ret = @ftp_fput($this->link,$file,$temp,$type);
 		fclose($temp);
 		return $ret;
+	}
+	function cwd(){
+		return ftp_pwd($this->link);
 	}
 	function chgrp($file,$group,$recursive=false){
 		return false;
@@ -247,10 +245,13 @@ class WP_Filesystem_FTP{
 			
 	}
 	function is_file($file){
-		return $this->exists($file);
+		$folder = $this->dirlist($file);
+		return ($file[ $folderName ]['perms'][0] == '-');
 	}
 	function is_dir($path){
-		return $this->exists($file);
+		$file = $this->dirlist($path.'/..');
+		$folderName = substr($path,strrpos($path,'/')+1);
+		return ($file[ $folderName ]['perms'][0] == 'd');
 	}
 	function is_readable($file){
 		//Get dir list, Check if the file is writable by the current user??

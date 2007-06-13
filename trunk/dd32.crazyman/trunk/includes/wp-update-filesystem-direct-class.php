@@ -24,7 +24,9 @@ class WP_Filesystem_Direct{
 		@fclose($fp);
 		return true;
 	}
-	
+	function cwd(){
+		return getcwd();
+	}
 	function chgrp($file,$group,$recursive=false){
 		if( ! $this->exists($file) )
 			return false;
