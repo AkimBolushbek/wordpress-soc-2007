@@ -12,7 +12,7 @@ function _WP_Filesystem_bestOption($preference='direct'){
 	switch($preference){
 		default:
 		case 'direct':
-			//Likely suPHP
+			//Likely suPHP or windows.
 			if( getmyuid() == fileowner(__FILE__) ) return 'direct';
 		case 'ftp':
 			if( extension_loaded('ftp') ) return 'ftp';
