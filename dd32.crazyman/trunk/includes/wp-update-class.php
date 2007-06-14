@@ -361,16 +361,16 @@ class WP_Update{
 		if( isset($_FILES['themefile']) && ! strpos($_FILES['themefile']['type'],'zip') > 0 ){
 			//Invalid File given.
 			$step = 1;
-			echo '<strong>Invalid Archive uploaded</strong><br/>';
+			echo '<strong>Invalid Archive selected</strong><br/>';
 		} else {
 			//potentially Valid.
 			$archive = new PclZip($file);
 			if( false === ($archiveFiles = $archive->listContent()) ){
 				$step = 1;
-				echo '<strong>Invalid Archive uploaded<br/>'.$archive->errorInfo(true).'</strong><br/>';
+				echo '<strong>Invalid Archive selected<br/>'.$archive->errorInfo(true).'</strong><br/>';
 			} else {
 				//Seems its OK!
-				echo '<strong>Valid Archive uploaded</strong><br/>';
+				echo '<strong>Valid Archive selected</strong><br/>';
 				$this->installThemeStep2($archive,$fileinfo);
 			}
 		}
@@ -381,7 +381,7 @@ class WP_Update{
 
 		/* Filesystem */
 		require_once('wp-update-filesystem-class.php');
-		$fs = WP_Filesystem('direct');
+		$fs = WP_Filesystem();
 		
 		//First of all, Does the zip file contain a base folder?
 		$base = $fs->get_base_dir() . 'wp-content/themes/';
@@ -405,13 +405,20 @@ class WP_Update{
 				
 			$base .= basename($fileinfo['name'],'.zip') . '/';				
 		} else {
-			echo __('<Strong>Installing to</strong>: ').$base.$files[0]['filename'].'<br/>';
-
-			echo __('<strong>Creating folder</strong>: ') . $files[0]['filename'];
-			if( $fs->mkdir( $base . $files[0]['filename'] ) )
-				echo ' <span style="color: green;">['.__('OK').']</span><br>';
-			else
-				echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
+			$tmppath = '';
+			$path = explode('/',$files[0]['filename']);
+			echo __('<Strong>Installing to</strong>: ').$base . $path[0].'<br/>';
+			
+			for( $j = 0; $j < count($path) - 1; $j++ ){
+				$tmppath .= $path[$j] . '/';
+				if( ! $fs->is_dir($base . $tmppath) ){
+					echo __('<strong>Creating folder</strong>: ') . $tmppath;
+					if( $fs->mkdir($base . $tmppath) )
+						echo ' <span style="color: green;">['.__('OK').']</span><br>';
+					else
+						echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
+				}
+			}
 		}
 
 		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
@@ -427,10 +434,10 @@ class WP_Update{
 			} else {
 				$tmppath = '';
 				$path = explode('/',$files[$i]['filename']);
-				for($j=0;$j<count($path)-1;$j++){
+				for( $j = 0; $j < count($path) - 1; $j++ ){
 					$tmppath .= $path[$j] . '/';
 					if( ! $fs->is_dir($base . $tmppath) ){
-						echo __('<strong>Creating folder</strong>: ') . $tmppath;
+						echo __('<strong>Creating folder</strong>: ') . $base . $tmppath;
 						if( $fs->mkdir($base . $tmppath) )
 							echo ' <span style="color: green;">['.__('OK').']</span><br>';
 						else
