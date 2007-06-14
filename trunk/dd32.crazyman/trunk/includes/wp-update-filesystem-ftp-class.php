@@ -3,7 +3,7 @@ class WP_Filesystem_FTP{
 	var $link;
 	var $timeout = 5;
 	
-	var $wp_base;
+	var $wp_base = '';
 	
 	var $filetypes = array(
 							'php'=>FTP_ASCII,
@@ -24,15 +24,13 @@ class WP_Filesystem_FTP{
 		if( ! function_exists('ftp_connect') )
 			return false;
 		//Check if options provided
-		//if( ! is_array($opt) );
-		//	return false;
 
 		//Set defaults:
 		if( ! isset($opt['port']) || empty($opt['port']) )
 			$opt['port'] = 21;
 		if( ! isset($opt['host']) || empty($opt['host']) )
 			$opt['host'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
-		if( isset($opt['base']) )
+		if( isset($opt['base']) && ! empty($opt['base']) )
 			$this->wp_base = $opt['base'];
 		
 		//Check if the options provided are OK.
@@ -54,10 +52,10 @@ class WP_Filesystem_FTP{
 		}
 		
 	}
-	function find_base_dir($base = ''){
-		if( $base == '' ) $base = $this->cwd();
+	function find_base_dir($base = '.'){
+		if( $base == '.' ) $base = $this->cwd();
 		if( empty( $base ) ) $base = '/';
-		echo "Changing to $base;<br>";
+		//echo "Changing to $base;<br>";
 		if( false === ftp_chdir($this->link, $base) )
 			return false;
 		if( $this->exists($base . '/wp-settings.php') ){
@@ -72,16 +70,18 @@ class WP_Filesystem_FTP{
 		}
 		for($i = 0; $i <= count($arrPath); $i++)
 			if( $arrPath[ $i ] == '' ) unset( $arrPath[ $i ] );
-		var_dump($arrPath);
+		//var_dump($arrPath);
 		foreach($arrPath as $key=>$folder){
 			if( $this->is_dir($base . $folder) ){
-				echo "Found $folder; Changing to $base$folder/<br>";
+				//echo "Found $folder; Changing to $base$folder/<br>";
 				return $this->find_base_dir($base . $folder . '/');
 			}
 		}
 
 	}
 	function get_base_dir($base = '.'){
+		if( empty($this->wp_base) )
+			$this->wp_base = $this->find_base_dir($base);
 		return $this->wp_base;
 	}
 	function get_contents($file,$type='',$resumepos=0){
@@ -249,7 +249,8 @@ class WP_Filesystem_FTP{
 		return ($file[ $folderName ]['perms'][0] == '-');
 	}
 	function is_dir($path){
-		$file = $this->dirlist($path.'/..');
+		if( substr($path,-1,1) == '/') $path = substr($path,0, strlen($path)-1);
+		$file = $this->dirlist($path . '/..');
 		$folderName = substr($path,strrpos($path,'/')+1);
 		return ($file[ $folderName ]['perms'][0] == 'd');
 	}
