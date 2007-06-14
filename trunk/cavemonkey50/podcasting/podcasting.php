@@ -36,6 +36,13 @@ add_action('admin_head', 'podcasting_admin_head');
 add_action('simple_edit_form', 'podcasting_edit_form');
 add_action('edit_form_advanced', 'podcasting_edit_form');
 
+// Save post page information
+add_action('publish_post', 'podcasting_save_form');
+add_action('edit_post', 'podcasting_save_form');
+add_action('save_post', 'podcasting_save_form');
+add_action('wp_insert_post', 'podcasting_save_form');
+add_action('delete_post', 'podcasting_delete_form');
+
 // Add the podcast feed
 add_action('do_feed_podcast', 'do_feed_podcast');
 add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
@@ -69,20 +76,20 @@ function podcasting_options_page() {
 		check_admin_referer('$podcasting_nonce', $podcasting_nonce);
 		
 		// Update the podcast options
-		update_option('pod_title', $_POST[pod_title]);
-		update_option('pod_tagline', $_POST[pod_tagline]);
+		update_option('pod_title', $_POST['pod_title']);
+		update_option('pod_tagline', $_POST['pod_tagline']);
 		
 		// Update the iTunes options
-		update_option('pod_itunes_summary', htmlentities($_POST[pod_itunes_summary]));
-		update_option('pod_itunes_author', htmlentities($_POST[pod_itunes_author]));
-		update_option('pod_itunes_image', podcasting_urlencode($_POST[pod_itunes_image]));
-		update_option('pod_itunes_cat1', $_POST[pod_itunes_cat1]);
-		update_option('pod_itunes_cat2', $_POST[pod_itunes_cat2]);
-		update_option('pod_itunes_cat3', $_POST[pod_itunes_cat3]);
-		update_option('pod_itunes_keywords', htmlentities($_POST[pod_itunes_keywords]));
-		update_option('pod_itunes_explicit', $_POST[pod_itunes_explicit]);
-		update_option('pod_itunes_ownername', htmlentities($_POST[pod_itunes_ownername]));
-		update_option('pod_itunes_owneremail', htmlentities($_POST[pod_itunes_owneremail]));
+		update_option('pod_itunes_summary', $_POST['pod_itunes_summary']);
+		update_option('pod_itunes_author', $_POST['pod_itunes_author']);
+		update_option('pod_itunes_image', podcasting_urlencode($_POST['pod_itunes_image']));
+		update_option('pod_itunes_cat1', $_POST['pod_itunes_cat1']);
+		update_option('pod_itunes_cat2', $_POST['pod_itunes_cat2']);
+		update_option('pod_itunes_cat3', $_POST['pod_itunes_cat3']);
+		update_option('pod_itunes_keywords', $_POST['pod_itunes_keywords']);
+		update_option('pod_itunes_explicit', $_POST['pod_itunes_explicit']);
+		update_option('pod_itunes_ownername', $_POST['pod_itunes_ownername']);
+		update_option('pod_itunes_owneremail', $_POST['pod_itunes_owneremail']);
 	}
 	
 	// iTunes category options
@@ -161,7 +168,7 @@ function podcasting_options_page() {
 						<label for="pod_itunes_summary">Summary:</label>
 					</th>
 					<td>
-						<textarea cols="40" rows="4" style="width: 95%" name="pod_itunes_summary" id="pod_itunes_summary"><?php echo html_entity_decode(stripslashes(get_option('pod_itunes_summary'))); ?></textarea>
+						<textarea cols="40" rows="4" style="width: 95%" name="pod_itunes_summary" id="pod_itunes_summary"><?php echo stripslashes(get_option('pod_itunes_summary')); ?></textarea>
 						<br />A detailed description of your podcast. iTunes allows up to 4,000 characters and the tagline will be used if no summary is entered.
 					</td>
 				</tr>
@@ -170,7 +177,7 @@ function podcasting_options_page() {
 						<label for="pod_itunes_author">Author:</label>
 					</th>
 					<td>
-						<input type="text" size="40" name="pod_itunes_author" id="pod_itunes_author" value="<?php echo html_entity_decode(stripslashes(get_option('pod_itunes_author'))); ?>" />
+						<input type="text" size="40" name="pod_itunes_author" id="pod_itunes_author" value="<?php echo stripslashes(get_option('pod_itunes_author')); ?>" />
 						<br />The default author of your podcast.
 					</td>
 				</tr>
@@ -214,7 +221,7 @@ function podcasting_options_page() {
 						<label for="pod_itunes_keywords">Keywords:</label>
 					</th>
 					<td>
-						<input type="text" style="width: 95%" name="pod_itunes_keywords" id="pod_itunes_keywords" value="<?php echo html_entity_decode(stripslashes(get_option('pod_itunes_keywords'))); ?>" />
+						<input type="text" style="width: 95%" name="pod_itunes_keywords" id="pod_itunes_keywords" value="<?php echo stripslashes(get_option('pod_itunes_keywords')); ?>" />
 						<br />Up to 12 comma-separated words which iTunes uses for search placement. 
 					</td>
 				</tr>
@@ -236,7 +243,7 @@ function podcasting_options_page() {
 						<label for="pod_itunes_ownername">Owner Name:</label>
 					</th>
 					<td>
-						<input type="text" size="40" name="pod_itunes_ownername" id="pod_itunes_ownername" value="<?php echo html_entity_decode(stripslashes(get_option('pod_itunes_ownername'))); ?>" />
+						<input type="text" size="40" name="pod_itunes_ownername" id="pod_itunes_ownername" value="<?php echo stripslashes(get_option('pod_itunes_ownername')); ?>" />
 						<br />Your podcast's owner's name. The owner name will not be publically displayed and is used only by iTunes in the event they need to contact your podcast.
 					</td>
 				</tr>
@@ -245,7 +252,7 @@ function podcasting_options_page() {
 						<label for="pod_itunes_owneremail">Owner E-mail Address:</label>
 					</th>
 					<td>
-						<input type="text" size="40" name="pod_itunes_owneremail" id="pod_itunes_owneremail" value="<?php echo html_entity_decode(stripslashes(get_option('pod_itunes_owneremail'))); ?>" />
+						<input type="text" size="40" name="pod_itunes_owneremail" id="pod_itunes_owneremail" value="<?php echo stripslashes(get_option('pod_itunes_owneremail')); ?>" />
 						<br />Your podcast's owner's e-mail address. The owner e-mail address will not be publically displayed and is used only by iTunes in the event they need to contact your podcast.
 					</td>
 				</tr>
@@ -279,7 +286,7 @@ function podcasting_admin_head() {
 // Podcasting post form
 function podcasting_edit_form() {
 	global $post;
-	$enclosures = get_post_meta($post->ID, 'enclosure'); ?>
+	$enclosures = array_reverse(get_post_meta($post->ID, 'enclosure')); ?>
 	<div id="podcasting" class="dbx-group" >
 	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
 	<div class="dbx-h-andle-wrapper">
@@ -313,7 +320,7 @@ function podcasting_edit_form() {
 						<option value="yes">Yes</option>
 						<option value="clean">Clean</option>
 					</select></td>
-					<td class="pod-update"><input name="" type="submit" class="" value="Update"/> <input name="" type="submit" class="" value="Delete"/></td>
+					<td class="pod-update"><input name="save" type="submit" class="" value="Update"/> <input name="" type="submit" class="" value="Delete"/></td>
 				</tr>
 			</table>
 		<?php } ?>
@@ -327,12 +334,37 @@ function podcasting_edit_form() {
 				<td class="pod-new-format"><select name="pod_format" class="pod_new_format">
 					<option value="">Main Feed</option>
 				</select></td>
-				<td class="submit"><input name="" type="submit" class="" value="Add"/></td>
+				<td class="submit"><input name="save" type="submit" class="" value="Add"/></td>
 			</tr>
 		</table>
 	</div></div>
 	</fieldset></div></div>
 <?php } // podcasting_edit_form()
+
+// Save post form
+function podcasting_save_form($postID) {
+	global $wpdb, $podcasting_nonce;
+	
+	// Security prevention
+	if ( !current_user_can('edit_post', $postID) )
+		return $postID;
+
+	// Extra security prevention
+	if (isset($_POST['comment_post_ID'])) return $postID;
+	if (isset($_POST['not_spam'])) return $postID; // akismet fix
+	if (isset($_POST["comment"])) return $postID; // moderation.php fix
+
+	// Escape content
+	$content = $wpdb->escape($_POST['pod_new_file']);
+	do_enclose ($content, $postID);
+	
+	return $postID;
+} // podcasting_save_form()
+
+// Cleanup a deleted post
+function podcasting_delete_form() {
+	
+}
 
 
 /* ------------------------------------- WORK -------------------------------------- */
@@ -402,13 +434,13 @@ function podcasting_add_itunes_feed() {
 	if ( 'podcast' == get_query_var('feed') ) {
 		// iTunes summary
 		if ( '' != get_option('pod_itunes_summary') )
-			echo '<itunes:summary>' . stripslashes(get_option('pod_itunes_summary')) . '</itunes:summary>' . "\n	";
+			echo '<itunes:summary>' . htmlentities(stripslashes(get_option('pod_itunes_summary'))) . '</itunes:summary>' . "\n	";
 		// iTunes subtitle
 		if ( '' != get_option('pod_tagline') )
 			echo '<itunes:subtitle>' . htmlentities(stripslashes(get_option('pod_tagline'))) . '</itunes:subtitle>' . "\n	";
 		// iTunes author
 		if ( '' != get_option('pod_itunes_author') )
-			echo '<itunes:author>' . stripslashes(get_option('pod_itunes_author')) . '</itunes:author>' . "\n	";
+			echo '<itunes:author>' . htmlentities(stripslashes(get_option('pod_itunes_author'))) . '</itunes:author>' . "\n	";
 		// iTunes image
 		if ( '' != get_option('pod_itunes_image') )
 			echo '<itunes:image href="' . stripslashes(get_option('pod_itunes_image')) . '" />' . "\n	";
@@ -427,7 +459,7 @@ function podcasting_add_itunes_feed() {
 		}
 		// iTunes keywords
 		if ( '' != get_option('pod_itunes_keywords') )
-			echo '<itunes:keywords>' . stripslashes(get_option('pod_itunes_keywords')) . '</itunes:keywords>' . "\n	";
+			echo '<itunes:keywords>' . htmlentities(stripslashes(get_option('pod_itunes_keywords'))) . '</itunes:keywords>' . "\n	";
 		// iTunes keywords
 		if ( '' != get_option('pod_itunes_explicit') )
 			echo '<itunes:explicit>' . get_option('pod_itunes_explicit') . '</itunes:explicit>' . "\n	";
@@ -437,9 +469,9 @@ function podcasting_add_itunes_feed() {
 		if ( ( '' != get_option('pod_itunes_ownername') ) || ( '' != get_option('pod_itunes_owneremail') ) ) {
 			echo '<itunes:owner>' . "\n	";
 			if ( '' != get_option('pod_itunes_ownername') )
-				echo '	<itunes:name>' . get_option('pod_itunes_ownername') . '</itunes:name>' . "\n	";
+				echo '	<itunes:name>' . htmlentities(stripslashes(get_option('pod_itunes_ownername'))) . '</itunes:name>' . "\n	";
 			if ( '' != get_option('pod_itunes_owneremail') )
-				echo '	<itunes:email>' . get_option('pod_itunes_owneremail') . '</itunes:email>' . "\n	";
+				echo '	<itunes:email>' . htmlentities(stripslashes(get_option('pod_itunes_owneremail'))) . '</itunes:email>' . "\n	";
 			echo '</itunes:owner>' . "\n	";
 		}
 	}
