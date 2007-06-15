@@ -11,6 +11,9 @@ Author URI: http://cavemonkey50.com/
 
 /* ------------------------------------- SETUP ------------------------------------- */
 
+// Install podcasting
+add_action('activate_podcasting/podcasting.php', 'podcasting_install');
+
 // Add Podcasting options to the database
 add_option('pod_title', get_option('blogname'), "The podcast's title");
 add_option('pod_tagline', get_option('blogdescription'), "The podcast's tagline");
@@ -55,6 +58,48 @@ add_action('rss2_ns', 'podcasting_add_itunes_xml');
 add_filter('option_blogname', 'podcasting_blogname_filter');
 add_filter('option_blogdescription', 'podcasting_blogdescription_filter');
 add_action('rss2_head', 'podcasting_add_itunes_feed');
+
+
+/* ------------------------------------ INSTALL ------------------------------------ */
+
+$podcasting_db_version = ".1";
+
+// Install the podcasting tables
+function podcasting_install() {
+	global $wpdb, $podcasting_db_version;
+	
+	// Define tables
+	$pod_format = $wpdb->prefix . "pod_format";
+	$pod_format2enclosure = $wpdb->prefix . "pod_format2enclosure";
+	
+	// Install podform
+	if ( $wpdb->get_var("show tables like '$pod_format'") != pod_format ) {
+		$sql = "CREATE TABLE " . $pod_format . " (
+			format_id bigint(20) NOT NULL AUTO_INCREMENT,
+			format_name varchar(55) NOT NULL,
+			format_nicename varchar(200) NOT NULL,
+			PRIMARY KEY  (format_id)
+		);";
+		
+		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+		dbDelta($sql);
+	}
+	
+	// Install podformat2enclosure
+	if ( $wpdb->get_var("show tables like '$pod_format2enclosure'") != pod_format2enclosure ) {
+		$sql = "CREATE TABLE " . $pod_format2enclosure . " (
+			rel_id bigint(20) NOT NULL AUTO_INCREMENT,
+			format_id bigint(20) NOT NULL,
+			enclosure_id bigint(20) NOT NULL,
+			PRIMARY KEY  (rel_id)
+		);";
+		
+		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
+		dbDelta($sql);
+	}
+	
+	add_option("podcasting_db_version", $podcasting_db_version);
+} // podcasting_install()
 
 
 /* ------------------------------------ OPTIONS ------------------------------------ */
@@ -285,8 +330,9 @@ function podcasting_admin_head() {
 
 // Podcasting post form
 function podcasting_edit_form() {
-	global $post;
-	$enclosures = array_reverse(get_post_meta($post->ID, 'enclosure')); ?>
+	global $wpdb, $post;
+	if ($post->ID)
+		$enclosures = $wpdb->get_results("SELECT meta_id, meta_value FROM {$wpdb->postmeta} WHERE post_id = {$post->ID} AND meta_key = 'enclosure' ORDER BY meta_id", ARRAY_A); ?>
 	<div id="podcasting" class="dbx-group" >
 	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
 	<div class="dbx-h-andle-wrapper">
@@ -294,27 +340,29 @@ function podcasting_edit_form() {
 	</div>
 	<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
 		<?php foreach ($enclosures as $enclosure) {
-			$enclosure = explode("\n", $enclosure); ?>
+			if ( $enclosure_count > 0 ) $enclosure_ids .= ','; $enclosure_count++;
+			$enclosure_ids .= $enclosure['meta_id'];
+			$enclosure_value = explode("\n", $enclosure['meta_value']); ?>
 			<table cellpadding="3" class="pod_enclosure">
 				<tr>
 					<td class="pod-title">File</td>
-					<td colspan="6"><input type="text" name="pod_file" class="pod_file" value="<?php echo $enclosure[0]; ?>" /></td>
+					<td colspan="6"><input type="text" name="pod_file_<?php echo $enclosure['meta_id']; ?>" class="pod_file" value="<?php echo $enclosure_value[0]; ?>" readonly="readonly" /></td>
 				</tr>
 				<tr>
 					<td class="pod-title">Format</td>
-					<td><select name="pod_format" class="pod_format">
+					<td><select name="pod_format_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
 						<option value="">Main Feed</option>
 					</select></td>
 					<td class="pod-title">Keywords</td>
-					<td colspan="4"><input type="text" name="pod_keywords" class="pod_keywords" value="" /></td>
+					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="" /></td>
 				</tr>
 				<tr>
 					<td class="pod-title">Author</td>
-					<td><input type="text" name="pod_author" class="pod_author" value="" /></td>
+					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="" /></td>
 					<td class="pod-title">Length</td>
-					<td class="pod-length"><input type="text" name="pod_length" class="pod_length" value="" /></td>
+					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="" /></td>
 					<td class="pod-title">Explicit</td>
-					<td class="pod-explicit"><select name="pod_format" class="pod_format">
+					<td class="pod-explicit"><select name="pod_explicit_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
 						<option value=""></option>
 						<option value="no">No</option>
 						<option value="yes">Yes</option>
@@ -324,6 +372,7 @@ function podcasting_edit_form() {
 				</tr>
 			</table>
 		<?php } ?>
+		<input name="enclosure_ids" type="hidden" value="<?php echo $enclosure_ids; ?>" />
 		<?php if ($enclosures) { ?>
 			<h3>Add a new file:</h3>
 		<?php } ?>
@@ -334,7 +383,7 @@ function podcasting_edit_form() {
 				<td class="pod-new-format"><select name="pod_format" class="pod_new_format">
 					<option value="">Main Feed</option>
 				</select></td>
-				<td class="submit"><input name="save" type="submit" class="" value="Add"/></td>
+				<td class="submit"><input name="save" type="submit" class="" value="Add" /></td>
 			</tr>
 		</table>
 	</div></div>
@@ -343,7 +392,7 @@ function podcasting_edit_form() {
 
 // Save post form
 function podcasting_save_form($postID) {
-	global $wpdb, $podcasting_nonce;
+	global $wpdb;
 	
 	// Security prevention
 	if ( !current_user_can('edit_post', $postID) )
@@ -352,18 +401,34 @@ function podcasting_save_form($postID) {
 	// Extra security prevention
 	if (isset($_POST['comment_post_ID'])) return $postID;
 	if (isset($_POST['not_spam'])) return $postID; // akismet fix
-	if (isset($_POST["comment"])) return $postID; // moderation.php fix
+	if (isset($_POST['comment'])) return $postID; // moderation.php fix
+	
+	// Basic setup
+	$pod_format2enclosure = $wpdb->prefix . "pod_format2enclosure";
+	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
 
-	// Escape content
-	$content = $wpdb->escape($_POST['pod_new_file']);
-	do_enclose ($content, $postID);
+/*	// Escape content
+	$content = 
+	
+	// Add enclosure information to the database
+	foreach ($enclosure_ids as $enclosure_id) {
+		$wpdb->query("UPDATE {$pod_format2enclosure} SET format_id = 0 WHERE enclosure_id = {$enclosure_id}");
+	} */
+	
+	// Add new enclosures
+	if ( isset($_POST['pod_new_file']) ) {
+		$content = $wpdb->escape($_POST['pod_new_file']);
+		do_enclose($content, $postID);
+	/*	$enclosure_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id = {$postID} AND meta_key = 'enclosure' ORDER BY meta_id DESC"); // Find the enclosure we just added
+		$wpdb->query("INSERT INTO {$pod_format2enclosure} (format_id, enclosure_id) VALUES (0, {$enclosure_id})"); */
+	}
 	
 	return $postID;
 } // podcasting_save_form()
 
 // Cleanup a deleted post
-function podcasting_delete_form() {
-	
+function podcasting_delete_form($postID) {
+	return $postID;
 }
 
 
