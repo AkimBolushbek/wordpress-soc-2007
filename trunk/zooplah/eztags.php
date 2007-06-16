@@ -8,10 +8,9 @@ Author: Keith Bowes
 Author URI: http://zooplah.farvista.net/
 */
 
-/* Global vars (necessary evil unless I can figure out a better way
- * to do it) */
-$contents = '';
+require_once 'eztagstags.php';
 
+/* The main class for Easier Template Tags */
 class EzTags
 {
 	var $_template;
@@ -37,22 +36,24 @@ class EzTags
 		return $template_name;
 	}
 
-	function gtl(){echo "Yeah";$title = get_the_title();if ( empty ($title) ){static $id = 0;$post = &get_post($id);$title = $post->post_title; $id = $post->ID; } return $title;}
 	/* Replace the tags with PHP */
 	function replace(&$contents)
 	{
-		$contents = str_replace('<$Loop$>', eval('return "Hello World<br/>\n";'), $contents);
-		$contents = str_replace('<$EntryTitle$>', eval('the_author();'), $contents);
+		global $_eztags_entries_loop_begin;
+		echo $_eztags_entries_loop_begin;
+
+		$contents = str_replace('<Entries>',  '<?php global $wp_query; var_dump($wp_query); ?>', $contents);
 	}
 
 	/* Just process the template and fill the content */
 	function processTemplate()
 	{
-		global $contents, $wp_query;
+		global $contents;
+		if ( $contents != '' ) return;
 
 		$template_name = EzTags::getTemplateName();
 
-		if ( is_admin() ) return $template_name;
+		if ( preg_replace('/^(.*)\/$/', '$1', 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']) != get_option('siteurl') ) return $template_name;
 
 		$_template = ABSPATH . 'wp-content/themes/' . $template_name;
 
@@ -61,19 +62,10 @@ class EzTags
 		else if ( file_exists($_template . '/home.php') )
 			$_template_home_file = $_template . '/home.php';
 
-		if (TRUE) {
 		$contents = file_get_contents($_template_home_file);
 		$contents = preg_replace('/^(.*)<\?(php)?/', '$1', $contents);
 		EzTags::replace($contents);
-		eval($contents);}
-		else
-		{
-			ob_start();
-			$contents = ob_get_contents();
-			ob_end_clean();
-			EzTags::replace($contents);
-			echo strlen($contents);;
-		}
+		eval($contents);
 
 		return NULL;
 	}
@@ -85,41 +77,9 @@ class EzTags
 		$template_name = EzTags::getTemplateName();
 		return $template_name;
 	}
-
-	/* Get the title */
-	function getTitle($a,$b,$c)
-	{
-		echo 'Getting title...';
-		$title = get_the_title();
-		echo strlen($title);
-
-		if ( empty($title) )
-		{
-			$id = 0;
-			$post = &get_post($id);
-			var_dump($post);
-			$title = $post->post_title;
-		}
-
-		return $title;
-
-	}
-	function init()
-	{
-
-	}
 }
 
-function _eztags_init($content)
-{
-	EzTags::replace($content);
-	return $content;
-}
-
-//error_reporting(E_ERROR|E_PARSE);
 add_filter('template', array(EzTags, 'processTemplate'));
 add_filter('stylesheet', array(EzTags, 'getStylesheet'));
-//add_filter('loop_end', @ob_flush());
-//ob_start('_ezTags_init');
 
 ?>
