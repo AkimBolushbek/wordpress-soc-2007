@@ -13,6 +13,7 @@ NOTES:
 wp_opbjexT_cache ignores expiration time, everything is for 900 seconds.
 http://trac.wordpress.org/ticket/4179
 _e() isnt used with a textdomain, i *think* thats a bad thing to do.. 
+TODO: Remove HTML from within the _() calls
 */
 
 
