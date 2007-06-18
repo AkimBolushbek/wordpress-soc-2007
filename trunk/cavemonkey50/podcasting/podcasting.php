@@ -13,6 +13,7 @@ Author URI: http://cavemonkey50.com/
 
 // Install podcasting
 add_action('activate_podcasting/podcasting.php', 'podcasting_install');
+register_taxonomy('podcast_format', 'custom_field');
 
 // Add Podcasting options to the database
 add_option('pod_title', get_option('blogname'), "The podcast's title");
@@ -36,14 +37,10 @@ add_action('admin_menu', 'add_podcasting_pages');
 
 // Add post page information
 add_action('admin_head', 'podcasting_admin_head');
-add_action('simple_edit_form', 'podcasting_edit_form');
-add_action('edit_form_advanced', 'podcasting_edit_form');
+add_action('dbx_post_advanced', 'podcasting_edit_form');
 
 // Save post page information
-add_action('publish_post', 'podcasting_save_form');
-add_action('edit_post', 'podcasting_save_form');
 add_action('save_post', 'podcasting_save_form');
-add_action('wp_insert_post', 'podcasting_save_form');
 add_action('delete_post', 'podcasting_delete_form');
 
 // Add the podcast feed
@@ -62,44 +59,10 @@ add_action('rss2_head', 'podcasting_add_itunes_feed');
 
 /* ------------------------------------ INSTALL ------------------------------------ */
 
-$podcasting_db_version = ".1";
-
-// Install the podcasting tables
+// Install the base podcasting taxonomy
 function podcasting_install() {
-	global $wpdb, $podcasting_db_version;
-	
-	// Define tables
-	$pod_format = $wpdb->prefix . "pod_format";
-	$pod_format2enclosure = $wpdb->prefix . "pod_format2enclosure";
-	
-	// Install podform
-	if ( $wpdb->get_var("show tables like '$pod_format'") != pod_format ) {
-		$sql = "CREATE TABLE " . $pod_format . " (
-			format_id bigint(20) NOT NULL AUTO_INCREMENT,
-			format_name varchar(55) NOT NULL,
-			format_nicename varchar(200) NOT NULL,
-			PRIMARY KEY  (format_id)
-		);";
-		
-		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
-		dbDelta($sql);
-	}
-	
-	// Install podformat2enclosure
-	if ( $wpdb->get_var("show tables like '$pod_format2enclosure'") != pod_format2enclosure ) {
-		$sql = "CREATE TABLE " . $pod_format2enclosure . " (
-			rel_id bigint(20) NOT NULL AUTO_INCREMENT,
-			format_id bigint(20) NOT NULL,
-			enclosure_id bigint(20) NOT NULL,
-			PRIMARY KEY  (rel_id)
-		);";
-		
-		require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
-		dbDelta($sql);
-	}
-	
-	add_option("podcasting_db_version", $podcasting_db_version);
-} // podcasting_install()
+	wp_insert_term('Main Feed', 'podcast_format'); // Default format
+}
 
 
 /* ------------------------------------ OPTIONS ------------------------------------ */
@@ -324,7 +287,6 @@ function podcasting_urlencode($url) {
 
 // Required information needed for post form
 function podcasting_admin_head() {
-	echo '<script type="text/javascript" src="' . get_option('siteurl') . '/wp-content/plugins/podcasting/podcasting-admin.js"></script>';
 	echo '<link rel="stylesheet" href="' . get_option('siteurl') . '/wp-content/plugins/podcasting/podcasting-admin.css" type="text/css" />';
 }
 
@@ -403,8 +365,9 @@ function podcasting_save_form($postID) {
 	if (isset($_POST['not_spam'])) return $postID; // akismet fix
 	if (isset($_POST['comment'])) return $postID; // moderation.php fix
 	
+	// WP-nonce
+	
 	// Basic setup
-	$pod_format2enclosure = $wpdb->prefix . "pod_format2enclosure";
 	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
 
 /*	// Escape content
@@ -416,11 +379,17 @@ function podcasting_save_form($postID) {
 	} */
 	
 	// Add new enclosures
-	if ( isset($_POST['pod_new_file']) ) {
+	if ( (isset($_POST['pod_new_file'])) && ('' != $_POST['pod_new_file']) ) {
 		$content = $wpdb->escape($_POST['pod_new_file']);
+		$enclosed = get_enclosed($postID);
 		do_enclose($content, $postID);
-	/*	$enclosure_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id = {$postID} AND meta_key = 'enclosure' ORDER BY meta_id DESC"); // Find the enclosure we just added
-		$wpdb->query("INSERT INTO {$pod_format2enclosure} (format_id, enclosure_id) VALUES (0, {$enclosure_id})"); */
+		
+		// Add relationship if new enclosure
+		if ( !in_array($content, $enclosed) ) {
+		//	echo 'here';
+			$enclosure_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id = {$postID} AND meta_key = 'enclosure' ORDER BY meta_id DESC"); // Find the enclosure we just added
+	//		wp_set_object_terms($enclosure_id, 3, 'podcast-format', false);
+		}		
 	}
 	
 	return $postID;
