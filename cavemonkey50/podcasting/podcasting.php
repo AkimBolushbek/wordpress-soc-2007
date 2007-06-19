@@ -364,19 +364,19 @@ function podcasting_save_form($postID) {
 	if (isset($_POST['comment_post_ID'])) return $postID;
 	if (isset($_POST['not_spam'])) return $postID; // akismet fix
 	if (isset($_POST['comment'])) return $postID; // moderation.php fix
-	
-	// WP-nonce
-	
-	// Basic setup
-	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
 
-/*	// Escape content
-	$content = 
-	
-	// Add enclosure information to the database
+	// Update enclosures
+	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
 	foreach ($enclosure_ids as $enclosure_id) {
-		$wpdb->query("UPDATE {$pod_format2enclosure} SET format_id = 0 WHERE enclosure_id = {$enclosure_id}");
-	} */
+		// Escape content
+		
+		// Update format
+		wp_set_object_terms($enclosure_id, 'main-feed', 'podcast_format', false);
+		// Update keywords
+		// Update author
+		// Update length
+		// Update explicit
+	}
 	
 	// Add new enclosures
 	if ( (isset($_POST['pod_new_file'])) && ('' != $_POST['pod_new_file']) ) {
@@ -386,9 +386,8 @@ function podcasting_save_form($postID) {
 		
 		// Add relationship if new enclosure
 		if ( !in_array($content, $enclosed) ) {
-		//	echo 'here';
 			$enclosure_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id = {$postID} AND meta_key = 'enclosure' ORDER BY meta_id DESC"); // Find the enclosure we just added
-	//		wp_set_object_terms($enclosure_id, 3, 'podcast-format', false);
+			wp_set_object_terms($enclosure_id, 'main-feed', 'podcast_format', false);
 		}		
 	}
 	
@@ -421,16 +420,22 @@ function podcasting_rewrite_rules($wp_rewrite) {
 // Add the join needed for enclosures only
 function podcasting_feed_join($join) {
 	global $wpdb;
-	if ( 'podcast' == get_query_var('feed') )
-		$join .= "INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
+	if ( 'podcast' == get_query_var('feed') ) {
+		$join .= " INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
+		$join .= " INNER JOIN {$wpdb->term_relationships} ON {$wpdb->postmeta}.meta_id = {$wpdb->term_relationships}.object_id";
+		$join .= " INNER JOIN {$wpdb->term_taxonomy} ON {$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id";
+		$join .= " INNER JOIN {$wpdb->terms} ON {$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id";
+	}
 	return $join;
 }
 
 // Add the where needed for enclosures only
 function podcasting_feed_where($where) {
 	global $wpdb;
-	if ( 'podcast' == get_query_var('feed') )
-		$where .= "AND {$wpdb->postmeta}.meta_key = 'enclosure'";
+	if ( 'podcast' == get_query_var('feed') ) {
+		$where .= " AND {$wpdb->postmeta}.meta_key = 'enclosure'";
+		$where .= " AND {$wpdb->terms}.slug = 'main-feed'";
+	}
 	return $where;
 }
 
@@ -440,6 +445,12 @@ function podcasting_feed_groupby($groupby) {
 	if ( 'podcast' == get_query_var('feed') )
 		$groupby = "{$wpdb->posts}.ID";
 	return $groupby;
+}
+
+// Only enclosures of the current format NEED TO IMPLEMENT filter:rss_enclosure
+function podcasting_remove_enclosures($enclosure) {
+	
+	return $enclosure;
 }
 
 // Add the iTunes xml information
