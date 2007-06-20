@@ -304,7 +304,8 @@ function podcasting_edit_form() {
 		<?php foreach ($enclosures as $enclosure) {
 			if ( $enclosure_count > 0 ) $enclosure_ids .= ','; $enclosure_count++;
 			$enclosure_ids .= $enclosure['meta_id'];
-			$enclosure_value = explode("\n", $enclosure['meta_value']); ?>
+			$enclosure_value = explode("\n", $enclosure['meta_value']);
+			$enclosure_itunes = unserialize($enclosure_value[3]); ?>
 			<table cellpadding="3" class="pod_enclosure">
 				<tr>
 					<td class="pod-title">File</td>
@@ -313,16 +314,16 @@ function podcasting_edit_form() {
 				<tr>
 					<td class="pod-title">Format</td>
 					<td><select name="pod_format_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
-						<option value="">Main Feed</option>
+						<option value="main-feed">Main Feed</option>
 					</select></td>
 					<td class="pod-title">Keywords</td>
-					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="" /></td>
+					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="<?php echo $enclosure_itunes['keywords']; ?>" /></td>
 				</tr>
 				<tr>
 					<td class="pod-title">Author</td>
-					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="" /></td>
+					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="<?php echo $enclosure_itunes['author']; ?>" /></td>
 					<td class="pod-title">Length</td>
-					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="" /></td>
+					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="<?php echo $enclosure_itunes['length']; ?>" /></td>
 					<td class="pod-title">Explicit</td>
 					<td class="pod-explicit"><select name="pod_explicit_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
 						<option value=""></option>
@@ -367,15 +368,31 @@ function podcasting_save_form($postID) {
 
 	// Update enclosures
 	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
+	$enclosures = get_post_meta($postID, 'enclosure'); $i = 0;
 	foreach ($enclosure_ids as $enclosure_id) {
 		// Escape content
+		$format = $wpdb->escape($_POST['pod_format_' . $enclosure_id]);
+		$keywords = $wpdb->escape($_POST['pod_keywords_' . $enclosure_id]);
+		$author = $wpdb->escape($_POST['pod_author_' . $enclosure_id]);
+		$length = $wpdb->escape($_POST['pod_length_' . $enclosure_id]);
+		$explicit = $wpdb->escape($_POST['pod_explicit_' . $enclosure_id]);
+		
+		$itunes = serialize(array(
+			'format' => $format,
+			'keywords' => $keywords,
+			'author' => $author,
+			'length' => $length,
+			'explicit' => $explicit
+			));
 		
 		// Update format
-		wp_set_object_terms($enclosure_id, 'main-feed', 'podcast_format', false);
-		// Update keywords
-		// Update author
-		// Update length
-		// Update explicit
+		wp_set_object_terms($enclosure_id, $format, 'podcast_format', false);
+		
+		// Update enclsoure
+		$enclosure = explode("\n", $enclosures[$i]);
+		$enclosure[3] = $itunes;
+		update_post_meta($postID, 'enclosure', implode("\n", $enclosure), $enclosures[$i]);
+		$i++;
 	}
 	
 	// Add new enclosures
