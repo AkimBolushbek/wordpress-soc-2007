@@ -294,7 +294,8 @@ function podcasting_admin_head() {
 function podcasting_edit_form() {
 	global $wpdb, $post;
 	if ($post->ID)
-		$enclosures = $wpdb->get_results("SELECT meta_id, meta_value FROM {$wpdb->postmeta} WHERE post_id = {$post->ID} AND meta_key = 'enclosure' ORDER BY meta_id", ARRAY_A); ?>
+		$enclosures = $wpdb->get_results("SELECT meta_id, meta_value FROM {$wpdb->postmeta} WHERE post_id = {$post->ID} AND meta_key = 'enclosure' ORDER BY meta_id", ARRAY_A);
+	$pod_formats = get_terms('podcast_format', 'get=all'); ?>
 	<div id="podcasting" class="dbx-group" >
 	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
 	<div class="dbx-h-andle-wrapper">
@@ -314,24 +315,28 @@ function podcasting_edit_form() {
 				<tr>
 					<td class="pod-title">Format</td>
 					<td><select name="pod_format_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
-						<option value="main-feed">Main Feed</option>
+						<?php foreach ($pod_formats as $pod_format) {
+							$selected = ($pod_format->slug == $enclosure_itunes['format']) ? ' selected="selected"' : '';
+							echo '<option value="' . $pod_format->slug . '"' . $selected . '>' . $pod_format->name . '</option>';
+						} ?>
 					</select></td>
-					<td class="pod-title">Keywords</td>
+					<td class="pod-title"><abbr title="Up to 12 comma-separated words which iTunes uses for search placement.">Keywords</abbr></td>
 					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="<?php echo $enclosure_itunes['keywords']; ?>" /></td>
 				</tr>
 				<tr>
-					<td class="pod-title">Author</td>
+					<td class="pod-title"><abbr title="Author name if different than default.">Author</abbr></td>
 					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="<?php echo $enclosure_itunes['author']; ?>" /></td>
-					<td class="pod-title">Length</td>
+					<td class="pod-title"><abbr title="Length of the podcast in HH:MM:SS format.">Length</abbr></td>
 					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="<?php echo $enclosure_itunes['length']; ?>" /></td>
-					<td class="pod-title">Explicit</td>
+					<td class="pod-title"><abbr title="Explicit setting if different than default.">Explicit</abbr></td>
 					<td class="pod-explicit"><select name="pod_explicit_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
-						<option value=""></option>
-						<option value="no">No</option>
-						<option value="yes">Yes</option>
-						<option value="clean">Clean</option>
+						<?php $explicits = array('', 'no', 'yes', 'clean');
+						foreach ($explicits as $explicit) {
+							$selected = ($explicit == $enclosure_itunes['explicit']) ? ' selected="selected"' : '';
+							echo '<option value="' . $explicit . '"' . $selected . '>' . ucfirst($explicit) . '</option>';
+						} ?>
 					</select></td>
-					<td class="pod-update"><input name="save" type="submit" class="" value="Update"/> <input name="" type="submit" class="" value="Delete"/></td>
+					<td class="pod-update"><input name="save" type="submit" class="" value="Update" /> <input name="delete_pod_<?php echo $enclosure['meta_id']; ?>" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast', <?php echo $enclosure['meta_id']; ?>, 'You are about to delete a podcast.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
 				</tr>
 			</table>
 		<?php } ?>
@@ -344,7 +349,9 @@ function podcasting_edit_form() {
 				<td class="pod-title">File URL</td>
 				<td><input type="text" name="pod_new_file" class="pod_new_file" value="" /></td>
 				<td class="pod-new-format"><select name="pod_format" class="pod_new_format">
-					<option value="">Main Feed</option>
+					<?php foreach ($pod_formats as $pod_format) {
+						echo '<option value="' . $pod_format->slug . '">' . $pod_format->name . '</option>';
+					} ?>
 				</select></td>
 				<td class="submit"><input name="save" type="submit" class="" value="Add" /></td>
 			</tr>
@@ -393,6 +400,16 @@ function podcasting_save_form($postID) {
 		$enclosure[3] = $itunes;
 		update_post_meta($postID, 'enclosure', implode("\n", $enclosure), $enclosures[$i]);
 		$i++;
+		
+		// Delete enclosure
+		if (isset($_POST['delete_pod_' . $enclosure_id])) {
+			// Remove format
+			wp_delete_object_term_relationships($enclosure_id, 'podcast_format');
+			// Remove enclosure
+			delete_meta($enclosure_id);
+			// Fake a save
+			$_POST['save'] = 'Update';
+		}
 	}
 	
 	// Add new enclosures
