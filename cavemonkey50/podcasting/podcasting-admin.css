@@ -39,6 +39,10 @@ table.pod_enclosure {
 	margin-bottom: 5px;
 }
 
+#podcasting abbr {
+	border-bottom: 1px dotted #aaa;
+}
+
 table.pod_new_enclosure {
 	width: 100%;
 }
