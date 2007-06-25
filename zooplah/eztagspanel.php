@@ -1,4 +1,5 @@
 <?php
+
 $title = __("Edit Themes");
 $parent_file = 'themes.php';
 
@@ -42,9 +43,9 @@ case 'update':
 		$f = fopen($real_file, 'w+');
 		fwrite($f, $newcontent);
 		fclose($f);
-		$location = "theme-editor.php?file=$file&theme=$theme&a=te";
+		$location = "themes.php?page=eztagspanel.php&file=../wp-content/plugins/eztagspanel.php?file=$file&theme=$theme&a=te";
 	} else {
-		$location = "theme-editor.php?file=$file&theme=$theme";
+		$location = "themes.php?page=eztagspanel.php&../wp-content/plugins/eztagspanel.php?file=$file&theme=$theme";
 	}
 
 	$location = wp_kses_no_null($location);
@@ -78,7 +79,7 @@ default:
  <div id="message" class="updated fade"><p><?php _e('File edited successfully.') ?></p></div>
 <?php endif; ?>
  <div class="wrap">
-	<form name="theme" action="theme-editor.php" method="post">
+	<form name="theme" action="../wp-content/plugins/eztagspanel.php" method="post">
 		<?php _e('Select theme to edit:') ?>
 		<select name="theme" id="theme">
 	<?php
@@ -111,7 +112,7 @@ if ($allowed_files) :
 ?>
 	<ul>
 <?php foreach($allowed_files as $allowed_file) : ?>
-		 <li><a href="theme-editor.php?file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>"><?php echo get_file_description($allowed_file); ?></a></li>
+		 <li><a href="themes.php?page=eztagspanel.php&file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>"><?php echo get_file_description($allowed_file); ?></a></li>
 <?php endforeach; ?>
 	</ul>
 <?php endif; ?>
@@ -119,7 +120,7 @@ if ($allowed_files) :
 	<?php
 	if (!$error) {
 	?>
-	<form name="template" id="template" action="theme-editor.php" method="post">
+	<form name="template" id="template" action="../wp-content/plugins/eztagspanel.php" method="post">
 	<?php wp_nonce_field('edit-theme_' . $file . $theme) ?>
 		 <div><textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php echo $content ?></textarea>
 		 <input type="hidden" name="action" value="update" />
