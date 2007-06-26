@@ -55,6 +55,8 @@ add_action('rss2_ns', 'podcasting_add_itunes_xml');
 add_filter('option_blogname', 'podcasting_blogname_filter');
 add_filter('option_blogdescription', 'podcasting_blogdescription_filter');
 add_action('rss2_head', 'podcasting_add_itunes_feed');
+add_filter('rss_enclosure', 'podcasting_remove_enclosures');
+add_action('rss2_item', 'podcasting_add_itunes_item');
 
 
 /* ------------------------------------ INSTALL ------------------------------------ */
@@ -321,13 +323,13 @@ function podcasting_edit_form() {
 						} ?>
 					</select></td>
 					<td class="pod-title"><abbr title="Up to 12 comma-separated words which iTunes uses for search placement.">Keywords</abbr></td>
-					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="<?php echo $enclosure_itunes['keywords']; ?>" /></td>
+					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="<?php echo stripslashes($enclosure_itunes['keywords']); ?>" /></td>
 				</tr>
 				<tr>
 					<td class="pod-title"><abbr title="Author name if different than default.">Author</abbr></td>
-					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="<?php echo $enclosure_itunes['author']; ?>" /></td>
+					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="<?php echo stripslashes($enclosure_itunes['author']); ?>" /></td>
 					<td class="pod-title"><abbr title="Length of the podcast in HH:MM:SS format.">Length</abbr></td>
-					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="<?php echo $enclosure_itunes['length']; ?>" /></td>
+					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="<?php echo stripslashes($enclosure_itunes['length']); ?>" /></td>
 					<td class="pod-title"><abbr title="Explicit setting if different than default.">Explicit</abbr></td>
 					<td class="pod-explicit"><select name="pod_explicit_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
 						<?php $explicits = array('', 'no', 'yes', 'clean');
@@ -377,23 +379,19 @@ function podcasting_save_form($postID) {
 	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
 	$enclosures = get_post_meta($postID, 'enclosure'); $i = 0;
 	foreach ($enclosure_ids as $enclosure_id) {
-		// Escape content
-		$format = $wpdb->escape($_POST['pod_format_' . $enclosure_id]);
-		$keywords = $wpdb->escape($_POST['pod_keywords_' . $enclosure_id]);
-		$author = $wpdb->escape($_POST['pod_author_' . $enclosure_id]);
-		$length = $wpdb->escape($_POST['pod_length_' . $enclosure_id]);
-		$explicit = $wpdb->escape($_POST['pod_explicit_' . $enclosure_id]);
+		// Insure we're dealing with an ID
+		$enclosure_id = (int) $enclosure_id;
 		
 		$itunes = serialize(array(
-			'format' => $format,
-			'keywords' => $keywords,
-			'author' => $author,
-			'length' => $length,
-			'explicit' => $explicit
+			'format' => $_POST['pod_format_' . $enclosure_id],
+			'keywords' => $_POST['pod_keywords_' . $enclosure_id],
+			'author' => $_POST['pod_author_' . $enclosure_id],
+			'length' => $_POST['pod_length_' . $enclosure_id],
+			'explicit' => $_POST['pod_explicit_' . $enclosure_id]
 			));
 		
 		// Update format
-		wp_set_object_terms($enclosure_id, $format, 'podcast_format', false);
+		wp_set_object_terms($enclosure_id, $_POST['pod_format_' . $enclosure_id], 'podcast_format', false);
 		
 		// Update enclsoure
 		$enclosure = explode("\n", $enclosures[$i]);
@@ -481,10 +479,9 @@ function podcasting_feed_groupby($groupby) {
 	return $groupby;
 }
 
-// Only enclosures of the current format NEED TO IMPLEMENT filter:rss_enclosure
-function podcasting_remove_enclosures($enclosure) {
-	
-	return $enclosure;
+// Add the RSS autodiscovery links to <head> section
+function podcasting_add_rss_discovery() {
+	// NEED TO ADD
 }
 
 // Add the iTunes xml information
@@ -555,5 +552,60 @@ function podcasting_add_itunes_feed() {
 		}
 	}
 } // podcasting_add_itunes_feed()
+
+// Only enclosures of the current format
+function podcasting_remove_enclosures($enclosure) {
+	if ( 'podcast' == get_query_var('feed') ) {
+		$podcast_format = 'main-feed';
+		$enclosures = get_post_custom_values('enclosure');
+		$podcast_urlformats = array();
+	
+		// Create array of enclosure information
+		foreach ($enclosures as $enclose) {
+			$enclose = explode("\n", $enclose);
+			$enclosure_itunes = unserialize($enclose[3]);
+			$podcast_urlformats[] = array(
+				'url' => $enclose[0],
+				'format' => $enclosure_itunes['format']
+			);
+		}
+		
+		// Check if the enclosure should be displayed
+		foreach ($podcast_urlformats as $podcast_urlformat) {
+			$enclosure_url = explode('"', $enclosure);
+			if ( ( $enclosure_url[1] == trim(htmlspecialchars($podcast_urlformat['url'])) ) && ( $podcast_urlformat['format'] == $podcast_format ) )
+				return $enclosure;
+		}
+	}
+}
+
+// Add the special iTunes information to item
+function podcasting_add_itunes_item() {
+	if ( 'podcast' == get_query_var('feed') ) {
+		$podcast_format = 'main-feed';
+		$enclosures = get_post_custom_values('enclosure');
+		$enclosures_itunes = explode("\n", $enclosures[0]);
+		$enclosure_itunes = unserialize($enclosures_itunes[3]);
+		
+		// iTunes summary
+		ob_start(); the_content(); $itunes_summary = ob_get_contents(); ob_end_clean();
+		echo '<itunes:summary>' . htmlentities(strip_tags(stripslashes($itunes_summary))) . '</itunes:summary>' . "\n";
+		// iTunes subtitle
+		ob_start(); the_excerpt_rss(); $itunes_subtitle = ob_get_contents(); ob_end_clean();
+		echo '<itunes:subtitle>' . htmlentities(strip_tags(stripslashes($itunes_subtitle))) . '</itunes:subtitle>' . "\n";
+		// iTunes author
+		if ( '' != $enclosure_itunes['author'] )
+			echo '<itunes:author>' . htmlentities(stripslashes($enclosure_itunes['author'])) . '</itunes:author>' . "\n";
+		// iTunes duration
+		if ( '' != $enclosure_itunes['length'] )
+			echo '<itunes:duration>' . htmlentities(stripslashes($enclosure_itunes['length'])) . '</itunes:duration>' . "\n";
+		// iTunes keywords
+		if ( '' != $enclosure_itunes['keywords'] )
+			echo '<itunes:keywords>' . htmlentities(stripslashes($enclosure_itunes['keywords'])) . '</itunes:keywords>' . "\n";
+		// iTunes explicit
+		if ( '' != $enclosure_itunes['explicit'] )
+			echo '<itunes:explicit>' . $enclosure_itunes['explicit'] . '</itunes:explicit>' . "\n";
+	}
+} // podcasting_add_itunes_item()
 
 ?>
