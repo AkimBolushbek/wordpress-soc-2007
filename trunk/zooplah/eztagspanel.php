@@ -43,9 +43,9 @@ case 'update':
 		$f = fopen($real_file, 'w+');
 		fwrite($f, $newcontent);
 		fclose($f);
-		$location = "themes.php?page=eztagspanel.php&file=../wp-content/plugins/eztagspanel.php?file=$file&theme=$theme&a=te";
+		$location = "themes.php?page=eztagspanel.php&file=$file&theme=$theme&a=te";
 	} else {
-		$location = "themes.php?page=eztagspanel.php&../wp-content/plugins/eztagspanel.php?file=$file&theme=$theme";
+		$location = "themes.php?page=eztagspanel.php&file=$file&theme=$theme";
 	}
 
 	$location = wp_kses_no_null($location);
