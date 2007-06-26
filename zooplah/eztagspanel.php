@@ -1,5 +1,11 @@
 <?php
 
+/* The Panel page
+ * It's just a hack of the theme editor
+ */
+
+require_once 'eztagsproxy.php';
+
 $title = __("Edit Themes");
 $parent_file = 'themes.php';
 
@@ -79,7 +85,7 @@ default:
  <div id="message" class="updated fade"><p><?php _e('File edited successfully.') ?></p></div>
 <?php endif; ?>
  <div class="wrap">
-	<form name="theme" action="../wp-content/plugins/eztagspanel.php" method="post">
+	<form name="theme" action="themes.php?page=eztagspanel.php" method="post">
 		<?php _e('Select theme to edit:') ?>
 		<select name="theme" id="theme">
 	<?php
@@ -122,7 +128,7 @@ if ($allowed_files) :
 	?>
 	<form name="template" id="template" action="../wp-content/plugins/eztagspanel.php" method="post">
 	<?php wp_nonce_field('edit-theme_' . $file . $theme) ?>
-		 <div><textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php echo $content ?></textarea>
+		 <div><textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php echo std2ez($content) ?></textarea>
 		 <input type="hidden" name="action" value="update" />
 		 <input type="hidden" name="file" value="<?php echo $file ?>" />
 		 <input type="hidden" name="theme" value="<?php echo $theme ?>" />
