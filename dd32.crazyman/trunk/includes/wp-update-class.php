@@ -223,18 +223,20 @@ class WP_Update{
 			$pluginCompatible = true;
 			$errors = array();
 			foreach((array)$pluginUpdateInfo['Requirements'] as $reqInfo){
+				if( !isset($reqInfo['Name']) || empty($reqInfo['Name']) )
+					$reqInfo['Name'] = $reqInfo['Type'];
 
-				switch($reqInfo['Name']){
+				switch($reqInfo['Type']){
 					case "WordPress":
 						if( isset($reqInfo['Min']) ){
 							if( version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
-								$errors[] = 'Requires WordPress '.$reqInfo['Min'];
+								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
 						if( isset($reqInfo['Tested']) ){
 							if( version_compare( $wp_version, $reqInfo['Tested'], '<=' ) ){
-								$errors[] = 'Only tested Upto WordPress '.$reqInfo['Tested'];
+								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
@@ -243,12 +245,12 @@ class WP_Update{
 						if( isset($reqInfo['Min']) ){
 							if( version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
-								$errors[] = 'Requires PHP '.$reqInfo['Min'];
+								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
 						if( isset($reqInfo['Tested']) ){
 							if( version_compare( phpversion(), $reqInfo['Tested'], '<=' ) ){
-								$errors[] = 'Only tested Upto PHP '.$reqInfo['Tested'];
+								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
@@ -256,20 +258,20 @@ class WP_Update{
 						if( isset($reqInfo['Min']) ){
 							if( version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
-								$errors[] = 'Requires MySQL '.$reqInfo['Min'];
+								$errors[] = sprintf('Requires %s ',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
 						if( isset($reqInfo['Tested']) ){
 							if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '<=' ) ){
-								$errors[] = 'Only tested Upto MySQL '.$reqInfo['Tested'];
+								$errors[] = sprintf('Only testd Upto %s ',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
 					case "Plugins":
-					//TODO
+						//TODO
 						break;
 					case "PHPExt":
-					//TODO
+						//TODO
 						break;
 					default:
 				} //end switch()
@@ -305,6 +307,7 @@ class WP_Update{
 		preg_match('#<li><strong>Compatible up to:</strong> ([\d\.]+)#',$snoopy->results, $compat_version);
 		
 		if ( !empty($req_version) || !empty($compat_version) ){
+			$wordpress['Type'] = 'WordPress';
 			$wordpress['Name'] = 'WordPress';
 			if( !empty($req_version) ) $wordpress['Min'] = $req_version[1];
 			if( !empty($compat_version) ) $wordpress['Tested'] = $compat_version[1];

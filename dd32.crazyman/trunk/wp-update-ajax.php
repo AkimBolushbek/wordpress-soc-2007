@@ -11,6 +11,7 @@ switch($_GET['action']){
 	case 'checkPluginUpdate':
 		$wpupdate = new WP_Update;
 		$updateStat = $wpupdate->checkPluginUpdate($_GET['file'],false,true,true);
+		
 		//TODO: Seems to be firing for disabled plugins regardless
 		if( isset($updateStat['Errors']) && in_array('Not Found',$updateStat['Errors']) ){
 			$updatetext = '';
