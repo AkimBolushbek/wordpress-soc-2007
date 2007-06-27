@@ -10,13 +10,21 @@ Author URI: http://dd32.id.au/
 
 add_action('init', 'wpupdatemanager_init');
 function wpupdatemanager_init() {
-	add_action('admin_menu', 'wpupdatemanager_admin_init');
 	
-	//update_option('rewrite_rules', '');
-	//add_filter('rewrite_rules_array','wpupdatemanager_createRewriteRules');
-	//wpupdatemanager_createRewriteRules();
 }
 
+add_action('template_redirect','wpupdatemanager_template');
+function wpupdatemanager_template($arg){
+	global $wp_query,$wp_rewrite;
+	if( !isset($wp_query->query_vars['pluginupdate']) )
+		return $arg;
+
+	var_dump($wp_query->query_vars);
+	var_dump($wp_rewrite->rules);
+	die();
+}
+
+add_action('admin_menu', 'wpupdatemanager_admin_init');
 function wpupdatemanager_admin_init(){
 	global $pagenow;
 	
@@ -24,30 +32,25 @@ function wpupdatemanager_admin_init(){
 	wp_enqueue_script('interface'); //jQuery
 }
 
-function wpupdatemanager_createRewriteRules($rewrite='') {
-	if($rewrite=='') $rewrite = array();
+add_action('generate_rewrite_rules', 'wpupdatemanager_add_rewrite_rules');
+function wpupdatemanager_add_rewrite_rules( $wp_rewrite ) {
+	$new_rules = array( 'pluginupdate/(.+)' => 'index.php?pluginupdate=' . $wp_rewrite->preg_index(1) );
+	
+	$wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
+}
+
+add_filter('query_vars', 'wpupdatemanager_queryvars' );
+function wpupdatemanager_queryvars( $qvars ){
+	$qvars[] = 'pluginupdate';
+	return $qvars;
+}
+
+register_activation_hook(__FILE__,'wpupdatemanager_activate');
+function wpupdatemanager_activate(){
+	//Flush the rewrite rules so that the new rules from this plugin get added.
 	global $wp_rewrite;
-	$wp_rewrite->rules[] = "DD32";
-	
-	add_rewrite_endpoint('pluginupdate/(.+)/?$','/wp-content/plugins/wp-update-manager/wp-update-manager-ajax.php');
-	
-	var_dump($wp_rewrite->endpoints);
-	return;
-	// add rewrite tokens
-	$keytag_token = '%pluginupdate%';
-	$wp_rewrite->add_rewrite_tag($keytag_token, '(.+)', 'updateplugin=');
-	
-	$keywords_structure = $wp_rewrite->root . "/pluginupdate/$keytag_token";
-	$keywords_rewrite = $wp_rewrite->generate_rewrite_rules($keywords_structure);
-
-	var_dump(array_merge($rewrite , $keywords_rewrite));
-	return ( array_merge($rewrite , $keywords_rewrite) );
+	$wp_rewrite->flush_rules();
 }
-
-function wpupdatemanager_test(){
-`net send dd32 test`;
-}
-
 
 
 ?>
