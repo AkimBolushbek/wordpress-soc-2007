@@ -15,7 +15,7 @@ class WP_Update{
 	}
 	/*** THEME SEARCH FUNCTIONS ****/
 	/** FEATURED THEEMS */
-	function getThemesFeatured($returnType = 'array'){
+	function getThemesFeatured(){
 		$themes = wp_cache_get('wpupdate_ThemesFeatured', 'wpupdate');
 		if( !$themes ){
 			$snoopy = new Snoopy();
@@ -23,8 +23,7 @@ class WP_Update{
 			$themes = $this->parseThemesFeaturedHTML($snoopy->results);
 			wp_cache_set('wpupdate_ThemesFeatured', $themes, 'wpupdate', 86400); //24*60*60=86400
 		}
-		if( 'array' == $returnType) return $themes;
-		return false;
+		return $themes;
 	}
 	function parseThemesFeaturedHTML($html){
 		preg_match_all('#<div class="featured" id="(.*)">#',$html,$ids);
@@ -165,10 +164,54 @@ class WP_Update{
 	}
 	
 	/** PLUGIN UPDATE FUNCTIONS **/
-	function checkPluginUpdate($pluginfile=false,$return=false,$skipcache=false,$forcecheck=false){
-		if( ! $pluginfile ) return array('Errors'=>array('Invalid File'));
-		$pluginUpdateInfo = false;
+	function getPluginUpdateText($pluginfile=false,$return=true,$skipcache=false,$forcecheck=false){
+		$updateStat = $this->checkPluginUpdate($pluginfile,$skipcache,$forcecheck);
 		
+		if( isset($updateStat['Errors']) ){
+			//An error Occured, What is it.
+			if( in_array('Not Cached',$updateStat['Errors']) ){
+				if( $return ) {
+					return false;
+				} else {
+					_e('Not Cached');
+					return;
+				}
+			} elseif ( in_array('Not Found',$updateStat['Errors']) ){
+				if( $return ) {
+					return implode('<br />',$updateStat['Errors']);
+				} else {
+					foreach( $updateStat['Errors'] as $error){
+						echo __($error);
+						echo '<br />';
+					}
+					return;
+				}
+			}
+		}
+		if( isset($updateStat['Update']) &&
+			false === $updateStat['Update'] ){
+			$updateText = __('Latest Installed');
+		} else {
+			//Else, Theres an update available:
+			$updateText = __('Update Available').':<br/>';
+			$updateText .= '<strong>' . $updateStat['Version'] . '</strong>';
+			if( get_option('update_install_enable') )
+				$updateText .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'">'.__('Install').'</a>';
+			if( isset($updateStat['Errors']) ){
+				$updateText .= '<br />' . implode('<br />',$updateStat['Errors']);
+			}
+		}
+		
+		if( $return )
+			return $updateText;
+		else
+			echo $updateText;
+		
+	}
+	function checkPluginUpdate($pluginfile=false,$skipcache=false,$forcecheck=false){
+		if( ! $pluginfile ) return array('Errors'=>array('Invalid File'));
+		
+		$pluginUpdateInfo = false;
 		if( ! $skipcache ) $pluginUpdateInfo = wp_cache_get('wpupdate_'.$pluginfile, 'wpupdate');
 
 		if( ! $pluginUpdateInfo && ! $forcecheck ) return array('Errors'=>array('Not Cached'));
@@ -180,7 +223,7 @@ class WP_Update{
 				//We have a custom update URL.
 				$pluginUpdateInfo = $this->checkPluginUpdateCustom($pluginfile,$pluginData);
 			}
-			//Else, We check wordpress.org.. 
+			//Else, We check wordpress.org..  (not } else { as the custom update url may fail)
 			if( !$pluginUpdateInfo && get_option('update_location_wordpressorg') ){
 				//Find the plugin:
 				$plugins = $this->searchPlugins($pluginData['Name']);
@@ -206,7 +249,7 @@ class WP_Update{
 			//If Expire is not set, or Expire is not valid
 			if( !empty($pluginUpdateInfo) && !isset($pluginUpdateInfo['Expire']) && ! (int) $pluginUpdateInfo['Expire'] > 0) $pluginUpdateInfo['Expire'] = 7*24*60*60;
 			if( empty($pluginUpdateInfo) )
-				$pluginUpdateInfo = array('Errors'=>array('Not Found','(Will check again in 1 week)'), 'Expire' =>7*24*60*60);
+				$pluginUpdateInfo = array('Errors'=>array('Not Found'), 'Expire' =>7*24*60*60); //,'(Will check again in 1 week)'
 			
 			wp_cache_set('wpupdate_'.$pluginfile, $pluginUpdateInfo, 'wpupdate', $pluginUpdateInfo['Expire']);
 		}// get cache
@@ -342,7 +385,9 @@ class WP_Update{
 		$snoopy->fetch($url);
 		//TODO: If Is serialised data, then return, else return null.. 
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
-		return unserialize($snoopy->results);
+		if( is_serialized($snoopy->results) )
+			return unserialize($snoopy->results);
+		
 	}
 	/** INSTALL FUNCITONS **/
 	function installThemeFromURL($url){
