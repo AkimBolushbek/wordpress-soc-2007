@@ -299,7 +299,6 @@ function podcasting_edit_form() {
 	if ($post->ID)
 		$enclosures = $wpdb->get_results("SELECT meta_id, meta_value FROM {$wpdb->postmeta} WHERE post_id = {$post->ID} AND meta_key = 'enclosure' ORDER BY meta_id", ARRAY_A);
 	$pod_formats = get_terms('podcast_format', 'get=all'); ?>
-	<div id="podcasting" class="dbx-group" >
 	<div class="dbx-b-ox-wrapper"><fieldset id="podcasting" class="dbx-box">
 	<div class="dbx-h-andle-wrapper">
 		<h3 class="dbx-handle">Podcasting</h3>
@@ -360,7 +359,7 @@ function podcasting_edit_form() {
 			</tr>
 		</table>
 	</div></div>
-	</fieldset></div></div>
+	</fieldset></div>
 <?php } // podcasting_edit_form()
 
 // Save post form
@@ -420,7 +419,7 @@ function podcasting_save_form($postID) {
 		// Add relationship if new enclosure
 		if ( !in_array($content, $enclosed) ) {
 			$enclosure_id = $wpdb->get_var("SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id = {$postID} AND meta_key = 'enclosure' ORDER BY meta_id DESC"); // Find the enclosure we just added
-			wp_set_object_terms($enclosure_id, 'main-feed', 'podcast_format', false);
+			wp_set_object_terms($enclosure_id, 'default-format', 'podcast_format', false);
 		}		
 	}
 	
