@@ -5,7 +5,6 @@ if( isset($_POST['submit_general']) ){
 		if( $key === '$ID')
 			continue;
 		//This resets all ID's to 0...n
-		echo "Adding ".$val['name']."<br />";
 		$items[] = $val;
 	}
 	update_option('wpum_items',$items);
