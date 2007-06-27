@@ -244,46 +244,37 @@ if (empty($plugins)) {
 			$forceupdate = '<a href="#" onclick="checkUpdate(\''.$plugin_file.'\'); return false;" title="'.__('Check for Plugin Update').'" class="edit">'.__('Check for Update').'</a>';
 		else
 			$forceupdate = '';
-		//TODO: Add some commenting to explain weird layering here
+		
+		$updateText = '';
 		if( !get_option('update_notification_enable') ){
-			$updatetext = __('Not Checked');
+			$updateText = __('Not Checked');
 		} else {
-			$updateStat = $wpupdate->checkPluginUpdate($plugin_file,false,false,false);
-			//TODO: Seems to be firing for disabled plugins regardless
-			if( isset($updateStat['Errors']) && in_array('Not Found',$updateStat['Errors']) ){
-				$updatetext = '';
-				foreach($updateStat['Errors'] as $error)
-					$updatetext .= __($error)."<br/>";
-			} elseif( ( isset($updateStat['Errors']) && in_array('Not Cached',$updateStat['Errors']) )
-					|| (get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins)  ) ){
-				//Plugin info not cached.
-				$updatetext = __('Please Wait');
-				$updatetext .= "<script type='text/javascript'>checkUpdate('$plugin_file');</script>";
-			} elseif ( !isset($updateStat['Update']) && !get_option('update_check_inactive') && !in_array($plugin_file, $current_plugins) ){
-				$updatetext = __('Not Checked');
+			//Check if the plugin is disabled:
+			$updateStat = $wpupdate->checkPluginUpdate($plugin_file,false,false);
+			if( !get_option('update_check_inactive') && 
+				!in_array($plugin_file, $current_plugins) &&
+				!( 
+					isset($updateStat['Update']) || 
+					( isset($updateStat['Errors']) && 
+					  in_array('Not Found', $updateStat['Errors']) )
+					)
+				 ){
+				//Plugin is disabled, and set to not check inactive plugins
+				$updateText = __('Not Checked');
 			} else {
-				//Update is available; display it.
-				if( $updateStat['Update'] ){
-					$updatetext = __('Update Available').':<br/>';
-					$updatetext .= $updateStat['Version'];
-					$updatetext .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'">'.__('Install').'</a>';
-					if( isset($updateStat['Errors']) ){
-						$updatetext .= '<br/><span class="updateerror">';
-						$updatetext .= implode('<br/>',$updateStat['Errors']);
-						$updatetext .= '</span>';
-					}
-				} else {
-					$updatetext = __('Latest Installed');
-				} //updatestat
-			} //isset()
-		}// !get_option
-		
-		
+				$updateText = $wpupdate->getPluginUpdateText($plugin_file);
+				if( false === $updateText){
+					$updateText = __('Please Wait');
+					$updateText .= "<script type='text/javascript'>checkUpdate('$plugin_file');</script>";
+				}
+			}
+		}
+					
 		echo "
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>$updatetext</td>
+		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>$updateText</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') )
