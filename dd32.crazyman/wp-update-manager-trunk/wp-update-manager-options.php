@@ -142,7 +142,7 @@ $items = (array)get_option('wpum_items');
 		
 		var RequirementNumberId = NextRequirementId[container] ? NextRequirementId[container] : 0;
 		var RequirementName = 'Requirement ' + RequirementNumberId;
-		var RequirementId = RequirementName.replace(' ','-');
+		var RequirementId = id + '-' + RequirementName.replace(' ','-');
 		
 		NextRequirementId[container] = RequirementNumberId+1;
 		
@@ -174,7 +174,7 @@ $items = (array)get_option('wpum_items');
 			return  false;
 			
 		$.tabs.removeCurrent('Requirements-' + ItemId);
-		$('#Requirement-' + RequirementId).remove();
+		$('#' + ItemId + 'Requirement-' + RequirementId).remove();
 		$.tabs.openTab(null,'Requirements-' + ItemId);
 		return false;
 	}
@@ -211,10 +211,12 @@ $items = (array)get_option('wpum_items');
 			<strong>Type:</strong>
 			<input type="radio" name="item[<?php echo $id; ?>][type]" value="plugin"<?php checked('plugin',$item['type']); ?> />Plugin
 			<input type="radio" name="item[<?php echo $id; ?>][type]" value="theme"<?php checked('theme',$item['type']); ?> />Theme<br />
-			<strong>Version:</strong><input type="text" name="item[<?php echo $id; ?>][version]" value="<?php echo attribute_escape($item['version']); ?>" /><br />
+			<strong>Version:</strong><input type="text" name="item[<?php echo $id; ?>][version]" value="<?php echo attribute_escape($item['version']); ?>" />&nbsp; 
+			<strong>Last Updated:</strong><input type="text" name="item[$ID][lastupdated]" value="<?php echo attribute_escape($item['lastupdated']); ?>" />(yyy-mm-dd format please)<br />
 			<strong>Author:</strong><input type="text" name="item[<?php echo $id; ?>][author]" value="<?php echo attribute_escape($item['author']); ?>" /><br />
 			<strong>Author Homepage:</strong><input type="text" name="item[<?php echo $id; ?>][authorhome]" value="<?php echo attribute_escape($item['authorhome']); ?>" /><br />
 			<strong>Plugin Homepage:</strong><input type="text" name="item[<?php echo $id; ?>][pluginhome]" value="<?php echo attribute_escape($item['pluginhome']); ?>" /><br />
+			<strong>Download Link:</strong><input type="text" name="item[$ID][download]" value="<?php echo attribute_escape($item['download']); ?>" /><br />
 			<strong>Requirements:</strong>
 			<div id="Requirements-<?php echo $id; ?>" class="subsection">
 				<script type="text/javascript">
@@ -226,23 +228,23 @@ $items = (array)get_option('wpum_items');
 				<ul class="tab-nav">
 				<?php if( !empty($item['requirements']) ){
 					foreach((array)$item['requirements'] as $rid=>$req){
-						echo '<li><a href="#Requirement-'.$rid.'" tabindex="1">' . $req['type'] . ' ' . $req['min']. '</a></li>';
+						echo '<li><a href="#'.$id.'-Requirement-'.$rid.'" tabindex="1">' . $req['type'] . ' ' . $req['min']. '</a></li>';
 				}} ?>
 				</ul>
 				<a href="#" onclick="return addNewItemRequirement('<?php echo $id; ?>');" tabindex="1" accesskey="n" style="display:inline; margin-left:5px;">[+] New Requirement</a>
 				<?php if(is_array($item['requirements']) && !empty($item['requirements']) ){
 				foreach((array)$item['requirements'] as $rid=>$req){ ?>
-					<div id="Requirement-<?php echo $rid; ?>" class="Item">
+					<div id="<?php echo $id; ?>-Requirement-<?php echo $rid; ?>" class="Item">
 						<div class="controlbox">
 							<b>-</b> <a href="#remove" onclick="return removeItemRequirement('<?php echo $id; ?>','<?php echo $rid; ?>');">Remove Item</a><br />
 						</div>
 						<strong>Type:</strong>
 						<select name="item[<?php echo $id; ?>][requirements][<?php echo $rid; ?>][type]">
-							<option value="WordPress"<?php selected('WordPress',$req['WordPress']); ?>>WordPress</option>
-							<option value="PHP"<?php selected('PHP',$req['PHP']); ?>>PHP</option>
-							<option value="MySQL"<?php selected('MySQL',$req['MySQL']); ?>>MySQL</option>
-							<option value="Plugin"<?php selected('Plugin',$req['Plugin']); ?>>WordPress Plugin</option>
-							<option value="PHPExt"<?php selected('PHPExt',$req['PHPExt']); ?>>PHP Extension</option>
+							<option value="WordPress"<?php selected('WordPress',$req['type']); ?>>WordPress</option>
+							<option value="PHP"<?php selected('PHP',$req['type']); ?>>PHP</option>
+							<option value="MySQL"<?php selected('MySQL',$req['type']); ?>>MySQL</option>
+							<option value="Plugin"<?php selected('Plugin',$req['type']); ?>>WordPress Plugin</option>
+							<option value="PHPExt"<?php selected('PHPExt',$req['type']); ?>>PHP Extension</option>
 						</select><br />
 						<strong>Name:</strong>
 						<input type="text" name="item[<?php echo $id; ?>][requirements][<?php echo $rid; ?>][name]" value="<?php echo attribute_escape($req['name']) ?>" /><br />
@@ -263,7 +265,7 @@ $items = (array)get_option('wpum_items');
 </div>
 
 
-<div id="Item-New" class="Item">
+<div id="Item-New" class="Item" style="display:none">
 	<div class="controlbox">
 		<b>-</b> <a href="#remove" onclick="return removeItem('Item-$ID');">Remove Item</a><br />
 	</div>
@@ -271,10 +273,12 @@ $items = (array)get_option('wpum_items');
 	<strong>Type:</strong>
 				<input type="radio" name="item[$ID][type]" value="plugin" checked="checked" />Plugin
 				<input type="radio" name="item[$ID][type]" value="theme" />Theme<br />
-	<strong>Version:</strong><input type="text" name="item[$ID][version]" value="" /><br />
+	<strong>Version:</strong><input type="text" name="item[$ID][version]" value="" />&nbsp;
+	<strong>Last Updated:</strong><input type="text" name="item[$ID][lastupdated]" />(yyy-mm-dd format please)<br />
 	<strong>Author:</strong><input type="text" name="item[$ID][author]" value="<?php echo wp_get_current_user()->nickname;  ?>" /><br />
 	<strong>Author Homepage:</strong><input type="text" name="item[$ID][authorhome]" value="<?php echo wp_get_current_user()->user_url;  ?>" /><br />
 	<strong>Plugin Homepage:</strong><input type="text" name="item[$ID][pluginhome]" value="<?php echo wp_get_current_user()->user_url;  ?>" /><br />
+	<strong>Download Link:</strong><input type="text" name="item[$ID][download]" value="" /><br />
 	<strong>Requirements:</strong>
 		<div id="Requirements-$ID" class="subsection">
 			<ul class="tab-nav">
@@ -282,7 +286,7 @@ $items = (array)get_option('wpum_items');
 			<a href="#" onclick="return addNewItemRequirement('$ID');" tabindex="1" accesskey="n" style="display:inline; margin-left:5px;">[+] New Requirement</a>
 		</div>
 </div>
-<div id="Requirement-New" class="Item">
+<div id="Requirement-New" class="Item" style="display:none">
 	<div class="controlbox">
 		<b>-</b> <a href="#remove" onclick="return removeItemRequirement('$ID','$RID');">Remove Item</a><br />
 	</div>
