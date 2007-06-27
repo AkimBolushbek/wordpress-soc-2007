@@ -212,11 +212,11 @@ $items = (array)get_option('wpum_items');
 			<input type="radio" name="item[<?php echo $id; ?>][type]" value="plugin"<?php checked('plugin',$item['type']); ?> />Plugin
 			<input type="radio" name="item[<?php echo $id; ?>][type]" value="theme"<?php checked('theme',$item['type']); ?> />Theme<br />
 			<strong>Version:</strong><input type="text" name="item[<?php echo $id; ?>][version]" value="<?php echo attribute_escape($item['version']); ?>" />&nbsp; 
-			<strong>Last Updated:</strong><input type="text" name="item[$ID][lastupdated]" value="<?php echo attribute_escape($item['lastupdated']); ?>" />(yyy-mm-dd format please)<br />
+			<strong>Last Updated:</strong><input type="text" name="item[<?php echo $id; ?>][lastupdated]" value="<?php echo attribute_escape($item['lastupdated']); ?>" />(yyy-mm-dd format please)<br />
 			<strong>Author:</strong><input type="text" name="item[<?php echo $id; ?>][author]" value="<?php echo attribute_escape($item['author']); ?>" /><br />
 			<strong>Author Homepage:</strong><input type="text" name="item[<?php echo $id; ?>][authorhome]" value="<?php echo attribute_escape($item['authorhome']); ?>" /><br />
 			<strong>Plugin Homepage:</strong><input type="text" name="item[<?php echo $id; ?>][pluginhome]" value="<?php echo attribute_escape($item['pluginhome']); ?>" /><br />
-			<strong>Download Link:</strong><input type="text" name="item[$ID][download]" value="<?php echo attribute_escape($item['download']); ?>" /><br />
+			<strong>Download Link:</strong><input type="text" name="item[<?php echo $id; ?>][download]" value="<?php echo attribute_escape($item['download']); ?>" /><br />
 			<strong>Requirements:</strong>
 			<div id="Requirements-<?php echo $id; ?>" class="subsection">
 				<script type="text/javascript">
