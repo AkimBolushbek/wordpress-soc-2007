@@ -49,6 +49,7 @@ add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
 add_filter('posts_join', 'podcasting_feed_join');
 add_filter('posts_where', 'podcasting_feed_where');
 add_filter('posts_groupby', 'podcasting_feed_groupby');
+add_action('wp_head', 'podcasting_add_feed_discovery');
 
 // Add podcasting information to feeds
 add_action('rss2_ns', 'podcasting_add_itunes_xml');
@@ -63,7 +64,7 @@ add_action('rss2_item', 'podcasting_add_itunes_item');
 
 // Install the base podcasting taxonomy
 function podcasting_install() {
-	wp_insert_term('Main Feed', 'podcast_format'); // Default format
+	wp_insert_term('Default Format', 'podcast_format'); // Default format
 }
 
 
@@ -466,7 +467,7 @@ function podcasting_feed_where($where) {
 	global $wpdb;
 	if ( 'podcast' == get_query_var('feed') ) {
 		$where .= " AND {$wpdb->postmeta}.meta_key = 'enclosure'";
-		$where .= " AND {$wpdb->terms}.slug = 'main-feed'";
+		$where .= " AND {$wpdb->terms}.slug = 'default-format'";
 	}
 	return $where;
 }
@@ -479,9 +480,12 @@ function podcasting_feed_groupby($groupby) {
 	return $groupby;
 }
 
-// Add the RSS autodiscovery links to <head> section
-function podcasting_add_rss_discovery() {
-	// NEED TO ADD
+// Add the feed autodiscovery links to <head> section
+function podcasting_add_feed_discovery() {
+	global $wp_rewrite;
+	$podcast_url = ($wp_rewrite->using_permalinks()) ? '/feed/podcast/' : '/?feed=podcast';
+	$podcast_url = get_option('home') . $podcast_url;
+	echo '	<link rel="alternate" type="application/rss+xml" title="Podcast: ' . htmlentities(stripslashes(get_option('pod_title'))) . '" href="' . $podcast_url . '" />' . "\n";
 }
 
 // Add the iTunes xml information
@@ -556,7 +560,7 @@ function podcasting_add_itunes_feed() {
 // Only enclosures of the current format
 function podcasting_remove_enclosures($enclosure) {
 	if ( 'podcast' == get_query_var('feed') ) {
-		$podcast_format = 'main-feed';
+		$podcast_format = 'default-format';
 		$enclosures = get_post_custom_values('enclosure');
 		$podcast_urlformats = array();
 	
@@ -582,7 +586,7 @@ function podcasting_remove_enclosures($enclosure) {
 // Add the special iTunes information to item
 function podcasting_add_itunes_item() {
 	if ( 'podcast' == get_query_var('feed') ) {
-		$podcast_format = 'main-feed';
+		$podcast_format = 'default-format';
 		$enclosures = get_post_custom_values('enclosure');
 		$enclosures_itunes = explode("\n", $enclosures[0]);
 		$enclosure_itunes = unserialize($enclosures_itunes[3]);
