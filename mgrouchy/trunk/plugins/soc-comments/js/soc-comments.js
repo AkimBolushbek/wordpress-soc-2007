@@ -41,5 +41,4 @@ function showRequest(formData, jqForm, options) {
 
 function showResponse(responseText, statusText) {
 		alert('responseText: \n' + responseText );
-		}
 }
