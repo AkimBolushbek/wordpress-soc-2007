@@ -156,7 +156,7 @@ function podcasting_options_page() {
 					</th>
 					<td>
 						<input type="text" size="40" name="pod_title" id="pod_title" value="<?php echo stripslashes(get_option('pod_title')); ?>" />
-						<br />If your podcast's title is different then your blog's title, change the title here.
+						<br />If your podcast's title is different than your blog's title, change the title here.
 					</td>
 				</tr>
 				<tr valign="top">
@@ -165,7 +165,7 @@ function podcasting_options_page() {
 					</th>
 					<td>
 						<input type="text" style="width: 95%" name="pod_tagline" id="pod_tagline" value="<?php echo stripslashes(get_option('pod_tagline')); ?>" />
-						<br />If your podcast's tagline is different then your blog's tagline, change the tagline here.
+						<br />If your podcast's tagline is different than your blog's tagline, change the tagline here.
 					</td>
 				</tr>
 			</table>
@@ -379,7 +379,7 @@ function podcasting_save_form($postID) {
 	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
 	$enclosures = get_post_meta($postID, 'enclosure'); $i = 0;
 	foreach ($enclosure_ids as $enclosure_id) {
-		// Insure we're dealing with an ID
+		// Ensure we're dealing with an ID
 		$enclosure_id = (int) $enclosure_id;
 		
 		$itunes = serialize(array(
@@ -412,7 +412,7 @@ function podcasting_save_form($postID) {
 	
 	// Add new enclosures
 	if ( (isset($_POST['pod_new_file'])) && ('' != $_POST['pod_new_file']) ) {
-		$content = $wpdb->escape($_POST['pod_new_file']);
+		$content = $_POST['pod_new_file'];
 		$enclosed = get_enclosed($postID);
 		do_enclose($content, $postID);
 		
@@ -428,6 +428,11 @@ function podcasting_save_form($postID) {
 
 // Cleanup a deleted post
 function podcasting_delete_form($postID) {
+	$enclosure_ids = explode(',', $_POST['enclosure_ids']);
+	foreach ($enclosure_ids as $enclosure_id) {
+		$enclosure_id = (int) $enclosure_id;
+		wp_delete_object_term_relationships($enclosure_id, 'podcast_format');
+	}
 	return $postID;
 }
 
