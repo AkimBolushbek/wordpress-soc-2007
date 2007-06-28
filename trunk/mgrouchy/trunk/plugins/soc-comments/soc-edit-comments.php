@@ -1,6 +1,7 @@
 <?php
-if (!isset($_GET['ajax'])) $ajax = false;
-else $ajax = (bool) attribute_escape($_GET['ajax']);
+
+if (!isset($_GET['ajax'])) $ajax = 0;
+else $ajax = (int) $_GET['ajax'];
 
 if ( !$ajax ) :
 
@@ -19,8 +20,7 @@ if (empty($_GET['mode'])) $mode = 'view';
 else $mode = attribute_escape($_GET['mode']);
 
 if (!isset($_GET['replyid'])) $replyid = -1;
-else $replyid = (int) attribute_escape($_GET['replyid']); 
-
+else $replyid = (int) $_GET['replyid']; 
 if ( !$ajax ) :
 ?>
 
@@ -50,11 +50,8 @@ function getNumChecked(form)
 	return num;
 }
 
-
 //-->
 </script>
-<?php
-echo "ajax=" .$ajax; ?>
 <div class="wrap">
 <h2><?php _e('Comments'); ?></h2>
 
@@ -70,13 +67,14 @@ echo "ajax=" .$ajax; ?>
  </div>
  <div> 
  <input type="text" name="s" value="<?php if (isset($_GET['s'])) echo attribute_escape($_GET['s']); ?>" size="17" /> 
- <input type="submit" name="submit" value="<?php _e('Search') ?>"  />  
+ <input type="submit" name="submit" value="<?php _e('Search') ?>" />  
  <input type="hidden" name="mode" value="<?php echo $mode; ?>" />
  </div>
  </div>
  </fieldset> 
 </form>
 <p><a href="?mode=view"><?php _e('View Mode') ?></a> | <a href="?mode=edit"><?php _e('Mass Edit Mode') ?></a></p>
+
 <?php
 if ( !empty( $_POST['delete_comments'] ) ) :
 	check_admin_referer('bulk-comments');
@@ -112,7 +110,7 @@ else
 
 $start = $offset = ( $page - 1 ) * 20;
 
-list($_comments, $total) = $soc_com->get_comment_list( $start, 25, isset($_GET['s']) ? $_GET['s'] : false,isset($_GET['sfield']) ? $_GET['sfield'] : false ); // Grab a few extra
+list($_comments, $total) = $soc_com->get_comment_list( $start, 25, isset($_GET['s']) ? $_GET['s'] : false, isset($_GET['sfield']) ? $_GET['sfield'] :false); // Grab a few extra
 
 $comments = array_slice($_comments, 0, 20);
 $extra_comments = array_slice($_comments, 20);
