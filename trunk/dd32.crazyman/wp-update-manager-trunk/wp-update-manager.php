@@ -6,6 +6,7 @@ Description: A Plugin to manage your created Plugins and Themes.
 Version: 0.1
 Author: Dion Hulse
 Author URI: http://dd32.id.au/
+Update URI: http://dd32.no-ip.com:8080/wordpress/pluginupdate/wp-update-manager/
 */
 
 add_action('template_redirect','wpupdatemanager_template');
@@ -19,7 +20,7 @@ function wpupdatemanager_template($arg){
 	$itemId = false;
 	foreach($items as $id=>$item){
 		/* This needs to compare Slugs rather than name. */
-		if( strtolower($item['name']) == strtolower($wp_query->query_vars['pluginupdate']) ){
+		if( $item['slug'] == strtolower($wp_query->query_vars['pluginupdate']) ){
 			/* We've found an item, Record it and break */
 			$itemId = $id;
 			break;
@@ -31,7 +32,7 @@ function wpupdatemanager_template($arg){
 	}
 	
 	$requirements = array();
-	foreach($items[$itemId]['requirements'] as $id=>$req)
+	foreach((array)$items[$itemId]['requirements'] as $id=>$req)
 		$requirements[] = array(
 								'Type' => $req['type'],
 								'Name' => $req['name'],
@@ -53,7 +54,7 @@ function wpupdatemanager_template($arg){
 				'Requirements' => $requirements,
 				'Expire'	=> 7*24*60*60
 				);
-	
+
 	echo serialize($itemDetails);
 	/*var_dump($itemDetails);
 	var_dump($items[$itemId]);

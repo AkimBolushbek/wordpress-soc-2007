@@ -4,6 +4,11 @@ if( isset($_POST['submit_general']) ){
 	foreach((array)$_POST['item'] as $key=>$val){
 		if( $key === '$ID')
 			continue;
+		//Create a slug if non provided:
+		if( empty($val['slug']) )
+			$val['slug'] = $val['name'];
+		$val['slug'] = sanitize_title_with_dashes($val['slug']);
+
 		//This resets all ID's to 0...n
 		$items[] = $val;
 	}
@@ -187,7 +192,7 @@ $items = (array)get_option('wpum_items');
 		var NextRequirementId = [];
 </script>
 <div class="wrap">
-	<h2>Plugins</h2>
+	<h2>Plugins &amp; Themes</h2>
 	<form name="wpupdate-manbager-options" method="post" action="options-general.php?page=wp-update-manager/wp-update-manager-options.php">
 	<div id="container">
 		<ul class="tab-nav">
@@ -206,7 +211,8 @@ $items = (array)get_option('wpum_items');
 			<div class="controlbox">
 				<b>-</b> <a href="#remove" onclick="return removeItem('Item-<?php echo $id; ?>');">Remove Item</a><br />
 			</div>
-			<strong>Name:</strong><input type="text" name="item[<?php echo $id; ?>][name]" value="<?php echo attribute_escape($item['name']); ?>" /><br />
+			<strong>Name:</strong><input type="text" name="item[<?php echo $id; ?>][name]" value="<?php echo attribute_escape($item['name']); ?>" />
+			<strong>Slug:</strong><input type="text" name="item[<?php echo $id; ?>][slug]" value="<?php echo attribute_escape($item['slug']); ?>" /><br />
 			<strong>Type:</strong>
 			<input type="radio" name="item[<?php echo $id; ?>][type]" value="plugin"<?php checked('plugin',$item['type']); ?> />Plugin
 			<input type="radio" name="item[<?php echo $id; ?>][type]" value="theme"<?php checked('theme',$item['type']); ?> />Theme<br />
@@ -263,12 +269,42 @@ $items = (array)get_option('wpum_items');
 	</form>
 </div>
 
+<?php if( !empty($items) ){ ?>
+<div class="wrap">
+	<h2>Update URIs</h2>
+	<table class="widefat plugins">
+		<thead>
+		<tr>
+			<th>Name</th>
+			<th>Update URI</th>
+			<th>Update URI(with Pretty permalinks)</th>
+		</tr>
+		</thead>
+	<?php foreach((array)$items as $id=>$item){ 
+			$style = ('class="alternate"' == $style|| 'class="alternate active"' == $style) ? '' : 'alternate';
+		?>
+		<tr <?php echo $style; ?>>
+			<td><?php echo $item['name']; ?></td>
+			<td><?php 
+					$url = get_bloginfo('siteurl') . '?pluginupdate=' . $item['slug']; 
+					echo "<a href='$url'>$url</a>";
+					?></td>
+			<td><?php 
+					$url = get_bloginfo('siteurl') . '/pluginupdate/' . $item['slug'] . '/'; 
+					echo "<a href='$url'>$url</a>";
+				?></td>
+		</tr>
+	<?php } ?>
+	</table>
+</div>
+<?php } ?>
 
 <div id="Item-New" class="Item" style="display:none">
 	<div class="controlbox">
 		<b>-</b> <a href="#remove" onclick="return removeItem('Item-$ID');">Remove Item</a><br />
 	</div>
-	<strong>Name:</strong><input type="text" name="item[$ID][name]" value="Item $ID" /><br />
+	<strong>Name:</strong><input type="text" name="item[$ID][name]" value="Item $ID" />
+	<strong>Slug:</strong><input type="text" name="item[$ID][slug]" value="" /><br />
 	<strong>Type:</strong>
 				<input type="radio" name="item[$ID][type]" value="plugin" checked="checked" />Plugin
 				<input type="radio" name="item[$ID][type]" value="theme" />Theme<br />
