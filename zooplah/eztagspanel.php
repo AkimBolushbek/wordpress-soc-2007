@@ -6,7 +6,7 @@
 
 require_once 'eztagsproxy.php';
 
-$title = __("Edit Themes");
+$title = __("Easier Theme Editor");
 $parent_file = 'themes.php';
 
 wp_reset_vars(array('action', 'redirect', 'profile', 'error', 'warning', 'a', 'file', 'theme'));
@@ -126,7 +126,7 @@ if ($allowed_files) :
 	<?php
 	if (!$error) {
 	?>
-	<form name="template" id="template" action="../wp-content/plugins/eztagspanel.php" method="post">
+	<form name="template" id="template" action="themes.php?page=eztagspanel.php" method="post">
 	<?php wp_nonce_field('edit-theme_' . $file . $theme) ?>
 		 <div><textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php echo std2ez($content) ?></textarea>
 		 <input type="hidden" name="action" value="update" />
