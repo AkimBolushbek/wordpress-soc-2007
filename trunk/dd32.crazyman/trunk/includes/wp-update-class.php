@@ -209,6 +209,8 @@ class WP_Update{
 		
 	}
 	function checkPluginUpdate($pluginfile=false,$skipcache=false,$forcecheck=false){
+		global $wp_version;
+		
 		if( ! $pluginfile ) return array('Errors'=>array('Invalid File'));
 		
 		$pluginUpdateInfo = false;
@@ -272,7 +274,7 @@ class WP_Update{
 				switch($reqInfo['Type']){
 					case "WordPress":
 						if( isset($reqInfo['Min']) ){
-							if( version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
+							if( ! version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
@@ -286,7 +288,7 @@ class WP_Update{
 					case "PHP":
 						//May have to keep in mind early PHP5 releases may not include all PHP4 functions/bugfixes
 						if( isset($reqInfo['Min']) ){
-							if( version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
+							if( ! version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
@@ -299,7 +301,7 @@ class WP_Update{
 						break;
 					case "MySQL":
 						if( isset($reqInfo['Min']) ){
-							if( version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
+							if( ! version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s ',$reqInfo['Name'],$reqInfo['Min']);
 							}
@@ -385,9 +387,16 @@ class WP_Update{
 		$snoopy->fetch($url);
 		//TODO: If Is serialised data, then return, else return null.. 
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
-		if( is_serialized($snoopy->results) )
-			return unserialize($snoopy->results);
-		
+		if( is_serialized($snoopy->results) ){
+			$data = unserialize($snoopy->results);
+			if( isset($data['Errors']) && in_array('Unknown Plugin',$data['Errors']) )
+				$data = false;
+		/*} elseif( is_rss($snoopy->results){
+			Blah */
+		} else {
+			$data = false;
+		}
+		return $data;		
 	}
 	/** INSTALL FUNCITONS **/
 	function installThemeFromURL($url){
