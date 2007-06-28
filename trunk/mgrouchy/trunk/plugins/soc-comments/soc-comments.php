@@ -123,7 +123,7 @@ if ( !class_exists( "soc_comments" ) ){
 					echo '<span class="approve"> | <a href="' . wp_nonce_url('comment.php?action=approvecomment&amp;p=' . $comment->comment_post_ID . '&amp;c=' . $comment->comment_ID, 'approve-comment_' . $comment->comment_ID) . '" onclick="return dimSomething( \'comment\', ' . $comment->comment_ID . ', \'unapproved\', theCommentList );">' . __('Approve') . '</a> </span>';
 				}
 				echo " | <a href=\"" . wp_nonce_url("comment.php?action=deletecomment&amp;dt=spam&amp;p=" . $comment->comment_post_ID . "&amp;c=" . $comment->comment_ID, 'delete-comment_' . $comment->comment_ID) . "\" onclick=\"return deleteSomething( 'comment-as-spam', $comment->comment_ID, '" . js_escape(sprintf(__("You are about to mark as spam this comment by '%s'.\n'Cancel' to stop, 'OK' to mark as spam."), $comment->comment_author))  . "', theCommentList );\">" . __('Spam') . "</a> ";
-    			echo " | <a href='" . $query . "' >" . __('Reply') . " </a>";
+    			echo " | <a href='" . $query . "' onclick=' return addReplyForm(" . $id . ",\"" . $user_identity . "\",\"" . $user_email . "\",\"" . $user_url . "\")' >" . __('Reply') . " </a>";
 			}
 			$post = get_post($comment->comment_post_ID);
 			$post_title = wp_specialchars( $post->post_title, 'double' );
