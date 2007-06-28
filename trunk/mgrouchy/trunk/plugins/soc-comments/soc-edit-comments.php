@@ -58,19 +58,19 @@ function getNumChecked(form)
  <form name="searchform" action="" method="get" id="editcomments">  
  <fieldset>
  <legend><?php _e('Show Comments That Contain...') ?></legend>
- <div><div>
- <?php _e('Author') ?><input type="checkbox" name="sfield[]" value="c_author"/>
- <?php _e('Author URL') ?><input type="checkbox" name="sfield[]" value="c_aurl"/>
- <?php _e('Author Email') ?><input type="checkbox" name="sfield[]" value="c_aemail"/>
- <?php _e('Author IP') ?><input type="checkbox" name="sfield[]" value="c_aip"/>
- <?php _e('Content') ?><input type="checkbox" name="sfield[]" value="c_content"/>
- </div>
- <div> 
+ <div><?php _e('Search by:') ?>
+ <select name="sfield">
+ 	<option value="c_author"><?php _e('Author') ?></option>
+	<option value="c_aurl"><?php _e('Author URL') ?></option>
+	<option value="c_aemail"><?php _e('Author Email') ?></option>
+	<option value="c_aip"><?php _e('Author IP') ?></option>
+	<option value="c_content"><?php _e('Content') ?></option>
+ 	<option value="all"><?php _e('All Fields') ?></option>
+ </select>
  <input type="text" name="s" value="<?php if (isset($_GET['s'])) echo attribute_escape($_GET['s']); ?>" size="17" /> 
  <input type="submit" name="submit" value="<?php _e('Search') ?>" />  
  <input type="hidden" name="mode" value="<?php echo $mode; ?>" />
- </div>
- </div>
+</div>
  </fieldset> 
 </form>
 <p><a href="?mode=view"><?php _e('View Mode') ?></a> | <a href="?mode=edit"><?php _e('Mass Edit Mode') ?></a></p>
