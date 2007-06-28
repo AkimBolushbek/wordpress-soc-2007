@@ -1,4 +1,9 @@
 <?php
+if (!isset($_GET['ajax'])) $ajax = false;
+else $ajax = (bool) attribute_escape($_GET['ajax']);
+
+if ( !$ajax ) :
+
 require_once('admin.php');
 
 $title = __('Edit Comments');
@@ -7,15 +12,16 @@ wp_enqueue_script( 'admin-comments' );
 wp_enqueue_script( 'soc-comments-js');
 
 require_once('admin-header.php');
+
+endif;
+
 if (empty($_GET['mode'])) $mode = 'view';
 else $mode = attribute_escape($_GET['mode']);
 
 if (!isset($_GET['replyid'])) $replyid = -1;
 else $replyid = (int) attribute_escape($_GET['replyid']); 
 
-if (!isset($_GET['js'])) $js = false;
-else $js = (bool) attribute_escape($_GET['js']);
-
+if ( !$ajax ) :
 ?>
 
 <script type="text/javascript">
@@ -48,7 +54,7 @@ function getNumChecked(form)
 //-->
 </script>
 <?php
-if ( !( $js ) ) : ?>
+echo "ajax=" .$ajax; ?>
 <div class="wrap">
 <h2><?php _e('Comments'); ?></h2>
 
@@ -224,4 +230,6 @@ if ( $page_links )
 
 </div>
 
-<?php include('admin-footer.php'); ?>
+<?php 
+if ( !$ajax ) 
+	include('admin-footer.php'); ?>
