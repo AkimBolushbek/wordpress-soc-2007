@@ -284,15 +284,14 @@ if (empty($plugins)) {
 		echo "
 	</tr>";
 	}
-}
-?>
- <?php  if ( current_user_can('edit_plugins') ){ ?>
+
+	if ( current_user_can('edit_plugins') ){ ?>
  <tr>
 	<td colspan="4">&nbsp;</td>
 	<td align="right">
 		<?php if ( !empty($plugins) ) { ?>
 		<a href="<?php echo wp_nonce_url('plugins.php?action=deactivate-all', 'deactivate-all'); ?>" class="delete"><?php _e('Deactivate All Plugins'); ?></a>
-		<? } ?>
+		<?php } ?>
 	</td>
 	<td colspan="2" align="center">
 		<?php if ( !empty($inactive) ) {  ?>
