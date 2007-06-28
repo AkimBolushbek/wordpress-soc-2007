@@ -6,6 +6,7 @@ Description: A number of upgrades to WordPress's commenting system
 Version: 0.1
 Author: Mike Grouchy
 Author URI: http://www.mikegrouchy.com
+
 */
 
 
@@ -14,17 +15,9 @@ $csspath =  "bloginfo('wpurl')" . "/wp-conetent/plugins/soc-comments/js/";
 //create soc_comments class
 if ( !class_exists( "soc_comments" ) ){
 	class soc_comments {
-		//set up our array of params to be used in the searching and sorting functions
-		var $ss_params = array(
-        	"c_author" => "comment_author",
-        	"c_aurl" => "comment_author_url",
-        	"c_aemail" => "comment_author_email",
-        	"c_aip" => "comment_author_ip",
-        	"c_content" => "comment_content",
-        	"c_date"  => "comment_date");
-		
 		//constructor
 		function soc_comments() {
+		
 		}
 		
 		
@@ -38,6 +31,15 @@ if ( !class_exists( "soc_comments" ) ){
 		//get list of comments
 		function get_comment_list( $start, $num , $s = false, $sfields = false ){
 			global $wpdb;
+
+			$ss_params = array(
+            	"c_author" => "comment_author",
+            	"c_aurl" => "comment_author_url",
+            	"c_aemail" => "comment_author_email",
+            	"c_aip" => "comment_author_ip",
+            	"c_content" => "comment_content",
+            	"c_date"  => "comment_date");
+
         
 			$start = (int) $start;
 			$num = (int) $num;
