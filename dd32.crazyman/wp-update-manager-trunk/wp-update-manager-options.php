@@ -173,12 +173,12 @@ $items = get_option('wpum_items');
 		return false;
 	}
 	function removeItemRequirement(ItemId,RequirementId){
-		var ans = window.confirm('Are you sure you wish to remove' + RequirementId + '?');
+		var ans = window.confirm('Are you sure you wish to remove ' + RequirementId + '?');
 		if( ! ans )
 			return  false;
 			
 		$.tabs.removeCurrent('Requirements-' + ItemId);
-		$('#' + ItemId + 'Requirement-' + RequirementId).remove();
+		$('#' + ItemId + '-Requirement-' + RequirementId).remove();
 		$.tabs.openTab(null,'Requirements-' + ItemId);
 		return false;
 	}
