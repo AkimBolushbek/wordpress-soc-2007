@@ -9,9 +9,6 @@ Author URI: http://www.mikegrouchy.com
 
 */
 
-
-$jspath = "bloginfo('wpurl')" . "/wp-content/plugins/soc-comments/js/";
-$csspath =  "bloginfo('wpurl')" . "/wp-conetent/plugins/soc-comments/js/";
 //create soc_comments class
 if ( !class_exists( "soc_comments" ) ){
 	class soc_comments {
@@ -29,9 +26,9 @@ if ( !class_exists( "soc_comments" ) ){
 		}
 		
 		//get list of comments
-		function get_comment_list( $start, $num , $s = false, $sfields = false ){
+		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = false  ){
 			global $wpdb;
-
+				
 			$ss_params = array(
             	"c_author" => "comment_author",
             	"c_aurl" => "comment_author_url",
@@ -43,52 +40,58 @@ if ( !class_exists( "soc_comments" ) ){
         
 			$start = (int) $start;
 			$num = (int) $num;
-     
+			$sort = $wpdb->escape($sort);     
+
+			if ( $sort ) {
+				if ( isset( $ss_params[$sort] ) )
+					$sort = $ss_params[$sort];
+			}
+			else {
+				$sort = "comment_date";
+			}
+				
        		 //if we have a search string
     	    if ( $s ) {
 				$s = $wpdb->escape($s);
-  	         
- 				if ( $sfields ){
-					$sq = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE";
-                	for ( $i = 0 ; $i < sizeof($sfields) ; $i++ ){
-                    	//make sure that the correct search feilds were specified
-                    	if (isset($ss_params[$sfields[$i]])){
-                    	    $sq2 = "$sq2 " .$ss_params[$sfields[$i]] . " LIKE ('%$s%')";
-                     
-                    	    //if not the last search param add an OR
-                    	    if ( $i < sizeof($sfields) -1)
-                    	        $sq2 ="$sq2 OR ";
-						}
-                	}
+  	        	$sfield = $wpdb->escape($sfield);
 
-					if ( isset($sq2) )
-    	            	$sq = "$sq ( $sq2 ) AND comment_approved != 'spam' ORDER BY comment_date DESC LIMIT $start, $num";
-    	            else
-    	                $sq = "$sq comment_approved != 'spam' ORDER BY comment_date DESC LIMIT $start, $num";
-						$comments = $wpdb->get_results($sq);
-				}
-	            else{
+				if ( ( $sfield == 'all' ) || ( !$sfield ) ) {
 					$comments = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE
-						(comment_author LIKE ('%$s%') OR
-						comment_author_email LIKE ('%$s%') OR
-						comment_author_url LIKE ('%$s%') OR
-						comment_author_IP LIKE ('%$s%') OR
-						comment_content LIKE ('%$s%') ) AND
-						comment_approved != 'spam'
-						ORDER BY comment_date DESC LIMIT $start, $num");
-	            }
-			}
-	        else {
-        
-			    $comments = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE comment_approved = '0' OR comment_approved = '1' ORDER BY comment_date DESC LIMIT $start, $num" ); 
+                        (comment_author LIKE ('%$s%') OR
+                        comment_author_email LIKE ('%$s%') OR
+                        comment_author_url LIKE ('%$s%') OR
+                        comment_author_IP LIKE ('%$s%') OR
+                        comment_content LIKE ('%$s%') ) AND
+                        comment_approved != 'spam'
+                        ORDER BY $sort DESC LIMIT $start, $num");
+					
+				}
+				else {
+					//set up the beginning of our SQL query
+					$sq = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE";
+					//check is $sfield is set
+					if ( isset( $ss_params[$sfield] ) )
+						$sq2 = $ss_params[$sfield] . " LIKE ('%$s%')";
+
+					//put our SQL query back together
+					if ( isset( $sq2 ) )
+                        $sq = "$sq ( $sq2 ) AND comment_approved != 'spam' ORDER BY $sort DESC LIMIT $start, $num";
+					else
+                        $sq = "$sq comment_approved != 'spam' ORDER BY $sort DESC LIMIT $start, $num";
+                        $comments = $wpdb->get_results($sq);
+				}
+		}
+		else {
+
+			    $comments = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE comment_approved = '0' OR comment_approved = '1' ORDER BY $sort DESC LIMIT $start, $num" ); 
     	
-		    }
+	    }
 	
 			$total = $wpdb->get_var( "SELECT FOUND_ROWS()" );
 	
 			return array($comments, $total);
-		}
-		
+	}
+	
 	
 		//to replace _wp_comment_list_item
 		function get_comment_list_item( $id, $alt = 0, $reply = false ){
@@ -174,6 +177,7 @@ if (class_exists("soc_comments")) {
 if (isset($soc_com)) {
 	add_action( 'load-edit-comments.php', array( &$soc_com,'replace_edit_comment' ), 9 );
 	wp_register_script('soc-comments-js',  '/wp-content/plugins/soc-comments/js/soc-comments.js', array('jquery', 'jquery-form'), '0.1');
+	//wp_register_script('soc-comments-css', '/wp-content/plugins/soc-comments/css/soc-comments.css','' , '0.1');
 }
 
 
