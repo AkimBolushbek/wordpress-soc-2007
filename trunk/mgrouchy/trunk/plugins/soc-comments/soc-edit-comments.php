@@ -22,6 +22,9 @@ else $mode = attribute_escape($_GET['mode']);
 if (!isset($_GET['replyid'])) $replyid = -1;
 else $replyid = (int) $_GET['replyid']; 
 if ( !$ajax ) :
+
+if (!isset($_GET['filter'])) $filter = '';
+else $filter = $wpdb->escape($_GET['filter'])
 ?>
 
 <script type="text/javascript">
@@ -50,16 +53,28 @@ function getNumChecked(form)
 	return num;
 }
 bindForm('replydiv','editcomments');
+bindForm('replydiv','sortform');
+//bindForm('replydiv','filterform'); 
 
 //-->
 </script>
 <div class="wrap">
 <h2><?php _e('Comments'); ?></h2>
 
+<div id="filter" style="float:right">
+	<form name="filterform" action="" method="get" id="filterform">
+		<select name="filter">
+			<option value=""><?php _e('comment') ?></option>
+			<option value="trackback"><?php _e('trackback') ?></option>
+        	<option value="pingback"><?php _e('pingback') ?></option>
+		</select>
+		<input type="submit" name="submit" value="<?php _e('filter') ?>" />
+	</form>
+</div>
  <form name="searchform" action="" method="get" id="editcomments">  
  <fieldset>
  <legend><?php _e('Show Comments That Contain...') ?></legend>
- <div><?php _e('Search by:') ?>
+ <div>
  <select name="sfield">
  	<option value="c_author"><?php _e('Author') ?></option>
 	<option value="c_aurl"><?php _e('Author URL') ?></option>
@@ -80,13 +95,12 @@ bindForm('replydiv','editcomments');
 	</div>
 	<div id='sort' style="float: right; ">
 		<form name="sortform" action="?<?php $_SERVER['QUERY_STRING'] ?>" method="get" id="sortform">
-			<?php _e('Sort by') ?>
 			<select name='sort'>
 			    <option value="c_author"><?php _e('Author') ?></option>
 	   			<option value="c_aurl"><?php _e('Author URL') ?></option>
 				<option value="c_aemail"><?php _e('Author Email') ?></option>
 			    <option value="c_aip"><?php _e('Author IP') ?></option>
-			    <option value="all"><?php _e('Date') ?></option>
+			    <option value="c_date"><?php _e('Date') ?></option>
 			</select>
 			<input type="submit" name="submit" value="<?php _e('Sort') ?>" />
 		</form>
@@ -128,7 +142,7 @@ else
 
 $start = $offset = ( $page - 1 ) * 20;
 
-list($_comments, $total) = $soc_com->get_comment_list( $start, 25, isset($_GET['s']) ? $_GET['s'] : false, isset($_GET['sfield']) ? $_GET['sfield'] :false); // Grab a few extra
+list($_comments, $total) = $soc_com->get_comment_list( $start, 25, isset($_GET['s']) ? $_GET['s'] : false, isset($_GET['sfield']) ? $_GET['sfield'] :false, isset($_GET['sort']) ? $_GET['sort'] : false); // Grab a few extra
 
 $comments = array_slice($_comments, 0, 20);
 $extra_comments = array_slice($_comments, 20);
