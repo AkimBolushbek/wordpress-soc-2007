@@ -6,11 +6,11 @@ else $ajax = (int) $_GET['ajax'];
 if ( !$ajax ) :
 
 require_once('admin.php');
-
 $title = __('Edit Comments');
 $parent_file = 'edit-comments.php';
 wp_enqueue_script( 'admin-comments' );
-wp_enqueue_script( 'soc-comments-js');
+wp_enqueue_script( 'soc-comments-css' );
+wp_enqueue_script( 'soc-comments-js' );
 
 require_once('admin-header.php');
 
@@ -49,6 +49,7 @@ function getNumChecked(form)
 	}
 	return num;
 }
+bindForm('replydiv','editcomments');
 
 //-->
 </script>
@@ -73,8 +74,25 @@ function getNumChecked(form)
 </div>
  </fieldset> 
 </form>
-<p><a href="?mode=view"><?php _e('View Mode') ?></a> | <a href="?mode=edit"><?php _e('Mass Edit Mode') ?></a></p>
-
+<div>
+	<div id='modes' style="float: left;">
+		<p><a href="?mode=view"><?php _e('View Mode') ?></a> | <a href="?mode=edit"><?php _e('Mass Edit Mode') ?></a></p>
+	</div>
+	<div id='sort' style="float: right; ">
+		<form name="sortform" action="?<?php $_SERVER['QUERY_STRING'] ?>" method="get" id="sortform">
+			<?php _e('Sort by') ?>
+			<select name='sort'>
+			    <option value="c_author"><?php _e('Author') ?></option>
+	   			<option value="c_aurl"><?php _e('Author URL') ?></option>
+				<option value="c_aemail"><?php _e('Author Email') ?></option>
+			    <option value="c_aip"><?php _e('Author IP') ?></option>
+			    <option value="all"><?php _e('Date') ?></option>
+			</select>
+			<input type="submit" name="submit" value="<?php _e('Sort') ?>" />
+		</form>
+	</div>
+<br style="clear: both;"/>
+</div>
 <?php
 if ( !empty( $_POST['delete_comments'] ) ) :
 	check_admin_referer('bulk-comments');
