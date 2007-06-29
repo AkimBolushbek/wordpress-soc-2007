@@ -22,20 +22,21 @@ function bindForm(divname,formname) {
 	jQuery(document).ready(function() {
 	    var options = {
 	        target: '#' + divname,
-	        beforeSubmit: showRequest,
-	        success: showResponse,
+			beforeSubmit: function( data, form, options ) { data.push({ name:'ajax', value:'1' }); },
+			//success: showResponse,
 	    };
-	// bind form and provide a simple callback function
+	    // bind form and provide a simple callback function
 	    jQuery('#' + formname).ajaxForm(options);
 	});
 }
 
-function showRequest(formData, jqForm, options) {
-
-    var qs = jQuery.param(formData);
-    alert(qs);
-    return true; 
+function addFormData(formData, jqForm, options, adddata) {
+	formData.push({ name: key, value: val});	
 	
+	//for testing purposes 
+	//var qs = jQuery.param(formData);
+	//alert(qs);
+	return true;
 }
 
 
