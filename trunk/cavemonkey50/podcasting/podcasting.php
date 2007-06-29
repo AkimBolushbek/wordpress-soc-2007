@@ -2,7 +2,7 @@
 
 /*
 Plugin Name: Podcasting
-Version: 0.01
+Version: 0.5
 Plugin URI: http://code.google.com/p/wordpress-soc-2007/
 Description: Adds full podcasting support.
 Author: Ronald Heft, Jr.
@@ -568,20 +568,12 @@ function podcasting_remove_enclosures($enclosure) {
 		$enclosures = get_post_custom_values('enclosure');
 		$podcast_urlformats = array();
 	
-		// Create array of enclosure information
+		// Check if the enclosure should be displayed
 		foreach ($enclosures as $enclose) {
 			$enclose = explode("\n", $enclose);
 			$enclosure_itunes = unserialize($enclose[3]);
-			$podcast_urlformats[] = array(
-				'url' => $enclose[0],
-				'format' => $enclosure_itunes['format']
-			);
-		}
-		
-		// Check if the enclosure should be displayed
-		foreach ($podcast_urlformats as $podcast_urlformat) {
 			$enclosure_url = explode('"', $enclosure);
-			if ( ( $enclosure_url[1] == trim(htmlspecialchars($podcast_urlformat['url'])) ) && ( $podcast_urlformat['format'] == $podcast_format ) )
+			if ( ( $enclosure_url[1] == trim(htmlspecialchars($enclose[0])) ) && ( $enclosure_itunes['format'] == $podcast_format ) )
 				return $enclosure;
 		}
 	}
@@ -592,8 +584,11 @@ function podcasting_add_itunes_item() {
 	if ( 'podcast' == get_query_var('feed') ) {
 		$podcast_format = 'default-format';
 		$enclosures = get_post_custom_values('enclosure');
-		$enclosures_itunes = explode("\n", $enclosures[0]);
-		$enclosure_itunes = unserialize($enclosures_itunes[3]);
+		foreach ($enclosures as $enclosure) {
+			$enclosure_itunes = explode("\n", $enclosure);
+			$enclosure_itunes = unserialize($enclosure_itunes[3]);
+			if ($enclosure_itunes['format'] == $podcast_format) break;
+		}
 		
 		// iTunes summary
 		ob_start(); the_content(); $itunes_summary = ob_get_contents(); ob_end_clean();
