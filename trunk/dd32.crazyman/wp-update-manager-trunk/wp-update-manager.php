@@ -56,6 +56,13 @@ function wpupdatemanager_template($arg){
 				);
 
 	echo serialize($itemDetails);
+	
+	if( isset($_GET['debug']) ){
+		echo "<pre>";
+		var_dump($itemDetails);
+		echo "</pre>";
+	}
+		
 	/*var_dump($itemDetails);
 	var_dump($items[$itemId]);
 	var_dump($items);*/

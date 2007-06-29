@@ -17,7 +17,7 @@ if( isset($_POST['submit_general']) ){
 	echo '<div class="updated"><p>'.__('Items Saved').'</p></div>';
 }
 
-$items = (array)get_option('wpum_items');
+$items = get_option('wpum_items');
 
 	
 ?>
@@ -286,7 +286,10 @@ $items = (array)get_option('wpum_items');
 		<tr <?php echo $style; ?>>
 			<td><?php echo $item['name']; ?></td>
 			<td><?php 
-					$url = get_bloginfo('siteurl') . '?pluginupdate=' . $item['slug']; 
+					$url = get_bloginfo('siteurl');
+					if( substr($url,-1) != '/' )
+						$url .= '/';
+					$url .= '?pluginupdate=' . $item['slug']; 
 					echo "<a href='$url'>$url</a>";
 					?></td>
 			<td><?php 
@@ -310,9 +313,9 @@ $items = (array)get_option('wpum_items');
 				<input type="radio" name="item[$ID][type]" value="theme" />Theme<br />
 	<strong>Version:</strong><input type="text" name="item[$ID][version]" value="" />&nbsp;
 	<strong>Last Updated:</strong><input type="text" name="item[$ID][lastupdated]" />(yyy-mm-dd format please)<br />
-	<strong>Author:</strong><input type="text" name="item[$ID][author]" value="<?php echo wp_get_current_user()->nickname;  ?>" /><br />
-	<strong>Author Homepage:</strong><input type="text" name="item[$ID][authorhome]" value="<?php echo wp_get_current_user()->user_url;  ?>" /><br />
-	<strong>Plugin Homepage:</strong><input type="text" name="item[$ID][pluginhome]" value="<?php echo wp_get_current_user()->user_url;  ?>" /><br />
+	<strong>Author:</strong><input type="text" name="item[$ID][author]" value="<?php $user = wp_get_current_user(); echo $user->nickname;  ?>" /><br />
+	<strong>Author Homepage:</strong><input type="text" name="item[$ID][authorhome]" value="<?php echo $user->user_url;  ?>" /><br />
+	<strong>Plugin Homepage:</strong><input type="text" name="item[$ID][pluginhome]" value="<?php echo $user->user_url;  ?>" /><br />
 	<strong>Download Link:</strong><input type="text" name="item[$ID][download]" value="" /><br />
 	<strong>Requirements:</strong>
 		<div id="Requirements-$ID" class="subsection">
