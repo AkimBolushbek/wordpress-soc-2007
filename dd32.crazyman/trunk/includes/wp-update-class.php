@@ -1,20 +1,33 @@
 <?php
+/**
+ * WP-Update Main class, This is where most of the magic is contained.
+ * @author Dion Hulse
+ * @version 0.1
+ */
 class WP_Update{
 	function WP_Update(){
 		include_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 	}
-	function search($item='themes',$tags=array(),$output='array',$page=1){
+	/**
+	 * Searches for a Plugin/Theme based upon tags/terms
+	 * @param string $item Search type, "themes"||"plugins"
+	 * @return mixed Array holding results on success, false on failure
+	 */
+	function search($item='themes',$tags=array(),$page=1){
 		if('themes' == $item){
-			if(0 == count($tags)) return false; //Must specify search terms.
-			if('array' == $output) return $this->searchThemes($tags,$page);
-			//Format for.. JSSI? XML?
-			return;
+			if(0 == count($tags))
+				return false; //Must specify search terms.
+			return $this->searchThemes($tags,$page);
 		} elseif('plugins' == $item){
 			
 		}
 	}
 	/*** THEME SEARCH FUNCTIONS ****/
 	/** FEATURED THEEMS */
+	/**
+	 * Returns the themes currently featured on WordPress.org
+	 * @return mixed Array holding results on success, null on failure
+	 */
 	function getThemesFeatured(){
 		$themes = wp_cache_get('wpupdate_ThemesFeatured', 'wpupdate');
 		if( !$themes ){
@@ -25,6 +38,11 @@ class WP_Update{
 		}
 		return $themes;
 	}
+	/**
+	 * Parses the Featured themes page on wordpress.org
+	 * @param string $html the HTML of the theme page
+	 * @return array of parsed page
+	 */
 	function parseThemesFeaturedHTML($html){
 		preg_match_all('#<div class="featured" id="(.*)">#',$html,$ids);
 		preg_match_all('#<p><img src="(.*?)" width="420" height="350" /></p>#',$html,$img);
@@ -46,7 +64,15 @@ class WP_Update{
 		return $ret;
 	}
 	/** THEME SEARCH **/
-	function searchThemes($tags,$page,$items=25){
+	/**
+	 * Searches for a theme
+	 * @param array $tags tags/terms to search for
+	 * @param int $page the pagenumber we're displaying
+	 * @param int $items the number of items to have displayed
+	 * @return mixed Array holding results on success
+ 	 * @todo remove the iterative loading of themes until the number is found
+	 */
+	function searchThemes($tags,$page=1,$items=25){
 		
 		$urlpart = array();
 		foreach($_POST as $postname=>$postvalue){
@@ -76,6 +102,11 @@ class WP_Update{
 		}
 		return $themes;
 	}
+	/**
+	 * Parses a theme page from themes.wordpress.net/
+	 * @param string $html the HTML of the theme page
+	 * @return array of parsed page
+	 */
 	function parseThemeHTML($html){
 		preg_match_all('#<a href="(.*?)" rel="bookmark" title="(.*?)"><img src="/snapshots/(\d+?)-thumb.jpg" alt="\2" /></a>#i',$html,$mat1);
 		preg_match_all('#Download \((\d+)\)#i',$html,$mat2);
@@ -107,6 +138,10 @@ class WP_Update{
 	/*** PLUGIN FUNCTIONS ***/
 	
 	/** PLUGIN TAG FUNCTIONS **/
+	/**
+	 * Retrieves the current tag list from wordpress.org
+	 * @return array of tags
+	 */
 	function getPluginSearchTags(){
 		$tags = wp_cache_get('wpupdate_PluginSearchTags', 'wpupdate');
 		if(!$tags){
@@ -117,10 +152,21 @@ class WP_Update{
 		}
 		return $tags;
 	}
+	/**
+	 * Returns plugins from WordPress.org of the specified tag
+	 * @param mixed $tag the tags for the plugins wanted
+	 * @param int $page the pagenumber to display
+	 * @return mixed set of plugins
+	 */
 	function getPluginsByTag($tag=false,$page=1){
 		if(!$tag) return;
 		
 	}
+	/**
+	 * Parses the Plugin page for the Search Tags
+	 * @param string $html the HTML of the plugin page
+	 * @return array tags including the url, number, name and pointsize
+	 */
 	function parseTagHTML($html){
 		$ret = array();
 		preg_match_all("#<a href='(.*)' title='(\d+) topics' rel='tag' style='font-size: ([\d\.]+)pt;'>(.*)</a>#i",$html,$tags);
@@ -137,6 +183,11 @@ class WP_Update{
 	}
 	
 	/** PLUGIN SEARCH FUNCTIONS **/
+	/**
+	 * Searches WordPress.org/extend/plugins/ for a term
+	 * @param string $term the search term
+	 * @return array of the search results
+	 */
 	function searchPlugins($term){
 		$searchresults = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
 		if( !$searchresults ){
@@ -164,6 +215,14 @@ class WP_Update{
 	}
 	
 	/** PLUGIN UPDATE FUNCTIONS **/
+	/**
+	 * Determines the Text to display for a plugin Update
+	 * @param string $pluginfile the name of the plugin file
+	 * @param bool $return to return the value or echo it
+	 * @param bool $skipcache If the cache'd values should be ignored
+	 * @param bool $forcecheck To Check for the update NOW, or to leave it
+	 * @return string update Text
+	 */
 	function getPluginUpdateText($pluginfile=false,$return=true,$skipcache=false,$forcecheck=false){
 		$updateStat = $this->checkPluginUpdate($pluginfile,$skipcache,$forcecheck);
 		
@@ -208,93 +267,93 @@ class WP_Update{
 			echo $updateText;
 		
 	}
+	/**
+	 * Searches the Plugin repositories for a given plugin
+	 * @param string $pluginfile the name of the plugin file
+	 * @param bool $skipcache If the cache'd values should be ignored
+	 * @param bool $forcecheck To Check for the update NOW, or to leave it
+	 * @return array the Plugin update information on success, array of errors on failure
+	 */
 	function checkPluginUpdate($pluginfile=false,$skipcache=false,$forcecheck=false){
 		global $wp_version;
-		
+		// Does the file exist
 		if( ! $pluginfile ) return array('Errors'=>array('Invalid File'));
 		
 		$pluginUpdateInfo = false;
+		//If cached requests are allowed, retrieve it
 		if( ! $skipcache ) $pluginUpdateInfo = wp_cache_get('wpupdate_'.$pluginfile, 'wpupdate');
-
+		//If no data is available, And we're not forcing a check, return an error
 		if( ! $pluginUpdateInfo && ! $forcecheck ) return array('Errors'=>array('Not Cached'));
 		
+		//Get the fields from the plugin file.
 		$pluginData = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $pluginfile);
 		
+		//If no Update info, or we're forcing a recheck
 		if( ! $pluginUpdateInfo || $forcecheck ){
 			if ( '' != $pluginData['Update'] && get_option('update_location_custom') ){
 				//We have a custom update URL.
-				$pluginUpdateInfo = $this->checkPluginUpdateCustom($pluginfile,$pluginData);
+				$pluginUpdateInfo = $this->checkPluginUpdateCustom($pluginData['Update']);
 			}
 			//Else, We check wordpress.org..  (not } else { as the custom update url may fail)
 			if( !$pluginUpdateInfo && get_option('update_location_wordpressorg') ){
 				//Find the plugin:
 				$plugins = $this->searchPlugins($pluginData['Name']);
-				$plugins['plugins'] = array_merge($plugins['titlematch'],$plugins['relevant']);
-				foreach( (array)$plugins['plugins'] as $result){
-					if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
-						//return information:
-						$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($pluginData,$result);
-					}
-				}
-				/*
-				if( isset($plugins['titlematch']) ){
-					foreach( (array)$plugins['titlematch'] as $result){
-						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
-							//Return information:
-							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($pluginData,$result);
-						}
-					}
-				}
-				if( !$pluginUpdateInfo && isset($plugins['relevant']) ){
-					foreach( (array)$plugins['relevant'] as $result){
+				if( isset($plugins['titlematch']) || isset($plugins['relevant']) ){
+					$plugins['plugins'] = array_merge((array)$plugins['titlematch'],(array)$plugins['relevant']);
+					foreach( (array)$plugins['plugins'] as $result){
 						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
 							//return information:
-							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($pluginData,$result);
+							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($result['Uri']);
 						}
 					}
-				}*/
+				}
 			}//end get_option('update_location_wordpressorg')
 			
 			//Update cache:
 			//If Expire is not set, or Expire is not valid
 			if( !empty($pluginUpdateInfo) && !isset($pluginUpdateInfo['Expire']) && ! (int) $pluginUpdateInfo['Expire'] > 0) $pluginUpdateInfo['Expire'] = 7*24*60*60;
+			//If no update info is available, we cant find it.
 			if( empty($pluginUpdateInfo) )
 				$pluginUpdateInfo = array('Errors'=>array('Not Found'), 'Expire' =>7*24*60*60); //,'(Will check again in 1 week)'
 			
 			wp_cache_set('wpupdate_'.$pluginfile, $pluginUpdateInfo, 'wpupdate', $pluginUpdateInfo['Expire']);
-		}// get cache
-		if( isset($pluginUpdateInfo['Errors']) ){
+		}
+		
+		//If Erorrs are set, it means we hit a snag in the update check process which has prevented checking.
+		if( isset($pluginUpdateInfo['Errors']) )
 			return array( 'Errors' => $pluginUpdateInfo['Errors']);
-		}
-		if( !$pluginUpdateInfo || !$pluginUpdateInfo['Version'] ){
-			//We cant help with this particular plugin as it doesnt specify a version.
+		
+		//If no Plugin data available, Or the Plugin version is not specified, we cant do anything for the plugin.
+		if( !$pluginUpdateInfo || !$pluginUpdateInfo['Version'] )
 			return array('Errors'=>array('Not Compatible','(No Version specified on update page)'));
-		}
 
 		if( version_compare($pluginUpdateInfo['Version'] , $pluginData['Version'], '>') ){
 			//Theres a new version available!, Now, Check its Requirements.
-			$pluginCompatible = true;
+			$pluginCompatible = true; //We'll override this later
 			$errors = array();
 			foreach((array)$pluginUpdateInfo['Requirements'] as $reqInfo){
+				//$reqInfo = array( 'Name', 'Type', 'Min', 'Tested');
+				//If the Requirement Name is not set, Set it to the Type.
 				if( !isset($reqInfo['Name']) || empty($reqInfo['Name']) )
 					$reqInfo['Name'] = $reqInfo['Type'];
 
 				switch($reqInfo['Type']){
 					case "WordPress":
+						//Check the minimum version needed
 						if( isset($reqInfo['Min']) ){
 							if( ! version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
+						//Check the Maximum version that its been tested with
 						if( isset($reqInfo['Tested']) ){
-							if( version_compare( $wp_version, $reqInfo['Tested'], '<=' ) ){
+							if( version_compare( $wp_version, $reqInfo['Tested'], '>' ) ){
 								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
 					case "PHP":
-						//May have to keep in mind early PHP5 releases may not include all PHP4 functions/bugfixes
 						if( isset($reqInfo['Min']) ){
 							if( ! version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
@@ -302,7 +361,7 @@ class WP_Update{
 							}
 						}
 						if( isset($reqInfo['Tested']) ){
-							if( version_compare( phpversion(), $reqInfo['Tested'], '<=' ) ){
+							if( version_compare( phpversion(), $reqInfo['Tested'], '>' ) ){
 								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
@@ -311,12 +370,12 @@ class WP_Update{
 						if( isset($reqInfo['Min']) ){
 							if( ! version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
-								$errors[] = sprintf('Requires %s ',$reqInfo['Name'],$reqInfo['Min']);
+								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
 						if( isset($reqInfo['Tested']) ){
-							if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '<=' ) ){
-								$errors[] = sprintf('Only testd Upto %s ',$reqInfo['Name'],$reqInfo['Tested']);
+							if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '>' ) ){
+								$errors[] = sprintf('Only testd Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
@@ -324,25 +383,61 @@ class WP_Update{
 						//TODO
 						break;
 					case "PHPExt":
-						//TODO
+						if( ! extension_loaded( strtolower($reqInfo['Name']) ) ){
+							$errors[] = sprintf('Requires the PHP Extension: "%s"',$reqInfo['Name']);
+						} else {
+							//Extension loaded, Check version???
+							$functs = get_extension_funcs( strtolower($reqInfo['Name']) );
+							//Iterate through library functions looking for something for version
+							foreach($functs as $function){
+								//If we've found one with version..
+								if( strpos($function,'version') > -1){
+									$version = @call_user_func($function);
+									if( isset($reqInfo['Min']) ){
+										if( ! version_compare( $version, $reqInfo['Min'], '>=' ) ){
+											$pluginCompatible = false;
+											$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+										}
+									}
+									if( isset($reqInfo['Tested']) ){
+										if( version_compare( $version, $reqInfo['Tested'], '>' ) ){
+											$errors[] = sprintf('Only testd Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+										}
+									}//ISSET
+									break;
+								}//strpos
+							}//foreach;
+						}
 						break;
 					default:
 				} //end switch()
 			} //end foreach()
-			$updateReturn = array('Update'=>true,'Compatible'=>$pluginCompatible,'Version'=>$pluginUpdateInfo['Version'], 'PluginInfo' => $pluginUpdateInfo);
-			if( !empty($errors) ) $updateReturn = array_merge($updateReturn, array('Errors'=>$errors));
+			
+			$updateReturn = array(
+								'Update'=>true,
+								'Compatible'=>$pluginCompatible,
+								'Version'=>$pluginUpdateInfo['Version'], 
+								'PluginInfo' => $pluginUpdateInfo
+								);
+			//If any errors occured, Add it in:
+			if( !empty($errors) )
+				$updateReturn = array_merge($updateReturn, array('Errors'=>$errors));
 			return $updateReturn;
 		} else {
 			//The currently installed version is the latest availaable.
 			return array('Update'=>false);
 		}
 	}
-
-	function checkPluginUpdateWordpressOrg($pluginData,$wordpressInfo){
-		if ( ! $wordpressInfo['Uri'] ) return false;
+	/**
+	 * Parses the WordPress.org plugin page for an individual plugins details
+	 * @param string $uri the URL of the Plugin page to parse
+	 * @return mixed array of Plugin details
+	 */
+	function checkPluginUpdateWordpressOrg($uri){
+		if ( ! $uri ) return false;
 		
 		$snoopy = new Snoopy();
-		$snoopy->fetch($wordpressInfo['Uri']);
+		$snoopy->fetch($uri);
 		preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
 		preg_match('#<strong>Version:<\/strong> ([\d\.]+)#',$snoopy->results,$version);
 		preg_match('#<strong>Last Updated:</strong> ([\d\-]+)#',$snoopy->results,$lastupdate);
@@ -360,8 +455,8 @@ class WP_Update{
 		preg_match('#<li><strong>Compatible up to:</strong> ([\d\.]+)#',$snoopy->results, $compat_version);
 		
 		if ( !empty($req_version) || !empty($compat_version) ){
-			$wordpress['Type'] = 'WordPress';
-			$wordpress['Name'] = 'WordPress';
+			$wordpress = array('Name' => 'WordPress',
+							   'Type' => 'Wordpress');
 			if( !empty($req_version) ) $wordpress['Min'] = $req_version[1];
 			if( !empty($compat_version) ) $wordpress['Tested'] = $compat_version[1];
 			$requirements[] = $wordpress;
@@ -389,10 +484,15 @@ class WP_Update{
 					'Expire'	=> 7*24*60*60
 					);
 	}
-	function checkPluginUpdateCustom($pluginfile,$plugindata){
-		$url = $plugindata['Update'];
+	
+	/**
+	 * Checks a Custom update URL for a plugin
+	 * @param string $uri the update link for the plugin
+	 * @return mixed array of details on sucess, false on failure
+	 */
+	function checkPluginUpdateCustom($uri){
 		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
+		$snoopy->fetch($uri);
 		//TODO: If Is serialised data, then return, else return null.. 
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
 		if( is_serialized($snoopy->results) ){
@@ -407,6 +507,11 @@ class WP_Update{
 		return $data;		
 	}
 	/** INSTALL FUNCITONS **/
+	/**
+	 * Installs a theme from a given URL
+	 * @param string $url the URL of the theme to install
+	 * @return void
+	 */
 	function installThemeFromURL($url){
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
@@ -421,9 +526,15 @@ class WP_Update{
 		
 		unlink($tmpfname);
 	}
+	/**
+	 * Installs a theme from a local File
+	 * @param string $file the Location of the local file
+	 * @param mixed $fileinfo Info given about the file, Similar to $_FILES
+	 * @return void
+	 */
 	function installTheme($file,$fileinfo=array()){
 		require_once('pclzip.lib.php');
-		if( isset($_FILES['themefile']) && ! strpos($_FILES['themefile']['type'],'zip') > 0 ){
+		if( !empty($fileinfo) && ! strpos($fileinfo['type'],'zip') > 0 ){
 			//Invalid File given.
 			$step = 1;
 			echo '<strong>Invalid Archive selected</strong><br/>';
@@ -440,6 +551,13 @@ class WP_Update{
 			}
 		}
 	}
+	/**
+	 * Installs a theme from a open Archive
+	 * @param mixed $archive the PCLZip Archive Object of the archive
+	 * @param mixed $fileinfo Info given about the file, Similar to $_FILES
+	 * @return false on failure, null otherwise
+	 * @todo move the OK/FAIL messages to own function
+	 */
 	function installThemeStep2($archive,$fileinfo=array()){
 		if( ! $archive) return false;
 		if( false === ($files = $archive->listContent()) ) return false;
@@ -452,6 +570,7 @@ class WP_Update{
 		$base = $fs->get_base_dir() . 'wp-content/themes/';
 		$baseFolderName = false;
 		foreach((array)$files as $thisFileInfo){
+			//If no Slash then it needs to be put in a folder
 			if( false === strpos($thisFileInfo['filename'],'/') ){
 				$baseFolderName = true;
 				break;
@@ -470,10 +589,12 @@ class WP_Update{
 				
 			$base .= basename($fileinfo['name'],'.zip') . '/';				
 		} else {
+			//All files are within a folder inside the archive:
 			$tmppath = '';
 			$path = explode('/',$files[0]['filename']);
 			echo __('<Strong>Installing to</strong>: ').$base . $path[0].'<br/>';
 			
+			//Loop through the folder list and create any needed folders
 			for( $j = 0; $j < count($path) - 1; $j++ ){
 				$tmppath .= $path[$j] . '/';
 				if( ! $fs->is_dir($base . $tmppath) ){
@@ -482,14 +603,15 @@ class WP_Update{
 						echo ' <span style="color: green;">['.__('OK').']</span><br>';
 					else
 						echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-				}
-			}
-		}
+				}//end if
+			}//end for
+		}//end if($baseFolderName
 
+		//Extract each file into the array
 		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
 		
 		for( $i=1; $i<count($files); $i++){
-
+			//If a folder, Create
 	  		if( $files[$i]['folder'] ){
 				echo __('<strong>Creating folder</strong>: ') . $files[$i]['filename'];
 				if( $fs->mkdir($base.$files[$i]['filename']) )
@@ -497,6 +619,7 @@ class WP_Update{
 				else
 					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
 			} else {
+				//File here, We need to make sure all the folders it needs are created allready
 				$tmppath = '';
 				$path = explode('/',$files[$i]['filename']);
 				for( $j = 0; $j < count($path) - 1; $j++ ){
@@ -509,14 +632,15 @@ class WP_Update{
 							echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
 					}
 				}
+				//Inflate the file now.
 				echo __('<strong>Inflating File</strong>: ') . $files[$i]['filename'];
 		  		if( $fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']) )
 					echo ' <span style="color: green;">['.__('OK').']</span><br>';
 				else
 					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-			}
-		}	
-		
-	}
+			}// end if(folder)
+		}//end for
+		return true;
+	}//end function installThemeStep2
 }
 ?>
