@@ -229,6 +229,14 @@ class WP_Update{
 			if( !$pluginUpdateInfo && get_option('update_location_wordpressorg') ){
 				//Find the plugin:
 				$plugins = $this->searchPlugins($pluginData['Name']);
+				$plugins['plugins'] = array_merge($plugins['titlematch'],$plugins['relevant']);
+				foreach( (array)$plugins['plugins'] as $result){
+					if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
+						//return information:
+						$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($pluginData,$result);
+					}
+				}
+				/*
 				if( isset($plugins['titlematch']) ){
 					foreach( (array)$plugins['titlematch'] as $result){
 						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
@@ -244,7 +252,7 @@ class WP_Update{
 							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($pluginData,$result);
 						}
 					}
-				}
+				}*/
 			}//end get_option('update_location_wordpressorg')
 			
 			//Update cache:
@@ -371,7 +379,7 @@ class WP_Update{
 					'LastUpdate'=>	trim($lastupdate[1]),
 					'Download'	=>	trim($download[1]),
 					'Author'	=>	trim($authordetails[2]),
-					'WPAuthor'	=>	trim($authordetails[1]),
+					/* 'WPAuthor'	=>	trim($authordetails[1]),*/
 					'AuthorHome'=>	trim($authorhomepage[1]),
 					'PluginHome'=>	trim($pluginhomepage[1]),
 					'Rating'	=>	trim($rating[1]),
