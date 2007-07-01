@@ -14,12 +14,14 @@ class WP_Update{
 	 * @return mixed Array holding results on success, false on failure
 	 */
 	function search($item='themes',$tags=array(),$page=1){
+		if(0 == count($tags))
+			return false; //Must specify search terms.
+
 		if('themes' == $item){
-			if(0 == count($tags))
-				return false; //Must specify search terms.
 			return $this->searchThemes($tags,$page);
-		} elseif('plugins' == $item){
-			
+		} else {
+			//Assume its plugins. if('plugins' == $item)
+			return $this->searchPlugins( join(' ',$tags) );
 		}
 	}
 	/*** THEME SEARCH FUNCTIONS ****/
@@ -56,8 +58,8 @@ class WP_Update{
 						'id' 		=> $ids[1][$i],
 						'thumbnail' => 'http://wordpress.org' . $img[1][$i],
 						'name' 		=> $name[1][$i],
-						'author' 	=> $author[2][$i],
 				   'authorhomepage' => $author[1][$i],
+						'author' 	=> $author[2][$i],
 						'download' 	=> $download[1][$i]
 						);
 		}
@@ -190,7 +192,9 @@ class WP_Update{
 	 */
 	function searchPlugins($term){
 		$searchresults = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
-		if( !$searchresults ){
+		echo 'wpupdate_search_'.rawurlencode($term);
+		if( ! $searchresults ){
+			echo "not hitting cache";
 			$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
 			$snoopy = new Snoopy();
 			$snoopy->fetch($url);
@@ -495,16 +499,50 @@ class WP_Update{
 		$snoopy->fetch($uri);
 		//TODO: If Is serialised data, then return, else return null.. 
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
-		if( is_serialized($snoopy->results) ){
+		if( strpos($snoopy->results, '<?xml') > -1 )
+			$data = __PluginUpdateCustomParse($snoopy->results);
+		/*} else if( is_serialized($snoopy->results) ){
 			$data = unserialize($snoopy->results);
 			if( isset($data['Errors']) && in_array('Unknown Plugin',$data['Errors']) )
-				$data = false;
+				$data = false;*/
 		/*} elseif( is_rss($snoopy->results){
 			Blah */
 		} else {
 			$data = false;
 		}
 		return $data;		
+	}
+	function  __PluginUpdateCustomParse($data){
+		preg_match('#<plugin>(.*?)<\/plugin>#is',$data,$items);
+			preg_match('#<name>(.*?)<\/name>#i'				,$items[1],$pluginname);
+			preg_match('#<version>(.*?)<\/version>#i'		,$items[1],$version);
+			preg_match('#<lastupdate>(.*?)<\/lastupdate>#i'	,$items[1],$lastupdate);
+			preg_match('#<download>(.*?)<\/download>#i'		,$items[1],$download);
+			preg_match('#<author>(.*?)<\/author>#i'			,$items[1],$author);
+			preg_match('#<authorhomepage>(.*?)<\/authorhomepage>#i'	,$items[1],$authorhome);
+			preg_match('#<pluginhomepage>(.*?)<\/pluginhomepage>#i'	,$items[1],$pluginhome);
+			preg_match('#<expire>(\d+?)<\/expire>#i'			,$items[1],$expire);
+
+			preg_match('#<requirements>(.*?)<\/requirements>#is',$items[1],$_requirements);
+				preg_match_all('#<requirement>(.*?)<\/requirement>#is',$_requirements[1],$_requirements);
+					for($i=0; $i < count($_requirements[1]);$i++){
+						preg_match('#<name>(.*?)<\/name>#i',$_requirements[1][$i],$name);
+						preg_match('#<type>(.*?)<\/type>#i',$_requirements[1][$i],$type);
+						preg_match('#<minversion>(.*?)<\/minversion>#i',$_requirements[1][$i],$min);
+						preg_match('#<tested>(.*?)<\/tested>#i',$_requirements[1][$i],$tested);
+						$requirements[] = array('Name'=>$name[1],'Type'=>$type[1],'Min'=>$min[1],'Tested'=>$tested[1]);
+					}
+		return array(
+						'Name' => $pluginname[1],
+						'Version' => $version[1],
+						'LastUpdate' => $lastupdate[1],
+						'Download' => $download[1],
+						'Author' => $author[1],
+						'AuthorHomepage' => $authorhome[1],
+						'PluginHomepage' => $pluginhome[1],
+						'Expire' => $expire[1],
+						'Requirements' => $requirements
+					);
 	}
 	/** INSTALL FUNCITONS **/
 	/**
@@ -516,9 +554,9 @@ class WP_Update{
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 		
-		$tmpfname = tempnam("/tmp", "theme");
+		$tmpfname = tempnam('/tmp', 'theme');
 
-		$handle = fopen($tmpfname, "w");
+		$handle = fopen($tmpfname, 'w');
 		fwrite($handle, $snoopy->results);
 		fclose($handle);
 
