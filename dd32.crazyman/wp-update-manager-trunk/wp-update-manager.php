@@ -26,46 +26,45 @@ function wpupdatemanager_template($arg){
 			break;
 		}
 	}
+	
+	echo '<?xml version="1.0" encoding="iso-8859-1"?>';
 	if( $itemId === false ){
 		/* Plugin not found: array('Errors'=> array('Unknown Plugin') )*/
-		die('a:1:{s:6:"Errors";a:1:{i:0;s:14:"Unknown Plugin";}}');
+		die('<error>Item not Found</error>');
 	}
-	
-	$requirements = array();
-	foreach((array)$items[$itemId]['requirements'] as $id=>$req)
-		$requirements[] = array(
-								'Type' => $req['type'],
-								'Name' => $req['name'],
-								'Min' => $req['min'],
-								'Tested' => $req['tested']
-								);
-	
-	$itemDetails = array(
-				'Name' 		=>	$items[$itemId]['name'],
-				'Version'	=>	$items[$itemId]['version'],
-				'LastUpdate'=>	$items[$itemId]['lastupdated'],
-				'Download'	=>	$items[$itemId]['download'],
-				'Author'	=>	$items[$itemId]['author'],
-				'AuthorHome'=>	$items[$itemId]['authorhome'],
-				'PluginHome'=>	$items[$itemId]['pluginhome'],
-				/*'Rating'	=>	$items[$itemId]['rating'],*/
-				'Tags'		=>	array(),
-				'Related'	=>	array(),
-				'Requirements' => $requirements,
-				'Expire'	=> 7*24*60*60
-				);
 
-	echo serialize($itemDetails);
+	echo "<{$items[$itemId]['type']}>\n";
+									
+	echo "<Name>{$items[$itemId]['name']}</Name>\n";
+	echo "<Version>{$items[$itemId]['version']}</Version>\n";
+	echo "<LastUpdate>{$items[$itemId]['lastupdated']}</LastUpdate>\n";
+	echo "<Download>{$items[$itemId]['download']}</Download>\n";
+	echo "<Author>{$items[$itemId]['author']}</Author>\n";
+	echo "<AuthorHome>{$items[$itemId]['authorhome']}</AuthorHome>\n";
+	echo "<PluginHome>{$items[$itemId]['pluginhome']}</PluginHome>\n";
+	echo "<Expire>".(7*24*60*60)."</Expire>\n";
 	
+	if( count($items[$itemId]['requirements']) > 0 ){
+		echo "<Requirements>\n";
+		foreach($items[$itemId]['requirements'] as $id=>$req){
+			echo "<Requirement>\n";
+				echo "<Type>{$req['type']}</Type>\n";
+				echo "<Name>{$req['name']}</Name>\n";
+				echo "<Min>{$req['min']}</Min>\n";
+				echo "<Tested>{$req['tested']}</Tested>\n";
+			echo "</Requirement>\n";
+		}
+		echo "</Requirements>\n";
+	}
+
+	echo "</{$items[$itemId]['type']}>\n";
+
 	if( isset($_GET['debug']) ){
 		echo "<pre>";
-		var_dump($itemDetails);
+		var_dump($items[$itemId]);
 		echo "</pre>";
 	}
 		
-	/*var_dump($itemDetails);
-	var_dump($items[$itemId]);
-	var_dump($items);*/
 	die();
 }
 
