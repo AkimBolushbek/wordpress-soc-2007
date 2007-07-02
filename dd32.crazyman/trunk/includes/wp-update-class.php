@@ -499,8 +499,9 @@ class WP_Update{
 		$snoopy->fetch($uri);
 		//TODO: If Is serialised data, then return, else return null.. 
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
-		if( strpos($snoopy->results, '<?xml') > -1 )
-			$data = __PluginUpdateCustomParse($snoopy->results);
+		if( strpos($snoopy->results, '<?xml') > -1 ){
+			$data = $this->__PluginUpdateCustomParse($snoopy->results);
+			var_dump($data);
 		/*} else if( is_serialized($snoopy->results) ){
 			$data = unserialize($snoopy->results);
 			if( isset($data['Errors']) && in_array('Unknown Plugin',$data['Errors']) )
