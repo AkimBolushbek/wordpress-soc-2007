@@ -90,14 +90,16 @@
 		$ftpinfo = array(
 						'host' => $_POST['ftp_host'],
 						'username' => $_POST['ftp_user'],
-						'base'  => $_POST['ftp_dir']
+						'base'  => $_POST['ftp_dir'],
+						'ssl' => $_POST['ftp_host_ssl']
 						);
-		if( 'on' == $_POST['ftp_pass_save'] ){
+		if( 'on' == $_POST['ftp_pass_save'] && !empty($_POST['ftp_pass']) ){
 			$ftpinfo['password'] = $_POST['ftp_pass'];
 		}
 		
 		update_option('wpupdate_ftp',$ftpinfo);
 		_e('<div class="updated"><p>FTP Options Saved.</p></div>');
+		var_dump($ftpinfo);
 	}
 	$ftpinfo = get_option('wpupdate_ftp');
 ?>
@@ -106,10 +108,11 @@
 	<form method="POST">
 	<fieldset>
 		<p>
-		<label for="ftp_host"><strong><?php _e('Hostname:') ?></strong></label><input type="text" name="ftp_host" value="<?php echo $ftpinfo['host']; ?>" /><br />
+		<label for="ftp_host"><strong><?php _e('Hostname:') ?></strong></label><input type="text" name="ftp_host" value="<?php echo $ftpinfo['host']; ?>" /> &nbsp; (
+		<label for="ftp_host_ssl"><?php _e('SFTP:') ?></label>&nbsp;<input type="checkbox" name="ftp_host_ssl" <?php checked('1',$ftpinfo['ssl']); ?> />)<br />
 		<label for="ftp_user"><strong><?php _e('Username:') ?></strong></label><input type="text" name="ftp_user" value="<?php echo $ftpinfo['username']; ?>" /><br />
 		<label for="ftp_dir"><strong><?php _e('Directory:') ?></strong></label><input type="text" name="ftp_dir" value="<?php echo $ftpinfo['base']; ?>" /><br />
-		<label for="ftp_pass"><strong><?php _e('Password:') ?></strong></label><input type="password" name="ftp_pass" value="<?php if('' != $ftpinfo['password']){ echo '*********"'; } ?>" /> &nbsp; ( <label for="ftp_pass_save"><?php _e('Save Password:') ?></label>&nbsp;<input type="checkbox" name="ftp_pass_save" <?php if('' != $ftpinfo['password']){ echo 'checked="checked"'; } ?> />)<br />
+		<label for="ftp_pass"><strong><?php _e('Password:') ?></strong></label><input type="password" name="ftp_pass" value="" /> &nbsp; ( <label for="ftp_pass_save"><?php _e('Save Password:') ?></label>&nbsp;<input type="checkbox" name="ftp_pass_save" <?php if('' != $ftpinfo['password']){ echo 'checked="checked"'; } ?> />)<br />
 		</p>
 		<p class="submit">
 			<input type="submit" name="submit_ftp" value="<?php _e('Save FTP Information &raquo;') ?>" />
