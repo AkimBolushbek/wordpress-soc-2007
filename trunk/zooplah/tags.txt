@@ -1,0 +1,53 @@
+To use easy tags, just enter into the editor
+(Admin > Presentation > Easier Theme Editor).
+
+The text box will automatically convert back and forth between
+the PHP functions that drive the theme and the easily edited
+HTML-like tags.  You can also add your own tags and easily
+customize your theme.  Note that no changes will be made until
+you save the file.
+
+Like with other systems, tags that start and end with dollar signs
+are tags that echo something out.  More precisely, they're replaced
+with PHP functions.  Those without dollar signs are containers
+and may or may not actually correspond to PHP code.
+
+So the format is:
+<ContainerTag [attributes]>content</ContainerTag>
+<$Tag [attributes]$>
+
+Attributes work just like in HTML:
+<$EntryTitle before="<h2>" after="<h2>"$>
+
+Attributes are usually (always?) optional.  Space after the tag is
+unnecessary if you don't use attributes.  I know all of this stuff
+is HTML 101, but I want this to be pretty easy for anyone.
+
+Currently, tags and attributes are case-sensitive, and (double)
+quotes around attributes are required.  That may change in the
+future, though all it will really do is add bloat and perhaps
+bugs to the code.
+
+Currently implemented tags:
+<$EntryTitle$>
+	The title of the current entry/blog.
+	Attributes:
+	before (optional)
+		Text to display before the title.
+	after (optional)
+		Text to display after the title.
+	display (optional)
+		Whether to display the title. (I'm not sure if
+		I should support this or not, since it's only
+		useful if you want to use the output in PHP.)
+
+<Entries>
+	Contains information about each entry.
+	Attributes: None.
+<NoEntries>
+	Contains the text to display if no entry is found.
+	Attributes: None
+
+ISSUES
+Currently, tag and attribute names are case sensitive.  That may
+change in the future, but be cautious for now.
