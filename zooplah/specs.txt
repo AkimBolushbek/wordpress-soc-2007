@@ -1,0 +1,18 @@
+This file is called specs.txt for no particular reason.
+
+It's the technical details of what I do, how I do it and so on.
+
+It's meant for my mentor, but anyone wanting to hack my plugin
+(after it becomes public) might find the information useful.
+
+THE TAGS
+See tags.txt.  I'm putting them in that file because users (not
+just hackers) might find them useful.
+
+THE FUNCTIONING
+Right now, eztagsproxy.php contains two routines: ez2std()
+for converting easy tags to PHP functions and std2ez() for doing
+the reverse.  I'm stripping away the PHP markers and doing a
+search and replace.  However, I intend to give the system an
+overhaul soon, so I'll likely have to totally rewrite this
+section.  I'll elaborate when I do.

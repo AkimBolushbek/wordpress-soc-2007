@@ -14,6 +14,6 @@ require_once ABSPATH . '/wp-admin/admin-functions.php';
 require_once ABSPATH . '/wp-admin/admin.php';
 require_once ABSPATH . '/wp-admin/menu.php';
 
-add_theme_page('Easier Template Tags', 'Easier Theme Editor', edit_themes, 'eztagspanel.php');
+add_theme_page('Easier Template Tags', 'Easier Theme Editor', edit_themes, 'eztagssubpanel.php');
 
 ?>
