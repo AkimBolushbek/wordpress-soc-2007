@@ -28,7 +28,6 @@ class WP_Filesystem_FTP{
 		//Set defaults:
 		if( ! isset($opt['port']) || empty($opt['port']) )
 			$opt['port'] = 21;
-		}
 		if( ! isset($opt['host']) || empty($opt['host']) )
 			$opt['host'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
 		if( isset($opt['base']) && ! empty($opt['base']) )
@@ -44,7 +43,7 @@ class WP_Filesystem_FTP{
 		
 		//All is A-OK.
 		if( $opt['ssl'] && function_exists('ftp_ssl_connect') ){
-			$this->link = ftp_ssl_connect($opt['host'], $opt['port'],$this->timeout)
+			$this->link = ftp_ssl_connect($opt['host'], $opt['port'],$this->timeout);
 		} else {
 			$this->link = ftp_connect($opt['host'], $opt['port'],$this->timeout);
 		}
