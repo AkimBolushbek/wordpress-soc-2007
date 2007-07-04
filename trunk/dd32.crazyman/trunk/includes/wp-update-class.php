@@ -192,9 +192,8 @@ class WP_Update{
 	 */
 	function searchPlugins($term){
 		$searchresults = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
-		echo 'wpupdate_search_'.rawurlencode($term);
 		if( ! $searchresults ){
-			echo "not hitting cache";
+			echo 'wpupdate_search_'.rawurlencode($term) . " not hitting cache";
 			$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
 			$snoopy = new Snoopy();
 			$snoopy->fetch($url);
@@ -204,13 +203,11 @@ class WP_Update{
 				$regex = ('Plugin title matches' == $mat[1][$i]) ? 
 							'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small><p>(.*?)</p></small>#ims' : 
 							'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
-							
+
 				preg_match_all($regex,$mat[2][$i],$matPlugins);
-				
-				$type = ('Plugin title matches' == $mat[1][$i]) ? 'titlematch' : 'relevant';
-				
+	
 				for( $j=0; $j < count($matPlugins[1]); $j++){
-					$searchresults[ $type ][] = array('Uri'=>$matPlugins[1][$j], 'Name'=>$matPlugins[2][$j], 'Desc'=>$matPlugins[3][$j]);
+					$searchresults[] = array('Uri'=>$matPlugins[1][$j], 'Name'=>$matPlugins[2][$j], 'Desc'=>$matPlugins[3][$j]);
 				}
 			}
 			wp_cache_set('wpupdate_search_'.rawurlencode($term), $searchresults, 'wpupdate', 21600); //6*60*60=21600
@@ -302,9 +299,8 @@ class WP_Update{
 			if( !$pluginUpdateInfo && get_option('update_location_wordpressorg') ){
 				//Find the plugin:
 				$plugins = $this->searchPlugins($pluginData['Name']);
-				if( isset($plugins['titlematch']) || isset($plugins['relevant']) ){
-					$plugins['plugins'] = array_merge((array)$plugins['titlematch'],(array)$plugins['relevant']);
-					foreach( (array)$plugins['plugins'] as $result){
+				if( ! empty($plugins) ){
+					foreach( (array)$plugins as $result){
 						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
 							//return information:
 							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($result['Uri']);
@@ -561,7 +557,7 @@ class WP_Update{
 		fwrite($handle, $snoopy->results);
 		fclose($handle);
 
-		$this->installTheme($tmpfname, array('name'=>basename($url)));
+		$this->installTheme($tmpfname, array('name'=>basename($url),'type'=>'application/zip'));
 		
 		unlink($tmpfname);
 	}
@@ -573,6 +569,7 @@ class WP_Update{
 	 */
 	function installTheme($file,$fileinfo=array()){
 		require_once('pclzip.lib.php');
+
 		if( !empty($fileinfo) && ! strpos($fileinfo['type'],'zip') > 0 ){
 			//Invalid File given.
 			$step = 1;
@@ -604,7 +601,9 @@ class WP_Update{
 		/* Filesystem */
 		require_once('wp-update-filesystem-class.php');
 		$fs = WP_Filesystem();
-		
+		if( ! $fs )
+			wp_die('Error: Check your Filesystem settings in wp-update Options.');
+			
 		//First of all, Does the zip file contain a base folder?
 		$base = $fs->get_base_dir() . 'wp-content/themes/';
 		$baseFolderName = false;
