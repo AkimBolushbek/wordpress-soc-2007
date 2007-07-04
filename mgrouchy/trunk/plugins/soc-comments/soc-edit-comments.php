@@ -21,10 +21,14 @@ else $mode = attribute_escape($_GET['mode']);
 
 if (!isset($_GET['replyid'])) $replyid = -1;
 else $replyid = (int) $_GET['replyid']; 
-if ( !$ajax ) :
 
 if (!isset($_GET['filter'])) $filter = '';
-else $filter = $wpdb->escape($_GET['filter'])
+else $filter = $wpdb->escape($_GET['filter']);
+
+if (!isset($_GET['numcomments'])) $numcomments = 25;
+else $numcomments = (int) $_GET['numcomments'];
+
+if (!$ajax) :
 ?>
 
 <script type="text/javascript">
@@ -52,29 +56,30 @@ function getNumChecked(form)
 	}
 	return num;
 }
+
 bindForm('replydiv','editcomments');
-bindForm('replydiv','sortform');
-//bindForm('replydiv','filterform'); 
 
 //-->
 </script>
 <div class="wrap">
 <h2><?php _e('Comments'); ?></h2>
 
-<div id="filter" style="float:right">
-	<form name="filterform" action="" method="get" id="filterform">
-		<select name="filter">
-			<option value=""><?php _e('comment') ?></option>
-			<option value="trackback"><?php _e('trackback') ?></option>
-        	<option value="pingback"><?php _e('pingback') ?></option>
-		</select>
-		<input type="submit" name="submit" value="<?php _e('filter') ?>" />
-	</form>
-</div>
- <form name="searchform" action="" method="get" id="editcomments">  
+<form name="searchform" action="" method="get" id="editcomments">  
  <fieldset>
- <legend><?php _e('Show Comments That Contain...') ?></legend>
- <div>
+<?php _e('Show') ?>
+<select name="numcomments">
+	<option value="25">25</option>
+	<option value="50">50</option>
+	<option value="75">75</option>
+	<option value="100">100</option>
+</select>
+
+<select name="filter">
+	 <option value=""><?php _e('comment') ?></option>
+     <option value="trackback"><?php _e('trackback') ?></option>
+     <option value="pingback"><?php _e('pingback') ?></option>
+ </select>
+<?php _e('That Contain...') ?> 
  <select name="sfield">
  	<option value="c_author"><?php _e('Author') ?></option>
 	<option value="c_aurl"><?php _e('Author URL') ?></option>
@@ -84,28 +89,20 @@ bindForm('replydiv','sortform');
  	<option value="all"><?php _e('All Fields') ?></option>
  </select>
  <input type="text" name="s" value="<?php if (isset($_GET['s'])) echo attribute_escape($_GET['s']); ?>" size="17" /> 
- <input type="submit" name="submit" value="<?php _e('Search') ?>" />  
+<?php _e('Sorted by ') ?> 
+<select name='sort'>
+	 <option value="c_author"><?php _e('Author') ?></option>
+     <option value="c_aurl"><?php _e('Author URL') ?></option>
+     <option value="c_aemail"><?php _e('Author Email') ?></option>
+     <option value="c_aip"><?php _e('Author IP') ?></option>
+     <option value="c_date"><?php _e('Date') ?></option>
+ </select>
+ <input type="submit" name="submit" value="<?php _e('Go') ?>" />  
  <input type="hidden" name="mode" value="<?php echo $mode; ?>" />
-</div>
  </fieldset> 
 </form>
-<div>
-	<div id='modes' style="float: left;">
+	<div id='modes' >
 		<p><a href="?mode=view"><?php _e('View Mode') ?></a> | <a href="?mode=edit"><?php _e('Mass Edit Mode') ?></a></p>
-	</div>
-	<div id='sort' style="float: right; ">
-		<form name="sortform" action="?<?php $_SERVER['QUERY_STRING'] ?>" method="get" id="sortform">
-			<select name='sort'>
-			    <option value="c_author"><?php _e('Author') ?></option>
-	   			<option value="c_aurl"><?php _e('Author URL') ?></option>
-				<option value="c_aemail"><?php _e('Author Email') ?></option>
-			    <option value="c_aip"><?php _e('Author IP') ?></option>
-			    <option value="c_date"><?php _e('Date') ?></option>
-			</select>
-			<input type="submit" name="submit" value="<?php _e('Sort') ?>" />
-		</form>
-	</div>
-<br style="clear: both;"/>
 </div>
 <?php
 if ( !empty( $_POST['delete_comments'] ) ) :
@@ -140,17 +137,17 @@ if ( isset( $_GET['apage'] ) )
 else
 	$page = 1;
 
-$start = $offset = ( $page - 1 ) * 20;
+$start = $offset = ( $page - 1 ) * $numcomments;
 
-list($_comments, $total) = $soc_com->get_comment_list( $start, 25, isset($_GET['s']) ? $_GET['s'] : false, isset($_GET['sfield']) ? $_GET['sfield'] :false, isset($_GET['sort']) ? $_GET['sort'] : false); // Grab a few extra
+list($_comments, $total) = $soc_com->get_comment_list( $start, $numcomments, isset($_GET['s']) ? $_GET['s'] : false, isset($_GET['sfield']) ? $_GET['sfield'] :false, isset($_GET['sort']) ? $_GET['sort'] : false, $filter); // Grab a few extra
 
-$comments = array_slice($_comments, 0, 20);
-$extra_comments = array_slice($_comments, 20);
+$comments = array_slice($_comments, 0, $numcomments);
+$extra_comments = array_slice($_comments, $numcomments);
 
 $page_links = paginate_links( array(
 	'base' => add_query_arg( 'apage', '%#%' ), 
 	'format' => '',
-	'total' => ceil($total / 20),
+	'total' => ceil($total / $numcomments),
 	'current' => $page
 ));
 
@@ -252,10 +249,9 @@ if ( $extra_comments ) : ?>
 <?php
 	} // end if ($comments)
 }
-echo '</div>';
 if ( $page_links )
 	echo "<p class='pagenav'>$page_links</p>";
-
+echo '</div>';
 ?>
 
 </div>

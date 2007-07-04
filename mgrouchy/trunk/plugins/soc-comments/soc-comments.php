@@ -26,7 +26,7 @@ if ( !class_exists( "soc_comments" ) ){
 		}
 		
 		//get list of comments
-		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = false  ){
+		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = false, $filter = ''  ){
 			global $wpdb;
 				
 			$ss_params = array(
@@ -42,6 +42,7 @@ if ( !class_exists( "soc_comments" ) ){
 			$num = (int) $num;
 			$sort = $wpdb->escape($sort);     
 
+			//set up our albums for sorting
 			if ( $sort ) {
 				if ( isset( $ss_params[$sort] ) )
 					$sort = $ss_params[$sort];
@@ -49,9 +50,11 @@ if ( !class_exists( "soc_comments" ) ){
 			else {
 				$sort = "comment_date";
 			}
-				
+			if ( $sort == "comment_date" ) $order = "DESC";
+			else $order = "ASC";
        		 //if we have a search string
-    	    if ( $s ) {
+    	   
+		    if ( $s ) {
 				$s = $wpdb->escape($s);
   	        	$sfield = $wpdb->escape($sfield);
 
@@ -62,8 +65,9 @@ if ( !class_exists( "soc_comments" ) ){
                         comment_author_url LIKE ('%$s%') OR
                         comment_author_IP LIKE ('%$s%') OR
                         comment_content LIKE ('%$s%') ) AND
+						comment_type = '$filter' AND
                         comment_approved != 'spam'
-                        ORDER BY $sort DESC LIMIT $start, $num");
+                        ORDER BY $sort $order LIMIT $start, $num");
 					
 				}
 				else {
@@ -75,15 +79,15 @@ if ( !class_exists( "soc_comments" ) ){
 
 					//put our SQL query back together
 					if ( isset( $sq2 ) )
-                        $sq = "$sq ( $sq2 ) AND comment_approved != 'spam' ORDER BY $sort DESC LIMIT $start, $num";
+                        $sq = "$sq ( $sq2 ) AND comment_type = '$filter' AND comment_approved != 'spam' ORDER BY $sort $order LIMIT $start, $num";
 					else
-                        $sq = "$sq comment_approved != 'spam' ORDER BY $sort DESC LIMIT $start, $num";
+                        $sq = "$sq comment_type = '$filter' AND comment_approved != 'spam' ORDER BY $sort $order LIMIT $start, $num";
                         $comments = $wpdb->get_results($sq);
 				}
-		}
-		else {
+			}
+			else {
 
-			    $comments = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE comment_approved = '0' OR comment_approved = '1' ORDER BY $sort DESC LIMIT $start, $num" ); 
+			    $comments = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE ( comment_approved = '0' OR comment_approved = '1') AND comment_type = '$filter' ORDER BY $sort $order LIMIT $start, $num" ); 
     	
 	    }
 	
