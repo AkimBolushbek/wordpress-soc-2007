@@ -22,7 +22,7 @@ function bindForm(divname,formname) {
 	jQuery(document).ready(function() {
 	    var options = {
 	        target: '#' + divname,
-			beforeSubmit: function( data, form, options ) { data.push({ name:'ajax', value:'1' }); },
+			beforeSubmit: addFormData ,
 			//success: showResponse,
 	    };
 	    // bind form and provide a simple callback function
@@ -30,8 +30,8 @@ function bindForm(divname,formname) {
 	});
 }
 
-function addFormData(formData, jqForm, options, adddata) {
-	formData.push({ name: key, value: val});	
+function addFormData(formData, jqForm, options ) {
+	formData.push({ name: 'ajax', value: '1'});	
 	
 	//for testing purposes 
 	//var qs = jQuery.param(formData);
@@ -39,7 +39,7 @@ function addFormData(formData, jqForm, options, adddata) {
 	return true;
 }
 
-
+//for testing
 function showResponse(responseText, statusText) {
 		alert('responseText: \n' + responseText );
 }
