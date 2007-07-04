@@ -1,28 +1,35 @@
 <?php
-/* Preserve the special tags */
-function preserve(&$content)
+
+$hide_php = get_option('hide_php');
+$in_loop = false;
+
+function normalize_loop_start(&$content)
 {
-	$content = preg_replace('/&lt;\?php\s*\/\/\s*!!!/', '<!php', $content);
-	$content = preg_replace('/\/\/\s*!!!\s*\?&gt;/', '!>', $content);
+	global $hide_php, $in_loop;
+
+	if ( 'yes' == $hide_php )
+	{
+		$content = preg_replace('/if\s*\(have_posts\(\)\)\s*:\s*while\s*\(have_posts\(\)\)\s*:\s*the_post\(\);/m', 'start_loop();', $content);
+		$in_loop = true;
+	}
 }
 
-/* And restore 'em */
-function restore(&$content)
+function eztags_parse_std(&$content)
 {
-	$content = str_replace('<!php', '<?php', $content);
-	$content = str_replace('!>', '?>', $content);
+	normalize_loop_start($content);
+
+	$arr = preg_split('/\n|\r|\r\n/', $content);
+	$n_arr = count($arr);
+
+	$content = '';
+
+	for ($i = 0; $i < $n_arr; $i++)
+	{
+		preg_match('/([\w|\d|_]+)\([^\)(;|\s)]*\)[;|\s+]/', $arr[$i], $matches);
+		list($match, $elem, $params) = $matches;
+		echo "Element: $elem; Paremeter list: $params;\n Original line: $arr[$i]\n\n";
+	}
 }
 
-/* Strips PHP from the file */
-function stripPHP(&$content)
-{
-	preserve($content);
-
-	/* Get rid of the PHP start and end markers */
-	$content = preg_replace('/&lt;\?php\s*/', '', $content);
-	$content = preg_replace('/\s*\?&gt;/', '', $content);
-
-	restore($content);
-}
 
 ?>

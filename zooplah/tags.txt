@@ -17,7 +17,7 @@ So the format is:
 <$Tag [attributes]$>
 
 Attributes work just like in HTML:
-<$EntryTitle before="<h2>" after="<h2>"$>
+<$EntryTitle before="<h2>" after="</h2>"$>
 
 Attributes are usually (always?) optional.  Space after the tag is
 unnecessary if you don't use attributes.  I know all of this stuff

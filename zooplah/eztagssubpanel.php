@@ -6,6 +6,9 @@
 
 require_once 'eztagsmediator.php';
 
+require_once 'eztagsoptions.php';
+eztags_options_set_defaults();
+
 $title = __("Easier Theme Editor");
 $parent_file = 'themes.php';
 
@@ -121,9 +124,10 @@ if ($allowed_files) :
 <?php foreach($allowed_files as $allowed_file) : ?>
 <?php if ( strstr($allowed_file, '.php') ) $is_php_file = true;
 if ( $is_php_file ) $link_color = 'blue';
-else $link_color = 'red'; ?>
+else $link_color = 'red';
+if ( $is_php_file || 'true' == get_settings('show_non_php') ) : ?>
 		 <li><a href="themes.php?page=eztagssubpanel.php&file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>" style="color: <?php echo $link_color; ?>"><?php echo get_file_description($allowed_file); ?></a></li>
-<?php endforeach; ?>
+<?php endif; endforeach; ?>
 	</ul>
 <?php endif; ?>
 </div>
