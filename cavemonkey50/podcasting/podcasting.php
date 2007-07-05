@@ -304,6 +304,7 @@ function podcasting_edit_form() {
 		<h3 class="dbx-handle">Podcasting</h3>
 	</div>
 	<div class="dbx-c-ontent-wrapper"><div class="dbx-content">
+		<?php if ( !empty($enclosures) ) { ?>
 		<?php foreach ($enclosures as $enclosure) {
 			if ( $enclosure_count > 0 ) $enclosure_ids .= ','; $enclosure_count++;
 			$enclosure_ids .= $enclosure['meta_id'];
@@ -341,8 +342,9 @@ function podcasting_edit_form() {
 					<td class="pod-update"><input name="save" type="submit" class="" value="Update" /> <input name="delete_pod_<?php echo $enclosure['meta_id']; ?>" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast', <?php echo $enclosure['meta_id']; ?>, 'You are about to delete a podcast.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
 				</tr>
 			</table>
+			<input name="enclosure_ids" type="hidden" value="<?php echo $enclosure_ids; ?>" />
 		<?php } ?>
-		<input name="enclosure_ids" type="hidden" value="<?php echo $enclosure_ids; ?>" />
+		<?php } ?>
 		<?php if ($enclosures) { ?>
 			<h3>Add a new file:</h3>
 		<?php } ?>
