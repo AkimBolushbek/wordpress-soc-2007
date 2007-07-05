@@ -154,7 +154,6 @@ if ( !class_exists( "soc_comments" ) ){
 			<input type="hidden" id="author" name="author" value="<?php echo $user_identity; ?>" />
 			<input type="hidden" id="email" name="email" value="<?php echo $user_email; ?>" />
 			<input type="hidden" id="url" name="url" value="<?php echo $user_url; ?>" />
-			
 			</p>
 			<?php do_action('comment_form', $post->ID); ?>
 			

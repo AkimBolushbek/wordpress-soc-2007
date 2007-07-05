@@ -101,8 +101,14 @@ bindForm('replydiv','editcomments');
  <input type="hidden" name="mode" value="<?php echo $mode; ?>" />
  </fieldset> 
 </form>
-	<div id='modes' >
-		<p><a href="?mode=view"><?php _e('View Mode') ?></a> | <a href="?mode=edit"><?php _e('Mass Edit Mode') ?></a></p>
+<div id="replydiv">
+<?php endif; ?>
+<div id='modes' >
+	<?php 
+		if (isset($_GET['mode'])) remove_query_arg('mode');
+		$query =  add_query_arg('mode','view');
+	?>
+		<p><a href="<?php echo $query ?>"><?php _e('View Mode') ?></a> | <? remove_query_arg('mode'); $query = add_query_arg('mode','edit'); ?><a href="<?php echo $query; ?>"><?php _e('Mass Edit Mode') ?></a></p>
 </div>
 <?php
 if ( !empty( $_POST['delete_comments'] ) ) :
@@ -128,8 +134,6 @@ if ( !empty( $_POST['delete_comments'] ) ) :
 		printf(__ngettext('%s comment deleted.', '%s comments deleted.', $i), $i);
 	}
 	echo '</p></div>';
-endif;
-echo '<div id="replydiv">';
 endif;
 
 if ( isset( $_GET['apage'] ) )
