@@ -49,8 +49,11 @@ case 'update':
 	$newcontent = stripslashes($_POST['newcontent']);
 	$theme = urlencode($theme);
 	if (is_writeable($real_file)) {
+		$real_file_is_php = strstr($real_file, '.php');
+		if ( $real_file_is_php) $newcontent = ez2std($newcontent);
+
 		$f = fopen($real_file, 'w+');
-		fwrite($f, ez2std($newcontent));
+		fwrite($f, $newcontent);
 		fclose($f);
 		$location = "themes.php?page=eztagssubpanel.php&file=$file&theme=$theme&a=te";
 	} else {

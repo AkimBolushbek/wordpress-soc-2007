@@ -14,6 +14,12 @@ function normalize_loop_start(&$content)
 	}
 }
 
+function eztags_clean_markers(&$content)
+{
+	$content = preg_replace('/&lt;\?php\s*\?&gt;/', '', $content);
+	$content = preg_replace('/\?&gt;\s*&lt;\?php/m', '', $content);
+}
+
 function eztags_from_title(&$ct)
 {
 	preg_match('/the_title\(([^\)]*)\);?/', $ct, $matches);
@@ -21,13 +27,14 @@ function eztags_from_title(&$ct)
 
 	$attrs = preg_split('/\,\s*/', $attr);
 	$attrs = preg_replace('/\'|\"/', '', $attrs);
-	list($before, $after, $echo) = $attrs;
+	list($before, $after) = $attrs;
 
-	$ct = str_replace($match, "?><\$EntryTitle before=\"$before\" after=\"$after\" echo=\"$echo\"$><?php", $ct);
+	$ct = str_replace($match, "?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
 }
 
 function eztags_parse_std(&$content)
 {
+	eztags_clean_markers($content);
 	normalize_loop_start($content);
 
 	$arr = preg_split('/\n|\r|\r\n/', $content);
@@ -41,6 +48,8 @@ function eztags_parse_std(&$content)
 		eztags_from_title($ct);
 		$content .= "$ct\n";
 	}
+
+	eztags_clean_markers($content);
 }
 
 ?>
