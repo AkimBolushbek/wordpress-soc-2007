@@ -16,8 +16,11 @@ function normalize_loop_start(&$content)
 
 function eztags_clean_markers(&$content)
 {
+	$content = preg_replace('/\)\s*\?&gt;/', '); ?&gt;', $content);
+
 	$content = preg_replace('/&lt;\?php\s*\?&gt;/', '', $content);
-	$content = preg_replace('/\?&gt;\s*&lt;\?php/m', '', $content);
+
+	$content = preg_replace('/\?&gt;\s*&lt;\?php/m', "\n", $content);
 }
 
 function eztags_from_title(&$ct)
