@@ -9,9 +9,21 @@ function normalize_loop_start(&$content)
 
 	if ( 'yes' == $hide_php )
 	{
-		$content = preg_replace('/if\s*\(have_posts\(\)\)\s*:\s*while\s*\(have_posts\(\)\)\s*:\s*the_post\(\);/m', 'start_loop();', $content);
+		//$content = preg_replace('/if\s*\(have_posts\(\)\)\s*:\s*while\s*\(have_posts\(\)\)\s*:\s*the_post\(\);/m', 'start_loop();', $content);
 		$in_loop = true;
 	}
+}
+
+function eztags_from_title(&$ct)
+{
+	preg_match('/the_title\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $attr) = $matches;
+
+	$attrs = preg_split('/\,\s*/', $attr);
+	$attrs = preg_replace('/\'|\"/', '', $attrs);
+	list($before, $after, $echo) = $attrs;
+
+	$ct = str_replace($match, "?><\$EntryTitle before=\"$before\" after=\"$after\" echo=\"$echo\"$><?php", $ct);
 }
 
 function eztags_parse_std(&$content)
@@ -25,11 +37,10 @@ function eztags_parse_std(&$content)
 
 	for ($i = 0; $i < $n_arr; $i++)
 	{
-		preg_match('/([\w|\d|_]+)\([^\)(;|\s)]*\)[;|\s+]/', $arr[$i], $matches);
-		list($match, $elem, $params) = $matches;
-		echo "Element: $elem; Paremeter list: $params;\n Original line: $arr[$i]\n\n";
+		$ct = $arr[$i];
+		eztags_from_title($ct);
+		$content .= "$ct\n";
 	}
 }
-
 
 ?>
