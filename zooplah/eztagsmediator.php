@@ -16,5 +16,7 @@ function std2ez($content)
 /* Replace Easy tags with Standard tags */
 function ez2std($content)
 {
+	eztags_parse_ez($content);
+
 	return $content;
 }

@@ -10,9 +10,11 @@ See tags.txt.  I'm putting them in that file because users (not
 just hackers) might find them useful.
 
 THE FUNCTIONING
-Right now, eztagsproxy.php contains two routines: ez2std()
+Right now, eztagsmediator.php contains two routines: ez2std()
 for converting easy tags to PHP functions and std2ez() for doing
-the reverse.  I'm stripping away the PHP markers and doing a
-search and replace.  However, I intend to give the system an
-overhaul soon, so I'll likely have to totally rewrite this
-section.  I'll elaborate when I do.
+the reverse.
+
+The actual conversion functions are in eztags_fromstandard.php
+and eztags_tostandard.php.  The from-standard functions are
+by far the most complex and, therefore, most likely extremely
+buggy.

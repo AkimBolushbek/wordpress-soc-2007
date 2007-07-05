@@ -18,6 +18,10 @@ So the format is:
 
 Attributes work just like in HTML:
 <$EntryTitle before="<h2>" after="</h2>"$>
+Note that this example is contrived.  It would be better to do:
+<h2><$EntryTitle$></h2>
+Also note that the before and after attributes have been
+removed.  I'll have to come up with a better example.
 
 Attributes are usually (always?) optional.  Space after the tag is
 unnecessary if you don't use attributes.  I know all of this stuff
@@ -31,22 +35,16 @@ bugs to the code.
 Currently implemented tags:
 <$EntryTitle$>
 	The title of the current entry/blog.
-	Attributes:
-	before (optional)
-		Text to display before the title.
-	after (optional)
-		Text to display after the title.
-	display (optional)
-		Whether to display the title. (I'm not sure if
-		I should support this or not, since it's only
-		useful if you want to use the output in PHP.)
+	Attributes: None
 
 <Entries>
 	Contains information about each entry.
 	Attributes: None.
+	(Not fully implemented)
 <NoEntries>
 	Contains the text to display if no entry is found.
 	Attributes: None
+	(Not fully implemented)
 
 ISSUES
 Currently, tag and attribute names are case sensitive.  That may
