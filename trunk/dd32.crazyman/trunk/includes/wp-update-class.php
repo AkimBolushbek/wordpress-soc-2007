@@ -16,6 +16,8 @@ class WP_Update{
 	function search($item='themes',$tags=array(),$page=1){
 		if(0 == count($tags))
 			return false; //Must specify search terms.
+		if( empty($page) || ! is_numeric($page) )
+			$page = 1;
 
 		if('themes' == $item){
 			return $this->searchThemes($tags,$page);
@@ -68,16 +70,16 @@ class WP_Update{
 	/** THEME SEARCH **/
 	/**
 	 * Searches for a theme
-	 * @param array $tags tags/terms to search for
+	 * @param array $options tags/terms to search for
 	 * @param int $page the pagenumber we're displaying
 	 * @param int $items the number of items to have displayed
 	 * @return mixed Array holding results on success
  	 * @todo remove the iterative loading of themes until the number is found
 	 */
-	function searchThemes($tags,$page=1,$items=25){
-		
+	function searchThemes($options,$page=1){
+
 		$urlpart = array();
-		foreach($_POST as $postname=>$postvalue){
+		foreach($options as $postname=>$postvalue){
 			if(is_array($postvalue)){
 				foreach($postvalue as $subpostvalue)
 					$urlpart[] = urlencode($postname.'[]').'='.urlencode($subpostvalue);
@@ -91,17 +93,16 @@ class WP_Update{
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 		$html = $snoopy->results;
-		$themes = $this->parseThemeHTML($html);
+		$themes = array(
+						'results' => $this->parseThemeHTML($html),
+						'info' 	  => array('page'=>$page)
+						);
 		
 		/* Check if this is the last page, if not, grab the next page too */
-		if ( preg_match('#<div id="bottompagenav">.*>(\d+)</a></p></div>#',$html,$pages) ){
-			if( count($themes) < $items ){
-				$themes2 = $this->searchThemes($tags,++$page, ($items - count($themes)) );
-				if( $themes2 )
-					$themes = array_merge($themes, $themes2 );
-			}
-			
-		}
+		if ( preg_match('#<div id="bottompagenav">.*>(\d+)</a></p></div>#',$html,$pages) )
+			$themes['info']['pages'] = $pages[1];
+		else 
+			$themes['info']['pages'] = 1;
 		return $themes;
 	}
 	/**

@@ -5,6 +5,8 @@ if( !get_option('update_theme_search_enable') ){
 }
 	
 require_once('includes/wp-update-class.php');
+require_once('includes/wp-update-functions.php');
+
 global $wpupdate;
 $wpupdate = new WP_Update;
 
@@ -114,18 +116,16 @@ $tags = array( 	1 => '1 column',
 </form>
 <script type="text/javascript">
 //<!CDATA[[
-//onclick="ajaxSearch(this.form);return false;"
-	function ajaxSearch(arg){
-		$("#searchresults").html = "Loading Results... Please wait.";
-		for (var i in arg){
-			//alert(arg[i]);
-		}
+	function loadMore(){
+		searchOptions.paged++;
+		alert(searchOptions.paged);
+		$.post("<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=themeSearch",
+			  searchOptions,
+			  function(data){
+				$('#load-more').before( data );
+			  }
+			);
 	}
-	$.get("plugins-extra.php?jax=checkupdate&plugin=", 
-						function(data) { 
-							$("td#update-").html(data);
-							}
-				);
 //]]>
 </script>
 <?php
@@ -140,7 +140,7 @@ $taglist = implode(', '.$_POST['andor'].' ',$taglist);
 <h2><?php _e('Search Results') ?></h2>
 <p><?php _e('Search results for Themes tagged with ') ?><strong><span id='taglist'><?php _e($taglist) ?></span></strong></p>
 <?php 
-$items = $wpupdate->search('themes',$_POST['cats']); 
+$searchResults = $wpupdate->search('themes',$_POST); 
 ?>
 <style type="text/css">
 	.themeinfo{
@@ -158,19 +158,25 @@ $items = $wpupdate->search('themes',$_POST['cats']);
 </style>
 <div id="searchresults">
 <?php
-if(!$items){
+if( !isset($searchResults['results']) || empty($searchResults['results']) ){
 	_e('Sorry there were no search results');
 } else {
-	foreach($items as $theme){
-		echo "&nbsp;<div class='themeinfo'>
-				<span>
-					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
-					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
-					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='themes.php?page=wp-update/wp-update-themes-install.php&step=2&url=".urlencode($theme['download'])."' target='_blank'>".__('Install')."</a>
-				</span>
-			</div>\n";
-	}
-	//TODO: Add link to load more items.
+	?>
+	<script type="text/javascript">
+		//<!CDATA[[
+			var searchOptions = {"cats": "<?php echo join(',',$_POST['cats']); ?>",
+								"sortby": "<?php echo $_POST['sortby']; ?>",
+								"order": "<?php echo $_POST['order']; ?>",
+								"andor": "<?php echo $_POST['andor']; ?>",
+								"paged":<?php echo $searchResults['info']['page']; ?>};
+		//]]>
+	</script>
+	<?php
+	foreach($searchResults['results'] as $theme)
+		echo wpupdate_themeSearchHTML($theme);
+
+	if( $searchResults['info']['page'] < $searchResults['info']['pages'] )
+		echo '&nbsp;<div class="themeinfo" id="load-more"><span><a href="#load-more" onclick="loadMore()">'.__('Next Page').'</a></span></div>';
 }
 ?>
 </div>

@@ -89,4 +89,16 @@ function wpupdate_get_plugins() {
 
 	return $wp_plugins;
 }
+
+
+function wpupdate_themeSearchHTML($theme){
+	return "&nbsp;<div class='themeinfo'>
+				<span>
+					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
+					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
+					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='themes.php?page=wp-update/wp-update-themes-install.php&step=2&url=".urlencode($theme['download'])."' target='_blank'>".__('Install')."</a>
+				</span>
+			</div>\n";
+}
+
 ?>
