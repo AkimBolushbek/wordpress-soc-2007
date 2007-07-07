@@ -26,7 +26,7 @@ if ( !class_exists( "soc_comments" ) ){
 		}
 		
 		//get list of comments
-		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = false, $filter = ''  ){
+		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = false, $filter = 'all'  ){
 			global $wpdb;
 				
 			$ss_params = array(
@@ -36,8 +36,9 @@ if ( !class_exists( "soc_comments" ) ){
             	"c_aip" => "comment_author_ip",
             	"c_content" => "comment_content",
             	"c_date"  => "comment_date");
-
-        
+			
+			if ( strcmp( 'all', $filter ) == 0 ) $filter = '';
+			else $filter = "AND comment_type = '$filter'";
 			$start = (int) $start;
 			$num = (int) $num;
 			$sort = $wpdb->escape($sort);     
@@ -64,8 +65,8 @@ if ( !class_exists( "soc_comments" ) ){
                         comment_author_email LIKE ('%$s%') OR
                         comment_author_url LIKE ('%$s%') OR
                         comment_author_IP LIKE ('%$s%') OR
-                        comment_content LIKE ('%$s%') ) AND
-						comment_type = '$filter' AND
+                        comment_content LIKE ('%$s%') ) 
+						$filter AND
                         comment_approved != 'spam'
                         ORDER BY $sort $order LIMIT $start, $num");
 					
@@ -79,15 +80,15 @@ if ( !class_exists( "soc_comments" ) ){
 
 					//put our SQL query back together
 					if ( isset( $sq2 ) )
-                        $sq = "$sq ( $sq2 ) AND comment_type = '$filter' AND comment_approved != 'spam' ORDER BY $sort $order LIMIT $start, $num";
+                        $sq = "$sq ( $sq2 ) $filter AND comment_approved != 'spam' ORDER BY $sort $order LIMIT $start, $num";
 					else
-                        $sq = "$sq comment_type = '$filter' AND comment_approved != 'spam' ORDER BY $sort $order LIMIT $start, $num";
+                        $sq = "$sq comment_approved != 'spam' $filter ORDER BY $sort $order LIMIT $start, $num";
                         $comments = $wpdb->get_results($sq);
 				}
 			}
 			else {
 
-			    $comments = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE ( comment_approved = '0' OR comment_approved = '1') AND comment_type = '$filter' ORDER BY $sort $order LIMIT $start, $num" ); 
+			    $comments = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->comments WHERE ( comment_approved = '0' OR comment_approved = '1') $filter ORDER BY $sort $order LIMIT $start, $num" ); 
     	
 	    }
 	
@@ -154,6 +155,8 @@ if ( !class_exists( "soc_comments" ) ){
 			<input type="hidden" id="author" name="author" value="<?php echo $user_identity; ?>" />
 			<input type="hidden" id="email" name="email" value="<?php echo $user_email; ?>" />
 			<input type="hidden" id="url" name="url" value="<?php echo $user_url; ?>" />
+			<?php $qs = remove_query_arg('replyid'); ?>
+			<input type="hidden" id="redirect_to"name="redirect_to" value="<?php echo $qs; ?>" />
 			</p>
 			<?php do_action('comment_form', $post->ID); ?>
 			
