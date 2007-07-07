@@ -16,13 +16,14 @@ require_once('admin-header.php');
 
 endif;
 
+//fix up all query string vars to be used in the page
 if (empty($_GET['mode'])) $mode = 'view';
 else $mode = attribute_escape($_GET['mode']);
 
 if (!isset($_GET['replyid'])) $replyid = -1;
 else $replyid = (int) $_GET['replyid']; 
 
-if (!isset($_GET['filter'])) $filter = '';
+if (!isset($_GET['filter'])) $filter = 'all';
 else $filter = $wpdb->escape($_GET['filter']);
 
 if (!isset($_GET['numcomments'])) $numcomments = 25;
@@ -67,17 +68,13 @@ bindForm('replydiv','editcomments');
 <form name="searchform" action="" method="get" id="editcomments">  
  <fieldset>
 <?php _e('Show') ?>
-<select name="numcomments">
-	<option value="25">25</option>
-	<option value="50">50</option>
-	<option value="75">75</option>
-	<option value="100">100</option>
-</select>
+<input type ="text" name="numcomments" value="<?php echo $numcomments ?>" size="5" />
 
 <select name="filter">
 	 <option value=""><?php _e('comment') ?></option>
      <option value="trackback"><?php _e('trackback') ?></option>
      <option value="pingback"><?php _e('pingback') ?></option>
+ 	 <option value="all"><?php _e('all') ?> </option>
  </select>
 <?php _e('That Contain...') ?> 
  <select name="sfield">
@@ -108,7 +105,9 @@ bindForm('replydiv','editcomments');
 		if (isset($_GET['mode'])) remove_query_arg('mode');
 		$query =  add_query_arg('mode','view');
 	?>
-		<p><a href="<?php echo $query ?>"><?php _e('View Mode') ?></a> | <? remove_query_arg('mode'); $query = add_query_arg('mode','edit'); ?><a href="<?php echo $query; ?>"><?php _e('Mass Edit Mode') ?></a></p>
+		<p><a href="<?php echo $query ?>" onclick="return openLink('<?php echo $query; ?>', 'GET', '#replydiv')"  ><?php _e('View Mode') ?></a> | 
+	<? remove_query_arg('mode'); $query = add_query_arg('mode','edit'); ?>
+	<a href="<?php echo $query; ?>" onclick="return openLink('<?php echo $query; ?>', 'GET', '#replydiv')"><?php _e('Mass Edit Mode') ?></a></p>
 </div>
 <?php
 if ( !empty( $_POST['delete_comments'] ) ) :
@@ -209,7 +208,7 @@ if ( $extra_comments ) : ?>
     <th scope="col">' .  __('E-mail') . '</th>
     <th scope="col">' . __('IP') . '</th>
     <th scope="col">' . __('Comment Excerpt') . '</th>
-	<th scope="col" colspan="3" style="text-align: center">' .  __('Actions') . '</th>
+	<th scope="col" colspan="4" style="text-align: center">' .  __('Actions') . '</th>
   </tr>
 </thead>';
 		foreach ($comments as $comment) {
@@ -231,11 +230,13 @@ if ( $extra_comments ) : ?>
     		<a href="<?php echo get_permalink($comment->comment_post_ID); ?>#comment-<?php comment_ID() ?>" class="edit"><?php _e('View') ?></a>
     	<?php } ?>
     </td>
+	<td><a href="#" onclick="return addReplyForm()" class="edit"><?php echo __('Reply') ?></a></td> 
     <td><?php if ( current_user_can('edit_post', $comment->comment_post_ID) ) {
 	echo "<a href='comment.php?action=editcomment&amp;c=$comment->comment_ID' class='edit'>" .  __('Edit') . "</a>"; } ?></td>
     <td><?php if ( current_user_can('edit_post', $comment->comment_post_ID) ) {
 		echo "<a href=\"comment.php?action=deletecomment&amp;p=".$comment->comment_post_ID."&amp;c=".$comment->comment_ID."\" onclick=\"return deleteSomething( 'comment', $comment->comment_ID, '" . js_escape(sprintf(__("You are about to delete this comment by '%s'. \n  'Cancel' to stop, 'OK' to delete."), $comment->comment_author ))  . "', theCommentList );\" class='delete'>" . __('Delete') . "</a> ";
 		} ?></td>
+	</p>
   </tr>
 		<?php 
 		} // end foreach
