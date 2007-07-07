@@ -344,7 +344,8 @@ class WP_Update{
 		
 		//If no Update info, or we're forcing a recheck
 		if( ! $pluginUpdateInfo || $forcecheck ){
-			if ( '' != $pluginData['Update'] && get_option('update_location_custom') ){
+			$pluginData['Update'] = apply_filters('wpupdate_update-url-' . $pluginfile, $pluginData['Update']);
+			if ( !empty($pluginData['Update']) ){
 				//We have a custom update URL.
 				$pluginUpdateInfo = $this->checkPluginUpdateCustom($pluginData['Update']);
 			}
@@ -380,6 +381,8 @@ class WP_Update{
 		if( !$pluginUpdateInfo || !$pluginUpdateInfo['Version'] )
 			return array('Errors'=>array('Not Compatible','(No Version specified on update page)'));
 
+		$pluginUpdateInfo = apply_filters('wpupdate_plugin-updateinfo-' . $pluginUpdateInfo, $pluginUpdateInfo);
+
 		if( version_compare($pluginUpdateInfo['Version'] , $pluginData['Version'], '>') ){
 			//Theres a new version available!, Now, Check its Requirements.
 			$pluginCompatible = true; //We'll override this later
@@ -393,40 +396,40 @@ class WP_Update{
 				switch($reqInfo['Type']){
 					case "WordPress":
 						//Check the minimum version needed
-						if( isset($reqInfo['Min']) ){
+						if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
 							if( ! version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
 						//Check the Maximum version that its been tested with
-						if( isset($reqInfo['Tested']) ){
+						if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
 							if( version_compare( $wp_version, $reqInfo['Tested'], '>' ) ){
 								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
 					case "PHP":
-						if( isset($reqInfo['Min']) ){
+						if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
 							if( ! version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
-						if( isset($reqInfo['Tested']) ){
+						if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
 							if( version_compare( phpversion(), $reqInfo['Tested'], '>' ) ){
 								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
 						}
 						break;
 					case "MySQL":
-						if( isset($reqInfo['Min']) ){
+						if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
 							if( ! version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
 								$pluginCompatible = false;
 								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
 							}
 						}
-						if( isset($reqInfo['Tested']) ){
+						if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
 							if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '>' ) ){
 								$errors[] = sprintf('Only testd Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
 							}
@@ -463,6 +466,7 @@ class WP_Update{
 						}
 						break;
 					default:
+						do_action('wpupdate_requirement-'.$reqInfo['Type'], &$pluginUpdateInfo, &$reqInfo, &$pluginCompatible, &$errors);
 				} //end switch()
 			} //end foreach()
 			
