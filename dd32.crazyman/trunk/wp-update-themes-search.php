@@ -38,7 +38,7 @@ $tags = array( 	1 => '1 column',
 ?>
 <div class="wrap">
 <h2>Search Themes</h2>
-<form id="searchoptions" name="sortoptions" method="post" action="">
+<form id="searchoptions" name="sortoptions" method="post" action="<?php echo $pagenow . '?page=' . $_GET['page']; ?>">
 <table align="center">
 	<tr>
 		<th>Columns</th>
@@ -47,7 +47,6 @@ $tags = array( 	1 => '1 column',
 	</tr>
 	<tr valign="top">
 		<td>
-		<!-- First Column -->
 		<p>
 		<input type="checkbox" name="cats[]" value="1" <?php if(is_array($_POST['cats']) && in_array(1,$_POST['cats'])){ echo 'checked="checked" '; } ?>/><?php _e('1 column') ?><br />
 		<input type="checkbox" name="cats[]" value="2" <?php if(is_array($_POST['cats']) && in_array(2,$_POST['cats'])){ echo 'checked="checked" '; } ?>/><?php _e('2 columns') ?><br />
@@ -118,13 +117,18 @@ $tags = array( 	1 => '1 column',
 //<!CDATA[[
 	function loadMore(){
 		searchOptions.paged++;
-		alert(searchOptions.paged);
+		$('#loading-image').show();
 		$.post("<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=themeSearch",
 			  searchOptions,
 			  function(data){
 				$('#load-more').before( data );
+				$('#loading-image').hide();
+				if( searchOptions.paged == searchOptions.pages ){
+					$('#load-more').hide();
+				}
 			  }
 			);
+		return false;
 	}
 //]]>
 </script>
@@ -168,7 +172,8 @@ if( !isset($searchResults['results']) || empty($searchResults['results']) ){
 								"sortby": "<?php echo $_POST['sortby']; ?>",
 								"order": "<?php echo $_POST['order']; ?>",
 								"andor": "<?php echo $_POST['andor']; ?>",
-								"paged":<?php echo $searchResults['info']['page']; ?>};
+								"paged":<?php echo $searchResults['info']['page']; ?>.
+								"pages":<?php echo $searchResults['info']['pages']; ?>};
 		//]]>
 	</script>
 	<?php
@@ -176,7 +181,7 @@ if( !isset($searchResults['results']) || empty($searchResults['results']) ){
 		echo wpupdate_themeSearchHTML($theme);
 
 	if( $searchResults['info']['page'] < $searchResults['info']['pages'] )
-		echo '&nbsp;<div class="themeinfo" id="load-more"><span><a href="#load-more" onclick="loadMore()">'.__('Next Page').'</a></span></div>';
+		echo '&nbsp;<div class="themeinfo" id="load-more"><span><img style="display:none" src="'.get_option('siteurl'). '/wp-content/plugins/wp-update/images/loading.gif" id="loading-image" /><br/><a href="#load-more" onclick="loadMore()">'.__('Next Page').'</a></span></div>';
 }
 ?>
 </div>

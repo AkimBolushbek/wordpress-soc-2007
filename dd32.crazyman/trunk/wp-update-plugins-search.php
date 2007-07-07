@@ -4,16 +4,16 @@ if( !get_option('update_plugin_search_enable') ){
 	return;
 }
 require_once('includes/wp-update-class.php');
+require_once('includes/wp-update-functions.php');
+
 global $wpupdate,$pagenow;
 $wpupdate = new WP_Update;
-
-$url = $pagenow . '?page=' . $_GET['page'];
 
 if( isset($_POST['term']) || isset($_GET['tag']) ){
 	if( isset($_POST['term']))
 		$searchTerm = $_POST['term'];
 	else
-		$searchTerm = $_GET['tag'];
+		$tagSearch = $_GET['tag'];
 }
 
 //$pluginInfo = $wpupdate->getPluginInformationWordPressOrg("http://wordpress.org/extend/plugins/google-sitemap-generator-ultimate-tag-warrior-tags-addon/");
@@ -23,10 +23,9 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 ?>
 <style type="text/css">
 	.taglist {
-		font-size:1.8em; /* overriden by the individual links */
+		font-size:1.8em; /* overriden by the individual links, this is mainly to give it a higher lineheight */
 	}
-	.searchresults{
-	}
+
 	.plugin{
 		display:inline;
 		width:320px;
@@ -39,50 +38,74 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 		margin-bottom:20px;
 		padding:5px;
 	}
-	#load-more *{
-		border:none;
-	}
-	.pluginitem h3{
-		font-size:1em;
-	}
-	.section{
-		font-weight:bold;
-		padding-left:50px;
-		margin:0px;
-	}
+
 </style>
+<script type="text/javascript">
+//<!CDATA[[
+	function loadMore(){
+		searchOptions.page++;
+		$('#loading-image').show();
+		$.post("<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=pluginSearch",
+			  searchOptions,
+			  function(data){
+				$('#load-more').before( data );
+				$('#loading-image').hide();
+				if( searchOptions.page == searchOptions.pages ){
+					$('#load-more').hide();
+				}
+			  }
+			);
+		return false;
+	}
+//]]>
+</script>
 <div class="wrap">
 	<div class="searchresults">
-	<h2>Search for Plugins<?php echo !empty($searchTerm) ? ': '.$searchTerm : 'via terms'; ?></h2>
-		<form method="post" action="<?php echo $url; ?>">
+	<h2>Search for Plugins</h2>
+		<form method="post" action="<?php echo $pagenow . '?page=' . $_GET['page']; ?>">
 			<input type="text" name="term" value="<?php if( !empty($searchTerm)){ echo attribute_escape($searchTerm);}  ?>" />
 			<input type="submit" name="submit" value="Search" />
 		</form>
 <?php
-	if( ! empty($searchTerm) ){
-		echo '<div id="searchresults">';
-			$results = $wpupdate->search('plugins',array($searchTerm));
-			//foreach((array)$results as $section=>$res){
-				foreach((array)$results as $plugin){
-					echo '<div class="plugin"><span>';
-						echo '<h3>'.$plugin['Name'].'</h3>';
-						echo '<p>';
-							echo wordwrap($plugin['Desc'],25,"<br/>\n");
-						echo '</p>';
-						echo "<p><a href='#'>Install</a> <a href='{$plugin['Uri']}' target='_blank'>WordPress.Org</a></p>\n\n";
-					echo '</span></div> &nbsp; ';
-				} //foreach
-			//} //foreach
-			echo '<div class="plugin" id="load-more"><span><p>&nbsp;<br/><br/><br/></p><p><a href="#more" onclick="loadMore();">Load More Items</a></p></span></div>';
-		echo '</div>';
-		var_dump($results);
-	} //end if empty
+	if( !empty($searchTerm) ){
+		$results = $wpupdate->search('plugins',array($searchTerm));
+		$resultText = 'Plugin Search: ' . $searchTerm;
+	} elseif (!empty($tagSearch)) {
+		$resultText = 'Plugins Tagged: ' . $tagSearch;
+		$results = $wpupdate->getPluginsByTag($tagSearch);
+	}
+	if( !empty($searchTerm) || !empty($tagSearch) ){
+		if( empty($results)) {
+			_e('No results');
+		} else {
+			echo '<div id="searchresults">';
+				echo '<h2>'. $resultText . '</h2>';
+				foreach((array)$results['results'] as $plugin)
+					echo wpupdate_pluginSearchHTML($plugin);
+				
+				if( $results['info']['page'] < $results['info']['pages'] ){
+					echo '&nbsp;<div class="plugin" id="load-more"><span><img style="display:none" src="'.get_option('siteurl'). '/wp-content/plugins/wp-update/images/loading.gif" id="loading-image" /><br/><a href="#load-more" onclick="loadMore()">'.__('Next Page').'</a></span></div>';
+					?>
+					<script type="text/javascript">
+						//<!CDATA[[
+							var searchOptions = {"tag": "<?php echo $tagSearch; ?>",
+												"page":<?php echo $results['info']['page']; ?>,
+												"pages":<?php echo $results['info']['pages']; ?>};
+						//]]>
+					</script>
+					<?php
+				}
+			echo '</div>';
+		} //End results
+	} //end if search
+	
 ?>
 	<h2>Search by Tag</h2>
 	<div class="taglist">
 		<p>
 <?php
 	$tags = $wpupdate->getPluginSearchTags();
+	$url = $pagenow . '?page=' . $_GET['page'];
 	foreach($tags as $tag)
 		echo "<a href='$url&tag={$tag['name']}' title='{$tag['number']} plugins' rel='tag' style='font-size: {$tag['pointsize']}pt;'>{$tag['name']}</a> ";
 ?>
