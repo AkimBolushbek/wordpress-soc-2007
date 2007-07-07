@@ -32,7 +32,7 @@ function eztags_from_title(&$ct)
 	$attrs = preg_replace('/\'|\"/', '', $attrs);
 	list($before, $after) = $attrs;
 
-	$ct = str_replace($match, "?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
+	$ct = str_replace($match, "?&gt;$before<\$EntryTitle lang=\"en\"\$>$after&lt;?php", $ct);
 }
 
 function eztags_parse_std(&$content)
