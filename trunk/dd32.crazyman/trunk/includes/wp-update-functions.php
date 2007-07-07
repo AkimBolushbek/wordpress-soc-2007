@@ -100,5 +100,15 @@ function wpupdate_themeSearchHTML($theme){
 				</span>
 			</div>\n";
 }
-
+function wpupdate_pluginSearchHTML($plugin){
+	$ret =  '<div class="plugin"><span>';
+	$ret .= '<h3>'.$plugin['Name'].'</h3>';
+	$ret .= '<p>';
+	$ret .= wordwrap($plugin['Desc'],25,"<br/>\n");
+	$ret .= '</p>';
+	$ret .= '<p><a href="plugins.php?page=wp-update/wp-update-plugin-install.php&step=2&url='.urlencode($plugin['download']).'">' . __('Install') . 
+			'</a> <a href="'.$plugin['Uri'].'" target="_blank">WordPress.Org</a></p>';
+	$ret .= '</span></div> &nbsp; ';
+	return $ret;
+}
 ?>
