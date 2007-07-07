@@ -169,6 +169,10 @@ class WP_Update{
 		if( $page < 1 || !is_numeric($page) ) $page = 1; //Sanitize
 		if( $page > 1 ) $url .= '/page/' . $page;
 
+		$results = wp_cache_get('wpupdate_search_tag_'.$tag.'-'.$page, 'wpupdate');
+		if( $results )
+			return $results;
+
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 		
@@ -200,6 +204,7 @@ class WP_Update{
 		if ( preg_match_all("#<a class='page-numbers' href='/extend/plugins/tags/post/page/(\d+)'>(\d+)</a>#",$snoopy->results,$pages) ){
 			$results['info']['pages'] = (int)$pages[2][ count( $pages[2]) - 1 ];
 		}
+		wp_cache_set('wpupdate_search_tag_'.$tag.'-'.$page, $results, 'wpupdate', 21600);
 		return $results;
 	}
 	/**
@@ -230,35 +235,36 @@ class WP_Update{
 	 */
 	function searchPlugins($term){
 		$results = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
-		if( ! $results ){
-			$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
-			$snoopy = new Snoopy();
-			$snoopy->fetch($url);
-			$results = array('results'=>array(),'info'=>array('page'=>1,'pages'=>1));
-			preg_match_all('#<h2>(Plugin title matches|Relevant plugins)</h2>(.*?)</ol>#ims',$snoopy->results,$mat);
-			for( $i=0; $i < count($mat[1]); $i++){
-				$regex = ('Plugin title matches' == $mat[1][$i]) ? 
-							'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small>(.*?)</small>#ims' : 
-							'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
+		if( $results )
+			return $results;
 
-				preg_match_all($regex,$mat[2][$i],$matPlugins);
-	
-				for( $j=0; $j < count($matPlugins[1]); $j++){
-					preg_match('#plugins/(.*?)/$#',$matPlugins[1][$j],$download);
-					$results['results'][] = array(
-								'Name' 		=> trim($matPlugins[2][$j],'<p></p>'),
-								'Desc'		=> trim($matPlugins[3][$j]),
-								'Version' 	=> '',
-								'LastUpdate'=> '',
-								'Download'	=> 'http://downloads.wordpress.org/plugin/' . $download[1] . '.zip',
-								'PluginHome'=> trim($matPlugins[1][$j]),
-								'Tags'		=> array($term),
-								'Rating'	=> ''
-								);
-				}
+		$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
+		$snoopy = new Snoopy();
+		$snoopy->fetch($url);
+		$results = array('results'=>array(),'info'=>array('page'=>1,'pages'=>1));
+		preg_match_all('#<h2>(Plugin title matches|Relevant plugins)</h2>(.*?)</ol>#ims',$snoopy->results,$mat);
+		for( $i=0; $i < count($mat[1]); $i++){
+			$regex = ('Plugin title matches' == $mat[1][$i]) ? 
+						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small>(.*?)</small>#ims' : 
+						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
+
+			preg_match_all($regex,$mat[2][$i],$matPlugins);
+
+			for( $j=0; $j < count($matPlugins[1]); $j++){
+				preg_match('#plugins/(.*?)/$#',$matPlugins[1][$j],$download);
+				$results['results'][] = array(
+							'Name' 		=> trim($matPlugins[2][$j],'<p></p>'),
+							'Desc'		=> trim($matPlugins[3][$j]),
+							'Version' 	=> '',
+							'LastUpdate'=> '',
+							'Download'	=> 'http://downloads.wordpress.org/plugin/' . $download[1] . '.zip',
+							'PluginHome'=> trim($matPlugins[1][$j]),
+							'Tags'		=> array($term),
+							'Rating'	=> ''
+							);
 			}
-			wp_cache_set('wpupdate_search_'.rawurlencode($term), $results, 'wpupdate', 21600); //6*60*60=21600
 		}
+		wp_cache_set('wpupdate_search_'.rawurlencode($term), $results, 'wpupdate', 21600); //6*60*60=21600
 		return $results;
 	}
 	
@@ -544,11 +550,6 @@ class WP_Update{
 		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
 		if( strpos($snoopy->results, '<?xml') > -1 ){
 			$data = $this->__PluginUpdateCustomParse($snoopy->results);
-			var_dump($data);
-		/*} else if( is_serialized($snoopy->results) ){
-			$data = unserialize($snoopy->results);
-			if( isset($data['Errors']) && in_array('Unknown Plugin',$data['Errors']) )
-				$data = false;*/
 		/*} elseif( is_rss($snoopy->results){
 			Blah */
 		} else {
