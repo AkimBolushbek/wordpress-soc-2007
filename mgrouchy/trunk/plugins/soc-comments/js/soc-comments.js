@@ -26,12 +26,34 @@ function addReplyForm( commentid, userident, useremail, userurl){
 	return false;	
 }
 
+
+//open a link with ajax and then post with div
+function openLink(url,  method, target) {
+	//append some data to the url we are trying to open
+	url = url + "&ajax=1";
+	jQuery.ajax({
+		type: method,
+		url: url,
+		//data: querystring,
+		dataType : "html",
+		success : function(html) {
+			jQuery(target).attr("innerHTML", html);
+		},
+	});
+	
+	return false;
+
+}
+
 //function to empty an element gracefully
 function clearInner(elemid) {
 	jQuery(elemid).hide('slow');
 	jQuery(elemid).empty();
 	return false;
 }
+
+
+//bind a form using form plugin
 function bindForm(divname,formname) {
 	jQuery(document).ready(function() {
 	    var options = {
