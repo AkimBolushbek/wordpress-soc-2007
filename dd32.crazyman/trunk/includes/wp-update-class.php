@@ -95,14 +95,13 @@ class WP_Update{
 		$html = $snoopy->results;
 		$themes = array(
 						'results' => $this->parseThemeHTML($html),
-						'info' 	  => array('page'=>$page)
+						'info' 	  => array('page'=>$page, 'pages'=>1)
 						);
 		
-		/* Check if this is the last page, if not, grab the next page too */
+		/* Check the number of pages, If this isnt the last page, change it. */
 		if ( preg_match('#<div id="bottompagenav">.*>(\d+)</a></p></div>#',$html,$pages) )
 			$themes['info']['pages'] = $pages[1];
-		else 
-			$themes['info']['pages'] = 1;
+
 		return $themes;
 	}
 	/**
@@ -176,7 +175,7 @@ class WP_Update{
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 		
-		$results = array('results'=>array(),'info'=>array('page'=>$page,'pages'=>1));
+		$results = array('results'=>array(),'info'=>array('page'=>$page,'pages'=>1)); //Set a default number of pages, We'll override this later
 
 		preg_match_all('#<h3><a href="(.*?)">(.*?)</a></h3>(.*?)<ul class="plugin-meta">#ims',$snoopy->results,$plugindetails);
 		preg_match_all('#Version</span> (.*?)</li>#i',$snoopy->results,$version);
@@ -188,14 +187,15 @@ class WP_Update{
 			return false;
 
 		for( $i = 0; $i < count($plugindetails[0]); $i++){
-			preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$download);
+			preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$wordpressId);
 
 			$results['results'][] = array(
 								'Name' 		=> trim($plugindetails[2][$i]),
 								'Desc'		=> trim($plugindetails[3][$i]),
 								'Version' 	=> trim($version[1][$i]),
 								'LastUpdate'=> trim($updated[1][$i]),
-								'Download'	=> 'http://downloads.wordpress.org/plugin/' . $download[1] . '.zip',
+								'Id'=> $wordpressId[1],
+								'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
 								'PluginHome'=> trim($plugindetails[1][$i]),
 								'Tags'		=> array($tag),
 								'Rating'	=> trim($rating[1][$i])
@@ -251,13 +251,14 @@ class WP_Update{
 			preg_match_all($regex,$mat[2][$i],$matPlugins);
 
 			for( $j=0; $j < count($matPlugins[1]); $j++){
-				preg_match('#plugins/(.*?)/$#',$matPlugins[1][$j],$download);
+				preg_match('#plugins/(.*?)/$#',$matPlugins[1][$j],$wordpressId);
 				$results['results'][] = array(
 							'Name' 		=> trim($matPlugins[2][$j],'<p></p>'),
 							'Desc'		=> trim($matPlugins[3][$j]),
 							'Version' 	=> '',
 							'LastUpdate'=> '',
-							'Download'	=> 'http://downloads.wordpress.org/plugin/' . $download[1] . '.zip',
+							'Id'		=> $wordpressId[1],
+							'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
 							'PluginHome'=> trim($matPlugins[1][$j]),
 							'Tags'		=> array($term),
 							'Rating'	=> ''
@@ -490,11 +491,19 @@ class WP_Update{
 	 * @param string $uri the URL of the Plugin page to parse
 	 * @return mixed array of Plugin details
 	 */
-	function checkPluginUpdateWordpressOrg($uri){
-		if ( ! $uri ) return false;
+	function checkPluginUpdateWordpressOrg($id){
+		if ( ! $id ) return false;
+		
+		if ( ! strpos($id,'http://') ){
+			$url = 'http://wordpress.org/extend/plugins/'.$id.'/';
+		} else {
+			$url = $id;
+			preg_match('#plugins/(.*?)/$#',$id,$_id);
+			$id = $_id[1];
+		}
 		
 		$snoopy = new Snoopy();
-		$snoopy->fetch($uri);
+		$snoopy->fetch($url);
 		preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
 		preg_match('#<strong>Version:<\/strong> ([\d\.]+)#',$snoopy->results,$version);
 		preg_match('#<strong>Last Updated:</strong> ([\d\-]+)#',$snoopy->results,$lastupdate);
@@ -529,6 +538,7 @@ class WP_Update{
 					'Name' 		=>	trim($name[1]),
 					'Version'	=>	trim($version[1]),
 					'LastUpdate'=>	trim($lastupdate[1]),
+					'Id'		=> 	$id,
 					'Download'	=>	trim($download[1]),
 					'Author'	=>	trim($authordetails[2]),
 					/* 'WPAuthor'	=>	trim($authordetails[1]),*/
@@ -594,6 +604,86 @@ class WP_Update{
 					);
 	}
 	/** INSTALL FUNCITONS **/
+	
+	function installPlugin($filename,$fileinfo=array()){
+		require_once('wp-update-filesystem-class.php');
+		require_once('pclzip.lib.php');	
+		$messages = array();
+		
+		if( ! $filename )
+			return false;
+
+		$archive = new PclZip($filename);
+		//Check to see if its a Valid archive
+		if( false == ($archiveFiles = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING)) ){
+			return array('Errors'=>array('Incompatible Archive'));
+		} else {
+			$messages[] = "Valid Archive Selected";
+		}
+		if ( 0 == count($archiveFiles) )
+			return array('Errors'=>array('Empty Archive'));
+		
+		$fs = WP_Filesystem();
+		if( ! $fs )
+			return array('Errors'=>array('Filesystem options not set correctly'));
+		
+		//First of all, Does the zip file contain a base folder?
+		$base = $fs->get_base_dir() . 'wp-content/plugins/';
+		$messages[] = "Base Directory: <strong>$base</strong>";
+		
+		if( count($archiveFiles) > 1){
+			//Multiple files, they'll need to be in a folder
+			$baseFolderName = false;
+
+			foreach((array)$archiveFiles as $thisFileInfo){
+				//If no Slash then it needs to be put in a folder
+				
+				if( false === strpos($thisFileInfo['filename'],'/') ){
+					$messages[] = 'Installing to Subdirectory: <strong>' . basename($fileinfo['name'],'.zip') . '</strong>';
+
+					$tmpMessage = __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip');
+					$base .= basename($fileinfo['name'],'.zip');
+					if( $fs->is_dir($base) )
+						return array('Errors'=>array('Folder Exists! Install cannot continue' . $base));
+						
+					if( $fs->mkdir( $base ) )
+						$tmpMessage .= ' <span style="color: green;">['.__('OK').']</span><br>';
+					else
+						$tmpMessage .= ' <span style="color: red;">['.__('FAILED').']</span><br>';
+					$messages[] = $tmpMessage;
+					break;
+				}
+			}
+		}
+		//Inflate the files and Create Directory Structure
+		
+		foreach($archiveFiles as $archiveFile){
+			$messages[] = "processing ".$archiveFile['filename'];
+			$path = explode('/',$archiveFile['filename']);
+			$tmppath = '';
+			//Loop through each of the items and check the folder exists.
+			for( $j = 0; $j < count($path) - 1; $j++ ){
+				$tmppath .= $path[$j] . '/';
+				if( ! $fs->is_dir($base . $tmppath) ){
+					$tmpMessage = __('<strong>Creating folder</strong>: ') . $tmppath;
+					if( $fs->mkdir($base . $tmppath) )
+						$tmpMessage .= ' <span style="color: green;">['.__('OK').']</span><br>';
+					else
+						$tmpMessage .= ' <span style="color: red;">['.__('FAILED').']</span><br>';
+					$messages[] = $tmpMessage;
+				}//end if
+			}//end for
+			//We've made sure the folders are there, So lets extract the file now:
+			$tmpMessage = __('<strong>Inflating File</strong>: ') . $archiveFile['filename'];
+			if( $fs->put_contents($base.$archiveFile['filename'], $archiveFile['content']) )
+				$tmpMessage .= ' <span style="color: green;">['.__('OK').']</span><br>';
+			else
+				$tmpMessage .= ' <span style="color: red;">['.__('FAILED').']</span><br>';
+			$messages[] = $tmpMessage;
+		}
+		return $messages;
+	}
+	
 	/**
 	 * Installs a theme from a given URL
 	 * @param string $url the URL of the theme to install
@@ -629,7 +719,7 @@ class WP_Update{
 		} else {
 			//potentially Valid.
 			$archive = new PclZip($file);
-			if( false === ($archiveFiles = $archive->listContent()) ){
+			if( false == ($archiveFiles = $archive->listContent()) ){
 				$step = 1;
 				echo '<strong>Invalid Archive selected<br/>'.$archive->errorInfo(true).'</strong><br/>';
 			} else {
