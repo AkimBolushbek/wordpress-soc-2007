@@ -7,6 +7,7 @@
 class WP_Update{
 	function WP_Update(){
 		include_once( ABSPATH . 'wp-includes/class-snoopy.php' );
+		require_once('wp-update-functions.php');
 	}
 	/**
 	 * Searches for a Plugin/Theme based upon tags/terms
@@ -618,7 +619,7 @@ class WP_Update{
 		if( false == ($archiveFiles = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING)) ){
 			return array('Errors'=>array('Incompatible Archive'));
 		} else {
-			$messages[] = "Valid Archive Selected";
+			$messages[] = 'Valid Archive Selected';
 		}
 		if ( 0 == count($archiveFiles) )
 			return array('Errors'=>array('Empty Archive'));
@@ -641,45 +642,29 @@ class WP_Update{
 				if( false === strpos($thisFileInfo['filename'],'/') ){
 					$messages[] = 'Installing to Subdirectory: <strong>' . basename($fileinfo['name'],'.zip') . '</strong>';
 
-					$tmpMessage = __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip');
 					$base .= basename($fileinfo['name'],'.zip');
 					if( $fs->is_dir($base) )
 						return array('Errors'=>array('Folder Exists! Install cannot continue' . $base));
-						
-					if( $fs->mkdir( $base ) )
-						$tmpMessage .= ' <span style="color: green;">['.__('OK').']</span><br>';
-					else
-						$tmpMessage .= ' <span style="color: red;">['.__('FAILED').']</span><br>';
-					$messages[] = $tmpMessage;
-					break;
+					
+					$messages[] = __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip') . succeeded( $fs->mkdir( $base ) );
+					break; //We've created any folders we need, we can now break out of this loop.
 				}
 			}
 		}
 		//Inflate the files and Create Directory Structure
-		
 		foreach($archiveFiles as $archiveFile){
-			$messages[] = "processing ".$archiveFile['filename'];
 			$path = explode('/',$archiveFile['filename']);
 			$tmppath = '';
 			//Loop through each of the items and check the folder exists.
 			for( $j = 0; $j < count($path) - 1; $j++ ){
 				$tmppath .= $path[$j] . '/';
-				if( ! $fs->is_dir($base . $tmppath) ){
-					$tmpMessage = __('<strong>Creating folder</strong>: ') . $tmppath;
-					if( $fs->mkdir($base . $tmppath) )
-						$tmpMessage .= ' <span style="color: green;">['.__('OK').']</span><br>';
-					else
-						$tmpMessage .= ' <span style="color: red;">['.__('FAILED').']</span><br>';
-					$messages[] = $tmpMessage;
-				}//end if
+				if( ! $fs->is_dir($base . $tmppath) )
+					$messages[] = __('<strong>Creating folder</strong>: ') . $tmppath . succeeded( $fs->mkdir($base . $tmppath) );
 			}//end for
 			//We've made sure the folders are there, So lets extract the file now:
-			$tmpMessage = __('<strong>Inflating File</strong>: ') . $archiveFile['filename'];
-			if( $fs->put_contents($base.$archiveFile['filename'], $archiveFile['content']) )
-				$tmpMessage .= ' <span style="color: green;">['.__('OK').']</span><br>';
-			else
-				$tmpMessage .= ' <span style="color: red;">['.__('FAILED').']</span><br>';
-			$messages[] = $tmpMessage;
+			if( ! $archiveFile['folder'] )
+				$messages[] = __('<strong>Inflating File</strong>: ') . $archiveFile['filename'] . 
+							succeeded( $fs->put_contents($base.$archiveFile['filename'], $archiveFile['content']) );
 		}
 		return $messages;
 	}

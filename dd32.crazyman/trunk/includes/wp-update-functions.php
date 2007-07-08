@@ -112,4 +112,17 @@ function wpupdate_pluginSearchHTML($plugin){
 				</p>
 		</span></div> &nbsp; ';
 }
+function succeeded($result=false,$args=''){
+	$defaults = array(
+		'before' => ' ', 'after' => '',
+		'true' => 'OK', 'false' => 'FAILED',
+		'true-colour' => 'green', 'false-colour' => 'red'
+		);
+	$r = wp_parse_args( $args, $defaults );
+
+	if( $result )
+		return $r['before'] . '<span style="color:' . $r['true-colour'] . '">' . __($r['true']) . '</span>' . $r['after'];
+	else
+		return $r['before'] . '<span style="color:' . $r['false-colour'] . '">' . __($r['false']) . '</span>' . $r['after'];
+}
 ?>
