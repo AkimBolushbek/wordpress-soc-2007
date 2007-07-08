@@ -12,7 +12,7 @@ $wpupdate = new WP_Update;
 
 </style>
 <div class="wrap">
-	<h2>Install a Theme</h2>
+	<h2>Install a Plugin</h2>
 	<?php if( (isset($_GET['url']) && !empty($_GET['url']) ) || !empty($_FILES) ){
 		if( isset($_GET['url']) ){
 			//Download file
@@ -32,6 +32,13 @@ $wpupdate = new WP_Update;
 				$file = $_FILES['pluginfile']['tmp_name'];
 				$fileinfo = $_FILES['pluginfile'];
 				$result = $wpupdate->installPlugin($file,$fileinfo);
+				if( isset($result['Error']) ){
+					echo '<div class="error">' . __('Errors Occured:') . '<br />' . implode('<br />', $result['Error']) . '</div>';
+				}
+				unset($result['Error']);
+				foreach((array)$result as $message){
+					echo $message . '<br />';
+				}
 				var_dump($result);
 			?>
 		</p>
