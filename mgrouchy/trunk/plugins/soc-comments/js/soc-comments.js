@@ -1,4 +1,4 @@
-function addReplyForm( commentid, userident, useremail, userurl){
+function addReplyForm(action, commentid, comment_post_id, userident, useremail, userurl, noncefield, redirect){
 	var divname = 'com-' + commentid;
 	var divid = '#' + divname;
 	
@@ -9,18 +9,19 @@ function addReplyForm( commentid, userident, useremail, userurl){
 
 	// build our form and put it the comments div
 	jQuery('#' + divname).css({display: 'none'});
-	jQuery("<form action=\"/wp-comments-post.php\" method=\"POST\" id=\"comment-reply-form\">" + 
+	jQuery("<form action=\"" + action + "\" method=\"POST\" id=\"comment-reply-form\">" + 
 	      "<p><textarea name=\"comment\" id=\"comment\" cols=\"100%\" rows=\"10\" tabindex=\"4\"></textarea></p>" +
 	      "<p><input name=\"submit\" type=\"submit\" id=\"submit\" tabindex=\"5\" value=\"Submit Comment\" />" +
 	      "<input name=\"submit\" type=\"reset\" id=\"cancel\" tabindex=\"6\" value=\"Cancel\" onclick=\"return clearInner('" + divid + "')\" />" +
-		  "<input type=\"hidden\" name=\"comment_post_ID\" value=\"" + commentid + "\" />" +
+		  "<input type=\"hidden\" name=\"comment_post_ID\" value=\"" + comment_post_id + "\" />" +
 	      "<input type=\"hidden\" id=\"author\" name=\"author\" value=\"" + userident + "\" />" +
 	      "<input type=\"hidden\" id=\"email\" name=\"email\" value=\"" + useremail + "\" />" +
+	      "<input type=\"hidden\" id=\"redirect_to\" name=\"redirect_to\" value=\"" + redirect + "\"/>" +
 	      "<input type=\"hidden\" id=\"url\" name=\"url\" value=\"" + userurl + "\" />" +
-	      "</p></form>").appendTo(divid);
+	      "<input type=\"hidden\" id=\"_wp_unfiltered_html_comment\" name=\"_wp_unfiltered_html_comment\" value=\"" + noncefield + "\" /></p> </form>").appendTo(divid);
 	
 	//bind our form, then show it
-	bindForm(divname,'comment-reply-form');
+	bindForm('replydiv','comment-reply-form');
 	jQuery(divid).show("slow");
 	
 	return false;	

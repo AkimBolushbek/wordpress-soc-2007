@@ -208,7 +208,7 @@ if ( $extra_comments ) : ?>
     <th scope="col">' .  __('E-mail') . '</th>
     <th scope="col">' . __('IP') . '</th>
     <th scope="col">' . __('Comment Excerpt') . '</th>
-	<th scope="col" colspan="4" style="text-align: center">' .  __('Actions') . '</th>
+	<th scope="col" colspan="3" style="text-align: center">' .  __('Actions') . '</th>
   </tr>
 </thead>';
 		foreach ($comments as $comment) {
@@ -230,7 +230,6 @@ if ( $extra_comments ) : ?>
     		<a href="<?php echo get_permalink($comment->comment_post_ID); ?>#comment-<?php comment_ID() ?>" class="edit"><?php _e('View') ?></a>
     	<?php } ?>
     </td>
-	<td><a href="#" onclick="return addReplyForm()" class="edit"><?php echo __('Reply') ?></a></td> 
     <td><?php if ( current_user_can('edit_post', $comment->comment_post_ID) ) {
 	echo "<a href='comment.php?action=editcomment&amp;c=$comment->comment_ID' class='edit'>" .  __('Edit') . "</a>"; } ?></td>
     <td><?php if ( current_user_can('edit_post', $comment->comment_post_ID) ) {

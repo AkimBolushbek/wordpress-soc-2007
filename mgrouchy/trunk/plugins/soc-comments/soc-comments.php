@@ -43,7 +43,7 @@ if ( !class_exists( "soc_comments" ) ){
 			$num = (int) $num;
 			$sort = $wpdb->escape($sort);     
 
-			//set up our albums for sorting
+			//set up our vars for sorting
 			if ( $sort ) {
 				if ( isset( $ss_params[$sort] ) )
 					$sort = $ss_params[$sort];
@@ -53,9 +53,9 @@ if ( !class_exists( "soc_comments" ) ){
 			}
 			if ( $sort == "comment_date" ) $order = "DESC";
 			else $order = "ASC";
+       		
        		 //if we have a search string
-    	   
-		    if ( $s ) {
+    	    if ( $s ) {
 				$s = $wpdb->escape($s);
   	        	$sfield = $wpdb->escape($sfield);
 
@@ -69,7 +69,6 @@ if ( !class_exists( "soc_comments" ) ){
 						$filter AND
                         comment_approved != 'spam'
                         ORDER BY $sort $order LIMIT $start, $num");
-					
 				}
 				else {
 					//set up the beginning of our SQL query
@@ -133,7 +132,7 @@ if ( !class_exists( "soc_comments" ) ){
 					echo '<span class="approve"> | <a href="' . wp_nonce_url('comment.php?action=approvecomment&amp;p=' . $comment->comment_post_ID . '&amp;c=' . $comment->comment_ID, 'approve-comment_' . $comment->comment_ID) . '" onclick="return dimSomething( \'comment\', ' . $comment->comment_ID . ', \'unapproved\', theCommentList );">' . __('Approve') . '</a> </span>';
 				}
 				echo " | <a href=\"" . wp_nonce_url("comment.php?action=deletecomment&amp;dt=spam&amp;p=" . $comment->comment_post_ID . "&amp;c=" . $comment->comment_ID, 'delete-comment_' . $comment->comment_ID) . "\" onclick=\"return deleteSomething( 'comment-as-spam', $comment->comment_ID, '" . js_escape(sprintf(__("You are about to mark as spam this comment by '%s'.\n'Cancel' to stop, 'OK' to mark as spam."), $comment->comment_author))  . "', theCommentList );\">" . __('Spam') . "</a> ";
-    			echo " | <a href='" . $query . "' onclick=' return addReplyForm(" . $id . ",\"" . $user_identity . "\",\"" . $user_email . "\",\"" . $user_url . "\")' >" . __('Reply') . " </a>";
+    			echo " | <a href='" . $query . "' onclick=' return addReplyForm(\"" . get_option('siteurl') . "/wp-comments-post.php\"," .  $id . "," . $comment->comment_post_ID . ",\"" . $user_identity . "\",\"" . $user_email . "\",\"" . $user_url . "\",\"" .  wp_create_nonce('unfiltered-html-comment_' . $comment_post_ID) . "\",\""  . add_query_arg('ajax','1') ."\")' >" . __('Reply') . " </a>";
 			}
 			$post = get_post($comment->comment_post_ID);
 			$post_title = wp_specialchars( $post->post_title, 'double' );
@@ -151,15 +150,14 @@ if ( !class_exists( "soc_comments" ) ){
 			<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
 
 			<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
-			<input type="hidden" name="comment_post_ID" value="<?php echo $id; ?>" />
+			<input type="hidden" name="comment_post_ID" value="<?php echo $comment->comment_post_ID; ?>" />
 			<input type="hidden" id="author" name="author" value="<?php echo $user_identity; ?>" />
 			<input type="hidden" id="email" name="email" value="<?php echo $user_email; ?>" />
 			<input type="hidden" id="url" name="url" value="<?php echo $user_url; ?>" />
 			<?php $qs = remove_query_arg('replyid'); ?>
 			<input type="hidden" id="redirect_to"name="redirect_to" value="<?php echo $qs; ?>" />
 			</p>
-			<?php do_action('comment_form', $post->ID); ?>
-			
+			<?php do_action('comment_form', $comment->comment_post_ID); ?>
 			</form>
 			<?php else : ?>
 				<p> Sorry. Comments for this post are closed</p>
