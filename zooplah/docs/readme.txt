@@ -1,13 +1,11 @@
-REQUIRED SOFTWARE
-Nothing should be required besides a working WordPress install.
-I'm currently using WordPress 2.2.1, but the versions 2.1 and
-higher should work just fine.  The 2.0.x series should also work,
-with the caveat that some PHP functions changed between 2.0.x and
-2.1, and so the tags may not quite work as advertised.
-I'm recommending 2.1 or higher (the latest stable version should
-be used for security reasons).
+=== Easier Template Tags ===
+Requires at least: 2.1
+Tested up to: 2.2.1
 
-INSTALLING THE PLUGIN
+Coverts between PHP template tags and HTML-like easier template
+tags.
+
+== Installation ==
 Just like any plugin. Drop into your wp-content/plugins directory
 or a subdirectory thereof.
 
@@ -19,9 +17,10 @@ for the time being.  Of course, this plugin is in-development and
 I wouldn't recommend trying it out yet.  It's not even open to
 testers yet.
 
-CUSTOMIZING YOUR THEME WITH EASY TAGS
+== Use ==
 See tags.txt.  It's actually quite easy.
 
+== Development ==
 IMPROVING THE PLUGIN
 See specs.txt for how the plugin works.  If you want to make it
 better, then by all means*...  Note:  For everyone's sake, please
@@ -52,3 +51,10 @@ matter.
 The full text is available in your WordPress install, on gnu.org,
 and if you use third-party free software, probably in hundreds of
 places on your computer.
+
+== Known problems and bugs ==
+* The easier tags are case sensitive (title, TITLE, and Title are
+  different entities).
+* After saving the file, rediretion to the editor doesn't work.
+  The files are saved to the disk, but you have to reclick on
+  a couple links to resume editing.

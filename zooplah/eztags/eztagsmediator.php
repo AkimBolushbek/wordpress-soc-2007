@@ -20,3 +20,5 @@ function ez2std($content)
 
 	return $content;
 }
+
+?>
