@@ -46,6 +46,8 @@ add_action('delete_post', 'podcasting_delete_form');
 // Add the podcast feed
 add_action('do_feed_podcast', 'do_feed_podcast');
 add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
+add_filter('rewite_rules_array', 'podcasting_format_rewrite_rules');
+add_filter('query_vars', 'podcasting_query_vars');
 add_filter('posts_join', 'podcasting_feed_join');
 add_filter('posts_where', 'podcasting_feed_where');
 add_filter('posts_groupby', 'podcasting_feed_groupby');
@@ -451,9 +453,26 @@ function do_feed_podcast() {
 // Pretty permalinks for the custom feed
 function podcasting_rewrite_rules($wp_rewrite) {
 	$feed_rules = array(
-		'feed/podcast' => 'index.php?feed=podcast',
-	);
+		'feed/podcast' => 'index.php?feed=podcast'
+	);	
 	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
+}
+
+// Pretty permalinks for the custom feed formats
+function podcasting_format_rewrite_rules($rules) {
+	global $wp_rewrite;
+
+	$wp_rewrite->add_rewrite_tag('%format%', '(.+)', 'format=');
+	$rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . 'feed/podcast' . '%format%') + $rules;
+	$rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . 'feed/podcast' . '%format%/') + $rules;
+
+	return $rules;
+}
+
+// Adds variable to select format for podcasting
+function podcasting_query_vars($vars) {
+	$vars[] = 'format';
+	return $vars;
 }
 
 // Add the join needed for enclosures only
@@ -472,8 +491,10 @@ function podcasting_feed_join($join) {
 function podcasting_feed_where($where) {
 	global $wpdb;
 	if ( 'podcast' == get_query_var('feed') ) {
+		$podcast_format = ( '' == get_query_var('format') ) ? 'default-format' : get_query_var('format');
+		
 		$where .= " AND {$wpdb->postmeta}.meta_key = 'enclosure'";
-		$where .= " AND {$wpdb->terms}.slug = 'default-format'";
+		$where .= " AND {$wpdb->terms}.slug = '{$podcast_format}'";
 	}
 	return $where;
 }
@@ -566,7 +587,7 @@ function podcasting_add_itunes_feed() {
 // Only enclosures of the current format
 function podcasting_remove_enclosures($enclosure) {
 	if ( 'podcast' == get_query_var('feed') ) {
-		$podcast_format = 'default-format';
+		$podcast_format = ( '' == get_query_var('format') ) ? 'default-format' : get_query_var('format');
 		$enclosures = get_post_custom_values('enclosure');
 		$podcast_urlformats = array();
 	
@@ -584,7 +605,7 @@ function podcasting_remove_enclosures($enclosure) {
 // Add the special iTunes information to item
 function podcasting_add_itunes_item() {
 	if ( 'podcast' == get_query_var('feed') ) {
-		$podcast_format = 'default-format';
+		$podcast_format = ( '' == get_query_var('format') ) ? 'default-format' : get_query_var('format');
 		$enclosures = get_post_custom_values('enclosure');
 		foreach ($enclosures as $enclosure) {
 			$enclosure_itunes = explode("\n", $enclosure);
