@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<title>Test An Editor With JsUnit</title>
+<!-- JsUnit -->
+<script language="JavaScript" type="text/javascript" src="../jsunit/app/jsUnitCore.js"></script>
+<!-- /JsUnit -->
+
+<!-- SpecificFilesAndTests -->
+<script language="JavaScript" type="text/javascript" src="temp/TinyMceSpecifiqueFunctions.js"></script>
+<script language="JavaScript" type="text/javascript" src="temp/JsUnitGeneratingTestsScenario.js"></script>
+<!-- /SpecificFilesAndTests -->
+
+<!-- tinyMCE -->
+<script language="javascript" type="text/javascript" src="../tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript">
+	// Setup TinyMce
+	tinyMCE.init({
+	theme : "advanced",
+	mode : "textareas",
+	plugins : "advlink"
+		});	
+</script>
+<!-- /tinyMCE -->
+
+<script language="javascript" type="text/javascript"> 
+function testAssertAlwaysTrue(){
+SetContentToEditor('Hello World');
+assertEquals('Hello World', GetContentFromEditor());
+}
+function testAssertAlwaysFalse(){
+SetContentToEditor('Hello World');
+assertNotEquals('Hello', GetContentFromEditor());
+}
+//this test failed on Ie7
+function testSetOneTextAndOneOtherAndTakeOnlyTheOther(){
+SetContentToEditor('Hello World');
+SetContentToEditor('Hello');
+assertEquals('Hello', GetContentFromEditor());
+}
+function testWeDonTGetTheTextSetByTheLastTest(){
+assertEquals('',GetContentFromEditor());
+}
+</script>
+<textarea id="TinyMceInstance" name="TinyMceInstance" rows="15" cols="32">
+</textarea>
+</form>
+</body>
+</html>
