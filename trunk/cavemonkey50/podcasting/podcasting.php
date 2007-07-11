@@ -45,8 +45,7 @@ add_action('delete_post', 'podcasting_delete_form');
 
 // Add the podcast feed
 add_action('do_feed_podcast', 'do_feed_podcast');
-add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
-add_filter('rewite_rules_array', 'podcasting_format_rewrite_rules');
+add_filter('rewrite_rules_array', 'podcasting_rewrite_rules');
 add_filter('query_vars', 'podcasting_query_vars');
 add_filter('posts_join', 'podcasting_feed_join');
 add_filter('posts_where', 'podcasting_feed_where');
@@ -451,21 +450,14 @@ function do_feed_podcast() {
 }
 
 // Pretty permalinks for the custom feed
-function podcasting_rewrite_rules($wp_rewrite) {
-	$feed_rules = array(
-		'feed/podcast' => 'index.php?feed=podcast'
-	);	
-	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
-}
-
-// Pretty permalinks for the custom feed formats
-function podcasting_format_rewrite_rules($rules) {
+function podcasting_rewrite_rules($rules) {
 	global $wp_rewrite;
 
+	$wp_rewrite->add_rewrite_tag('%feed%', '(.+)', 'feed=');
 	$wp_rewrite->add_rewrite_tag('%format%', '(.+)', 'format=');
-	$rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . 'feed/podcast' . '%format%') + $rules;
-	$rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . 'feed/podcast' . '%format%/') + $rules;
-
+	
+	$rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . 'feed/%feed%/%format%') + $rules;
+	
 	return $rules;
 }
 
