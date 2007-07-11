@@ -252,7 +252,7 @@ class WP_Update{
 			preg_match_all($regex,$mat[2][$i],$matPlugins);
 
 			for( $j=0; $j < count($matPlugins[1]); $j++){
-				preg_match('#plugins/(.*?)/$#',$matPlugins[1][$j],$wordpressId);
+				preg_match('#plugins/(.*?)/#',$matPlugins[1][$j],$wordpressId);
 				$results['results'][] = array(
 							'Name' 		=> trim($matPlugins[2][$j],'<p></p>'),
 							'Desc'		=> trim($matPlugins[3][$j]),
@@ -331,7 +331,7 @@ class WP_Update{
 	 * @return array the Plugin update information on success, array of errors on failure
 	 */
 	function checkPluginUpdate($pluginfile=false,$skipcache=false,$forcecheck=false){
-		global $wp_version;
+
 		// Does the file exist
 		if( ! $pluginfile ) return array('Errors'=>array('Invalid File'));
 		
@@ -356,10 +356,11 @@ class WP_Update{
 				//Find the plugin:
 				$plugins = $this->searchPlugins($pluginData['Name']);
 				if( ! empty($plugins) ){
-					foreach( (array)$plugins as $result){
+					foreach( (array)$plugins['results'] as $result){
 						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
 							//return information:
-							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($result['Uri']);
+							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($result['PluginHome']);
+							break;
 						}
 					}
 				}
@@ -387,101 +388,12 @@ class WP_Update{
 
 		if( version_compare($pluginUpdateInfo['Version'] , $pluginData['Version'], '>') ){
 			//Theres a new version available!, Now, Check its Requirements.
-			$pluginCompatible = true; //We'll override this later
-			$errors = array();
-			foreach((array)$pluginUpdateInfo['Requirements'] as $reqInfo){
-				//$reqInfo = array( 'Name', 'Type', 'Min', 'Tested');
-				//If the Requirement Name is not set, Set it to the Type.
-				if( !isset($reqInfo['Name']) || empty($reqInfo['Name']) )
-					$reqInfo['Name'] = $reqInfo['Type'];
-
-				switch($reqInfo['Type']){
-					case "WordPress":
-						//Check the minimum version needed
-						if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
-							if( ! version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
-								$pluginCompatible = false;
-								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
-							}
-						}
-						//Check the Maximum version that its been tested with
-						if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
-							if( version_compare( $wp_version, $reqInfo['Tested'], '>' ) ){
-								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
-							}
-						}
-						break;
-					case "PHP":
-						if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
-							if( ! version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
-								$pluginCompatible = false;
-								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
-							}
-						}
-						if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
-							if( version_compare( phpversion(), $reqInfo['Tested'], '>' ) ){
-								$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
-							}
-						}
-						break;
-					case "MySQL":
-						if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
-							if( ! version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
-								$pluginCompatible = false;
-								$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
-							}
-						}
-						if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
-							if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '>' ) ){
-								$errors[] = sprintf('Only testd Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
-							}
-						}
-						break;
-					case "Plugins":
-						//TODO
-						break;
-					case "PHPExt":
-						if( ! extension_loaded( strtolower($reqInfo['Name']) ) ){
-							$errors[] = sprintf('Requires the PHP Extension: "%s"',$reqInfo['Name']);
-						} else {
-							//Extension loaded, Check version???
-							$functs = get_extension_funcs( strtolower($reqInfo['Name']) );
-							//Iterate through library functions looking for something for version
-							foreach($functs as $function){
-								//If we've found one with version..
-								if( strpos($function,'version') > -1){
-									$version = @call_user_func($function);
-									if( isset($reqInfo['Min']) ){
-										if( ! version_compare( $version, $reqInfo['Min'], '>=' ) ){
-											$pluginCompatible = false;
-											$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
-										}
-									}
-									if( isset($reqInfo['Tested']) ){
-										if( version_compare( $version, $reqInfo['Tested'], '>' ) ){
-											$errors[] = sprintf('Only testd Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
-										}
-									}//ISSET
-									break;
-								}//strpos
-							}//foreach;
-						}
-						break;
-					default:
-						do_action('wpupdate_requirement-'.$reqInfo['Type'], &$pluginUpdateInfo, &$reqInfo, &$pluginCompatible, &$errors);
-				} //end switch()
-			} //end foreach()
-			
-			$updateReturn = array(
-								'Update'=>true,
-								'Compatible'=>$pluginCompatible,
-								'Version'=>$pluginUpdateInfo['Version'], 
-								'PluginInfo' => $pluginUpdateInfo
-								);
-			//If any errors occured, Add it in:
-			if( !empty($errors) )
-				$updateReturn = array_merge($updateReturn, array('Errors'=>$errors));
-			return $updateReturn;
+			return array_merge($this->checkPluginCompatible($pluginUpdateInfo), 
+								array(
+									'Update'=>true,
+									'Version'=>$pluginUpdateInfo['Version'], 
+									'PluginInfo' => $pluginUpdateInfo
+									) );
 		} else {
 			//The currently installed version is the latest availaable.
 			return array('Update'=>false);
@@ -495,18 +407,19 @@ class WP_Update{
 	function checkPluginUpdateWordpressOrg($id){
 		if ( ! $id ) return false;
 		
-		if ( ! strpos($id,'http://') ){
+		if ( false === strpos($id,'http://') ){
 			$url = 'http://wordpress.org/extend/plugins/'.$id.'/';
 		} else {
+			//TODO: Check if the provided URL has a #...
 			$url = $id;
-			preg_match('#plugins/(.*?)/$#',$id,$_id);
+			preg_match('#plugins/(.*?)/#',$id,$_id);
 			$id = $_id[1];
 		}
-		
+
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 		preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
-		preg_match('#<strong>Version:<\/strong> ([\d\.]+)#',$snoopy->results,$version);
+		preg_match('#<strong>Version:<\/strong> ([\.\d]+?)<\/li>#',$snoopy->results,$version);
 		preg_match('#<strong>Last Updated:</strong> ([\d\-]+)#',$snoopy->results,$lastupdate);
 		preg_match("#<a href='(.*?)'>Download#",$snoopy->results,$download);
 		preg_match("#<a href='(.*?)'>Author Homepage#",$snoopy->results,$authorhomepage);
@@ -523,7 +436,7 @@ class WP_Update{
 		
 		if ( !empty($req_version) || !empty($compat_version) ){
 			$wordpress = array('Name' => 'WordPress',
-							   'Type' => 'Wordpress');
+							   'Type' => 'WordPress');
 			if( !empty($req_version) ) $wordpress['Min'] = $req_version[1];
 			if( !empty($compat_version) ) $wordpress['Tested'] = $compat_version[1];
 			$requirements[] = $wordpress;
@@ -553,6 +466,116 @@ class WP_Update{
 					);
 	}
 	
+	function checkPluginCompatible($pluginUpdateInfo){
+		global $wp_version;
+		$pluginCompatible = true; //We'll override this later
+		$errors = array();
+		foreach((array)$pluginUpdateInfo['Requirements'] as $reqInfo){
+			//$reqInfo = array( 'Name', 'Type', 'Min', 'Tested');
+			//If the Requirement Name is not set, Set it to the Type.
+			if( !isset($reqInfo['Name']) || empty($reqInfo['Name']) )
+				$reqInfo['Name'] = $reqInfo['Type'];
+	
+			switch($reqInfo['Type']){
+				case "WordPress":
+					//Check the minimum version needed
+					if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
+						if( ! version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
+							$pluginCompatible = false;
+							$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+						}
+					}
+					//Check the Maximum version that its been tested with
+					if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
+						if( version_compare( $wp_version, $reqInfo['Tested'], '>' ) ){
+							$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+						}
+					}
+					break;
+				case "PHP":
+					if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
+						if( ! version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
+							$pluginCompatible = false;
+							$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+						}
+					}
+					if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
+						if( version_compare( phpversion(), $reqInfo['Tested'], '>' ) ){
+							$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+						}
+					}
+					break;
+				case "MySQL":
+					if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
+						if( ! version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
+							$pluginCompatible = false;
+							$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+						}
+					}
+					if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
+						if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '>' ) ){
+							$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+						}
+					}
+					break;
+				case "Plugin":
+					$plugins = wpupdate_get_plugins();
+					foreach($plugins as $plugin){
+						if( false !== strcasecmp($plugin['Name'], $reqInfo['Name']) ){
+							if( isset($reqInfo['Min']) ){
+								if( ! version_compare( $plugin['Version'], $reqInfo['Min'], '>=' ) ){
+									$pluginCompatible = false;
+									$errors[] = sprintf('Requires WordPress Plugin %s %s',$reqInfo['Name'],$reqInfo['Min']);
+								}
+							}
+							if( isset($reqInfo['Tested']) ){
+								if( version_compare( $plugin['Version'], $reqInfo['Tested'], '>' ) ){
+									$errors[] = sprintf('Only tested with version %s of the plugin %s',$reqInfo['Tested'], $reqInfo['Name']);
+								}
+							}//ISSET
+							break;
+						}
+					}
+					break;
+				case "PHPExt":
+					if( ! extension_loaded( strtolower($reqInfo['Name']) ) ){
+						$errors[] = sprintf('Requires the PHP Extension: "%s"',$reqInfo['Name']);
+					} else {
+						//Extension loaded, Check version???
+						$functs = get_extension_funcs( strtolower($reqInfo['Name']) );
+						//Iterate through library functions looking for something for version
+						foreach($functs as $function){
+							//If we've found one with version..
+							if( strpos($function,'version') > -1){
+								$version = @call_user_func($function);
+								if( isset($reqInfo['Min']) ){
+									if( ! version_compare( $version, $reqInfo['Min'], '>=' ) ){
+										$pluginCompatible = false;
+										$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+									}
+								}
+								if( isset($reqInfo['Tested']) ){
+									if( version_compare( $version, $reqInfo['Tested'], '>' ) ){
+										$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+									}
+								}//ISSET
+								break;
+							}//strpos
+						}//foreach;
+					}
+					break;
+				default:
+					do_action('wpupdate_requirement-'.$reqInfo['Type'], &$pluginUpdateInfo, &$reqInfo, &$pluginCompatible, &$errors);
+			} //end switch()
+		} //end foreach()
+
+		$pluginCompatible = array('Compatible'=>$pluginCompatible);
+		if( !empty($errors) )
+			$pluginCompatible['Errors'] = $errors;
+			
+		return $pluginCompatible;
+	}
+	
 	/**
 	 * Checks a Custom update URL for a plugin
 	 * @param string $uri the update link for the plugin
@@ -561,8 +584,7 @@ class WP_Update{
 	function checkPluginUpdateCustom($uri){
 		$snoopy = new Snoopy();
 		$snoopy->fetch($uri);
-		//TODO: If Is serialised data, then return, else return null.. 
-		//		Also should determine the type of the data, and if its a URL of wordpress.org or something
+		//TODO: Also should determine the type of the data, and if its a URL of wordpress.org or something
 		if( strpos($snoopy->results, '<?xml') > -1 ){
 			$data = $this->__PluginUpdateCustomParse($snoopy->results);
 		/*} elseif( is_rss($snoopy->results){

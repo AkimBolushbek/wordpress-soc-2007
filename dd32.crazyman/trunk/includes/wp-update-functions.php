@@ -107,7 +107,7 @@ function wpupdate_pluginSearchHTML($plugin){
 				' . wordwrap($plugin['Desc'],25,"<br/>\n") . '
 				</p>
 				<p>
-				<a href="plugins.php?page=wp-update/wp-update-plugin-install.php&step=2&url='.urlencode($plugin['Download']).'">' . __('Install') . '</a> 
+				<a href="plugins.php?page=wp-update/wp-update-plugins-install.php&wp-id='.urlencode($plugin['Id']).'">' . __('Install') . '</a> 
 				<a href="'.$plugin['PluginHome'].'" target="_blank">WordPress.Org</a>
 				</p>
 		</span></div> &nbsp; ';
