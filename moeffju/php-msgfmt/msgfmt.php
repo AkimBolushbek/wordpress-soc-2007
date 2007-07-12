@@ -49,7 +49,7 @@
  * @license http://opensource.org/licenses/lgpl-license.php GNU Lesser General Public License 2.1
  * @license http://opensource.org/licenses/apache2.0.php Apache License 2.0
  */
- 
+
 /*
  * This is a command line PHP script to compile gettext PO files into gettext MO files.
  * Output should be equivalent to that of msgfmt --no-hash
@@ -57,14 +57,20 @@
  * Syntax: ./msgfmt.php file.po [-o output.mo]
  */
 
-include(dirname(__FILE__).'/msgfmt-functions.php');
+include (dirname(__FILE__) . '/msgfmt-functions.php');
 
 array_shift($argv);
 $in= array_shift($argv);
 $out= str_replace('.po', '.mo', $in);
-if (array_shift($argv) == '-o') $out= array_shift($argv);
+if (array_shift($argv) == '-o')
+	$out= array_shift($argv);
 
 $hash= parse_po_file($in);
-write_mo_file($hash, $out);
+if ($hash === FALSE) {
+	print("Error reading '{$in}', aborted.\n");
+}
+else {
+	write_mo_file($hash, $out);
+}
 
 ?>
