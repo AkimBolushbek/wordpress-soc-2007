@@ -1,0 +1,84 @@
+Index: wpsoc/wp-admin/wp-admin.css
+===================================================================
+--- wpsoc/wp-admin/wp-admin.css	(revision 5797)
++++ wpsoc/wp-admin/wp-admin.css	(working copy)
+@@ -1337,3 +1337,9 @@
+ 	margin-right: 220px;
+ 	text-decoration:underline;
+ }
++
++/* Language Picker */
++form#user_lang_picker {
++  text-align: right;
++  margin-top: -0.6em;
++}
+Index: wpsoc/wp-admin/admin.php
+===================================================================
+--- wpsoc/wp-admin/admin.php	(revision 5797)
++++ wpsoc/wp-admin/admin.php	(working copy)
+@@ -2,7 +2,7 @@
+ if ( defined('ABSPATH') )
+ 	require_once( ABSPATH . 'wp-config.php');
+ else
+-    require_once('../wp-config.php');
++  require_once('../wp-config.php');
+ 
+ if ( get_option('db_version') != $wp_db_version ) {
+ 	wp_redirect(get_option('siteurl') . '/wp-admin/upgrade.php?_wp_http_referer=' . urlencode(stripslashes($_SERVER['REQUEST_URI'])));
+@@ -19,6 +19,36 @@
+ 
+ wp_get_current_user();
+ 
++/* Begin on the fly lang switch */
++$languages= array(
++  array(
++    'iso_code' => '',
++    'long_name' => 'English',
++    'long_name_en' => 'English',
++  ),
++  array(
++    'iso_code' => 'de_DE',
++    'long_name' => 'Deutsch',
++    'long_name_en' => 'German',
++  ),
++);
++
++if (isset($_POST) && isset($_POST['user_lang'])) {
++  //echo "Setting User #{$current_user->id} lang to {$_POST['user_lang']}";
++  update_usermeta($current_user->id, 'lang', addslashes($_POST['user_lang']));
++}
++$user_lang= get_usermeta($current_user->id, 'lang');
++$locale= $user_lang;
++
++// reload locale
++load_default_textdomain();
++$locale_file = ABSPATH . LANGDIR . "/$locale.php";
++if ( is_readable($locale_file) )
++	require_once($locale_file);
++require_once(ABSPATH . WPINC . '/locale.php');
++$wp_locale =& new WP_Locale();
++/* End on the fly lang switch */
++
+ $posts_per_page = get_option('posts_per_page');
+ $what_to_show = get_option('what_to_show');
+ $date_format = get_option('date_format');
+Index: wpsoc/wp-admin/admin-header.php
+===================================================================
+--- wpsoc/wp-admin/admin-header.php	(revision 5797)
++++ wpsoc/wp-admin/admin-header.php	(working copy)
+@@ -1,4 +1,5 @@
+ <?php
++
+ @header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
+ if (!isset($_GET["page"])) require_once('admin.php');
+ if ( $editing ) {
+@@ -46,7 +47,8 @@
+ <div id="wphead">
+ <h1><?php bloginfo('name'); ?> <span>(<a href="<?php echo get_option('home') . '/'; ?>"><?php _e('View site &raquo;') ?></a>)</span></h1>
+ </div>
+-<div id="user_info"><p><?php printf(__('Howdy, <strong>%s</strong>.'), $user_identity) ?> [<a href="<?php echo get_option('siteurl'); ?>/wp-login.php?action=logout" title="<?php _e('Log out of this account') ?>"><?php _e('Sign Out'); ?></a>, <a href="profile.php"><?php _e('My Profile'); ?></a>] </p></div>
++<div id="user_info"><p><?php printf(__('Howdy, <strong>%s</strong>.'), $user_identity) ?> [<a href="<?php echo get_option('siteurl'); ?>/wp-login.php?action=logout" title="<?php _e('Log out of this account') ?>"><?php _e('Sign Out'); ?></a>, <a href="profile.php"><?php _e('My Profile'); ?></a>] </p>
++<form method="POST" id="user_lang_picker"><?php _e('Language:'); ?> <select name="user_lang"><?php foreach ($languages as $lang): ?><option value="<?php echo $lang['iso_code']; ?>"<?php if ($user_lang==$lang['iso_code']) echo ' selected="selected"'; ?>><?php echo $lang['long_name']; ?></option><?php endforeach; ?></select><input type="submit" value="<?php _e('Go'); ?>" /></form></div>
+ 
+ <?php
+ require(ABSPATH . '/wp-admin/menu-header.php');
