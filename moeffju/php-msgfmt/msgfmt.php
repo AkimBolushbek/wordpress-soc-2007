@@ -57,14 +57,14 @@
  * Syntax: ./msgfmt.php file.po [-o output.mo]
  */
 
-include './msgfmt-functions.php';
+include(dirname(__FILE__).'/msgfmt-functions.php');
 
 array_shift($argv);
 $in= array_shift($argv);
 $out= str_replace('.po', '.mo', $in);
 if (array_shift($argv) == '-o') $out= array_shift($argv);
 
-$hash= read_po_file($in);
+$hash= parse_po_file($in);
 write_mo_file($hash, $out);
 
 ?>
