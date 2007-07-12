@@ -164,11 +164,11 @@ function parse_po_file($in) {
 				// parse error
 				return FALSE;
 			}
-			$hash[$entry['msgid']]= $entry;
 		}
-
-		return $hash;
+		$hash[$entry['msgid']]= $entry;
 	}
+
+	return $hash;
 }
 
 /* Write a GNU gettext style machine object. */
@@ -237,4 +237,5 @@ function write_mo_file($hash, $out) {
 
 	file_put_contents($out, $mo);
 }
+
 ?>
