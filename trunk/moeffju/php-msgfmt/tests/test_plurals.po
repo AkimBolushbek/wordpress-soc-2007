@@ -1,0 +1,114 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2006-12-15 11:16+0100\n"
+"PO-Revision-Date: 2007-01-10 17:24+0100\n"
+"Last-Translator: michelef <michele@drupalitalia.org>\n"
+"Language-Team: drupal.it team <info@drupal.it>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+
+#: includes/common.inc:324
+msgid "Site off-line"
+msgstr "Sito off-line"
+
+#: includes/common.inc:353
+msgid "Page not found"
+msgstr "Pagina non trovata"
+
+#: includes/common.inc:382
+msgid "Access denied"
+msgstr "Accesso negato"
+
+#: includes/common.inc:383
+msgid "You are not authorized to access this page."
+msgstr "Non sei autorizzato ad accedere a questa pagina."
+
+#: includes/common.inc:555
+msgid "%message in %file on line %line."
+msgstr "%message in %file nella riga %line."
+
+#: includes/common.inc:992
+msgid "bytes"
+msgstr "byte"
+
+#: includes/common.inc:995
+msgid "KB"
+msgstr "KB"
+
+#: includes/common.inc:1001
+msgid "@size @suffix"
+msgstr "@size @suffix"
+
+#: includes/common.inc:1029
+msgid "0 sec"
+msgstr "0 sec"
+
+#: includes/common.inc:1966
+msgid "Cron has been running for more than an hour and is most likely stuck."
+msgstr "Cron ha funzionato per più di un'ora ed è molto probabilmente bloccato."
+
+#: includes/common.inc:1973
+msgid "Attempting to re-run cron while it is already running."
+msgstr "Tentativo di riavviare cron mentre è già attivo."
+
+#: includes/common.inc:1988
+msgid "Cron run completed."
+msgstr "Processo di cron completato."
+
+#: includes/common.inc:2004
+msgid "Cron run exceeded the time limit and was aborted."
+msgstr "Il processo di cron ha ecceduto il limite di tempo ed è stato fermato."
+
+#: includes/common.inc:335
+msgid "page not found"
+msgstr "pagina non trovata"
+
+#: includes/common.inc:364
+msgid "access denied"
+msgstr "accesso negato"
+
+#: includes/common.inc:1966;1973;1988;2004
+msgid "cron"
+msgstr "cron"
+
+#: includes/common.inc:0
+msgid "1 year"
+msgid_plural "%count years"
+msgstr[0] "1 anno"
+msgstr[1] "%count anni"
+
+#: includes/common.inc:0
+msgid "1 week"
+msgid_plural "%count weeks"
+msgstr[0] "1 settimana"
+msgstr[1] "%count settimane"
+
+#: includes/common.inc:0
+msgid "1 day"
+msgid_plural "%count days"
+msgstr[0] "1 giorno"
+msgstr[1] "%count giorni"
+
+#: includes/common.inc:0
+msgid "1 hour"
+msgid_plural "%count hours"
+msgstr[0] "1 ora"
+msgstr[1] "%count ore"
+
+#: includes/common.inc:0
+msgid "1 min"
+msgid_plural "%count min"
+msgstr[0] "1 min"
+msgstr[1] "%count min"
+
+#: includes/common.inc:0
+msgid "1 sec"
+msgid_plural "%count sec"
+msgstr[0] "1 sec"
+msgstr[1] "%count sec"
+
