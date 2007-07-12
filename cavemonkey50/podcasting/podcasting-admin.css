@@ -1,37 +1,47 @@
-table.pod_enclosure {
+table.pod_enclosure, table.pod_format {
 	border: 1px solid #ccc;
 	margin: 0 0 10px 0;
 	width: 100%;
 }
 
-#podcasting table.pod_enclosure td {
+table.pod_format {
+	width: 95%;
+	margin: 0 auto 20px auto;
+}
+
+#podcasting table.pod_enclosure td, table.pod_format td {
 	padding-right: 12px;
 	background: #f1f1f1;
 }
 
-#podcasting table.pod_enclosure td.pod-title {
+#podcasting table.pod_enclosure td.pod-title, table.pod_format td.pod-title {
 	font-weight: bold;
 	background: #dfdfdf;
 	padding-right: 5px;
 }
 
-#podcasting table.pod_enclosure input, #podcasting table.pod_enclosure select {
+#podcasting table.pod_enclosure input, #podcasting table.pod_enclosure select,
+table.pod_format input, table.pod_format select {
 	width: 100%;
+}
+
+table.pod_format td.pod-format-feed {
+	padding: 7px 5px;
 }
 
 #podcasting table.pod_enclosure .pod-length {
 	width: 60px;
 }
 
-#podcasting table.pod_enclosure .pod-explicit {
+#podcasting table.pod_enclosure .pod-explicit, #podcasting table.pod_format .pod-format-explicit {
 	width: 68px;
 }
 
-#podcasting table.pod_enclosure .pod-update {
+#podcasting table.pod_enclosure .pod-update, table.pod_format .pod-update {
 	width: 128px;
 }
 
-#podcasting table.pod_enclosure .pod-update input {
+#podcasting table.pod_enclosure .pod-update input, table.pod_format .pod-update input {
 	width: 60px;
 }
 

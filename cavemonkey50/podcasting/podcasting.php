@@ -138,7 +138,7 @@ function podcasting_options_page() {
 			<table class="optiontable">
 				<tr valign="top">
 					<th scope="row">
-						<label for="pod_title">Podcast feed address (URL):</label>
+						<label>Podcast feed address (URL):</label>
 					</th>
 					<td>
 						<p style="margin: 3px 0;"><strong>
@@ -273,6 +273,75 @@ function podcasting_options_page() {
 		
 		<p class="submit">
 			<input type="submit" name="Submit" value="Update Options &raquo;" />
+		</p>
+		
+		<fieldset class="options">
+			<legend>Formats</legend>
+			<table cellpadding="3" class="pod_format">
+				<tr>
+					<td class="pod-title">Format Feed</td>
+					<td class="pod-format-feed" colspan="6">test</td>
+				</tr>
+				<tr>
+					<td class="pod-title">Format Name</td>
+					<td><input type="text" name="pod_format_name_" class="pod_format_name" value="" /></input>					
+					<td class="pod-title">Format Slug</td>
+					<td><input type="text" name="pod_format_slug_" class="pod_format_slug" value="" /></input></td>					
+					<td class="pod-title">Explicit</td>
+					<td><select name="pod_format_explicit_" class="pod_format_explicit">
+						<?php $explicits = array('', 'no', 'yes', 'clean');
+						foreach ($explicits as $explicit) {
+							$selected = ($explicit == '') ? ' selected="selected"' : '';
+							echo '<option value="' . $explicit . '"' . $selected . '>' . ucfirst($explicit) . '</option>';
+						} ?>
+					</select></td>					
+					<td class="pod-update">
+						<input name="Submit" type="submit" class="" value="Update" /> 
+						<input name="delete_pod_format_" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast_format', , 'You are about to delete a podcast format.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
+				</tr>
+			</table>
+		</fieldset>
+		
+		<fieldset class="options">
+			<legend>Add a New Format</legend>
+			<table class="optiontable">
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_format_name">Format name:</label>
+					</th>
+					<td>
+						<input type="text" size="40" name="pod_format_name" id="pod_format_name" value="" />
+						<br />The display name of your new new format.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_format_slug">Format slug:</label>
+					</th>
+					<td>
+						<input type="text" size="40" name="pod_format_slug" id="pod_format_slug" value="" />
+						<br />If you leave this field blank, a slug will automatically be generated for you.
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="pod_format_explicit">Explicit:</label>
+					</th>
+					<td>
+						<select name="pod_format_explicit" id="pod_format_explicit">
+							<option value=""></option>
+							<option value="no">No</option>
+							<option value="yes">Yes</option>
+							<option value="clean">Clean</option>
+						</select>
+						<br />The explicit setting for this format. If you leave this field blank, your global podcast explicit setting will be used.
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		
+		<p class="submit">
+			<input type="submit" name="Submit" value="Add Format &raquo;" />
 		</p>
 	</div>
 	</form>
