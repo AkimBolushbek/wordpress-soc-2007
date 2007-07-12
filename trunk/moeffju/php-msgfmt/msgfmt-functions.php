@@ -52,7 +52,7 @@
 function _po_clean_helper($x) {
   if (is_array($x)) {
     foreach ($x as $k => $v) {
-      $x[$k]= clean($v);
+      $x[$k]= _po_clean_helper($v);
     }
   }
   else {
