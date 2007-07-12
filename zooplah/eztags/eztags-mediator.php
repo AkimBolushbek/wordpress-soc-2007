@@ -5,10 +5,16 @@
 require_once 'eztags_fromstandard.php';
 require_once 'eztags_tostandard.php';
 
+function remove_empty_php(&$content)
+{
+	$content = preg_replace('/&lt;\?php\s*\?&gt;/', '', $content);
+}
+
 /* Replace Standard tags with Easy tags */
 function std2ez($content)
 {
 	eztags_parse_std($content);
+	remove_empty_php($content);
 
 	return $content;
 }
