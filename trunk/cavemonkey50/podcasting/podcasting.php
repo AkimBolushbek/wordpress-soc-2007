@@ -13,26 +13,7 @@ Author URI: http://cavemonkey50.com/
 
 // Install podcasting
 add_action('activate_podcasting/podcasting.php', 'podcasting_install');
-register_taxonomy('podcast_format', 'custom_field');
-
-// Add Podcasting options to the database
-add_option('pod_title', get_option('blogname'), "The podcast's title");
-add_option('pod_tagline', get_option('blogdescription'), "The podcast's tagline");
-add_option('pod_itunes_summary', '', 'iTunes summary');
-add_option('pod_itunes_author', '', 'iTunes author');
-add_option('pod_itunes_image', '', 'iTunes image');
-add_option('pod_itunes_cat1', '', 'iTunes category 1');
-add_option('pod_itunes_cat2', '', 'iTunes category 2');
-add_option('pod_itunes_cat3', '', 'iTunes category 3');
-add_option('pod_itunes_keywords', '', 'iTunes keywords');
-add_option('pod_itunes_explicit', '', 'iTunes explicit');
-add_option('pod_itunes_ownername', '', 'iTunes owner name');
-add_option('pod_itunes_owneremail', '', 'iTunes owner email');
-
-// Add Podcasting to the options menu
-function add_podcasting_pages() {
-	add_options_page('Podcasting Options', 'Podcasting', 8, basename(__FILE__), 'podcasting_options_page');
-}
+add_action('init', 'podcasting_init');
 add_action('admin_menu', 'add_podcasting_pages');
 
 // Add post page information
@@ -44,8 +25,7 @@ add_action('save_post', 'podcasting_save_form');
 add_action('delete_post', 'podcasting_delete_form');
 
 // Add the podcast feed
-add_action('do_feed_podcast', 'do_feed_podcast');
-add_filter('rewrite_rules_array', 'podcasting_rewrite_rules');
+add_filter('generate_rewrite_rules', 'podcasting_rewrite_rules');
 add_filter('query_vars', 'podcasting_query_vars');
 add_filter('posts_join', 'podcasting_feed_join');
 add_filter('posts_where', 'podcasting_feed_where');
@@ -63,9 +43,35 @@ add_action('rss2_item', 'podcasting_add_itunes_item');
 
 /* ------------------------------------ INSTALL ------------------------------------ */
 
-// Install the base podcasting taxonomy
+// Install the base podcasting settings
 function podcasting_install() {
-	wp_insert_term('Default Format', 'podcast_format'); // Default format
+	// Taxonomy
+	wp_insert_term('Default Format', 'podcast_format');
+	
+	// Add Podcasting options to the database
+	add_option('pod_title', get_option('blogname'), "The podcast's title");
+	add_option('pod_tagline', get_option('blogdescription'), "The podcast's tagline");
+	add_option('pod_itunes_summary', '', 'iTunes summary');
+	add_option('pod_itunes_author', '', 'iTunes author');
+	add_option('pod_itunes_image', '', 'iTunes image');
+	add_option('pod_itunes_cat1', '', 'iTunes category 1');
+	add_option('pod_itunes_cat2', '', 'iTunes category 2');
+	add_option('pod_itunes_cat3', '', 'iTunes category 3');
+	add_option('pod_itunes_keywords', '', 'iTunes keywords');
+	add_option('pod_itunes_explicit', '', 'iTunes explicit');
+	add_option('pod_itunes_ownername', '', 'iTunes owner name');
+	add_option('pod_itunes_owneremail', '', 'iTunes owner email');
+}
+
+// Run on WordPress load
+function podcasting_init() {
+	add_feed('podcast', 'do_feed_podcast');
+	register_taxonomy('podcast_format', 'custom_field');
+}
+
+// Add Podcasting to the options menu
+function add_podcasting_pages() {
+	add_options_page('Podcasting Options', 'Podcasting', 8, basename(__FILE__), 'podcasting_options_page');
 }
 
 
@@ -519,16 +525,33 @@ function do_feed_podcast() {
 }
 
 // Pretty permalinks for the custom feed
-function podcasting_rewrite_rules($rules) {
-	global $wp_rewrite;
+function podcasting_rewrite_rules($wp_rewrite) {
+	// Rewrite rules are manually entered as there is no hook for adding addition feed queries
+	$feed_rules = array(
+		'podcast/(.+)/?$' => 'index.php?feed=podcast&format=' . $wp_rewrite->preg_index(1),
+		'feed/podcast/(.+)/?$' => 'index.php?feed=podcast&format=' . $wp_rewrite->preg_index(1),
+		'search/(.+)/podcast/(.+)/?$' => 'index.php?s=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'search/(.+)/feed/podcast/(.+)/?$' => 'index.php?s=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'category/(.+?)/podcast/(.+)/?$' => 'index.php?category_name=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'category/(.+?)/feed/podcast/(.+)/?$' => 'index.php?category_name=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'tag/(.+?)/podcast/(.+)/?$' => 'index.php?tag=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'tag/(.+?)/feed/podcast/(.+)/?$' => 'index.php?tag=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'author/([^/]+)/podcast/(.+)/?$' => 'index.php?author_name=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'author/([^/]+)/feed/podcast/(.+)/?$' => 'index.php?author_name=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&monthnum=' . $wp_rewrite->preg_index(2) . '&day=' . $wp_rewrite->preg_index(3) . '&feed=podcast&format=' . $wp_rewrite->preg_index(4),
+		'([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/feed/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&monthnum=' . $wp_rewrite->preg_index(2) . '&day=' . $wp_rewrite->preg_index(3) . '&feed=podcast&format=' . $wp_rewrite->preg_index(4),
+		'([0-9]{4})/([0-9]{1,2})/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&monthnum=' . $wp_rewrite->preg_index(2) . '&feed=podcast&format=' . $wp_rewrite->preg_index(3),
+		'([0-9]{4})/([0-9]{1,2})/feed/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&monthnum=' . $wp_rewrite->preg_index(2) . '&feed=podcast&format=' . $wp_rewrite->preg_index(3),
+		'([0-9]{4})/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'([0-9]{4})/feed/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&feed=podcast&format=' . $wp_rewrite->preg_index(2),
+		'([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/([^/]+)/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&monthnum=' . $wp_rewrite->preg_index(2) . '&day=' . $wp_rewrite->preg_index(3) . '&name=' . $wp_rewrite->preg_index(4) . '&feed=podcast&format=' . $wp_rewrite->preg_index(5),
+		'([0-9]{4})/([0-9]{1,2})/([0-9]{1,2})/([^/]+)/feed/podcast/(.+)/?$' => 'index.php?year=' . $wp_rewrite->preg_index(1) . '&monthnum=' . $wp_rewrite->preg_index(2) . '&day=' . $wp_rewrite->preg_index(3) . '&name=' . $wp_rewrite->preg_index(4) . '&feed=podcast&format=' . $wp_rewrite->preg_index(5)
+	);
 
-	$wp_rewrite->add_rewrite_tag('%feed%', '(.+)', 'feed=');
-	$wp_rewrite->add_rewrite_tag('%format%', '(.+)', 'format=');
+	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
 	
-	$rules = $wp_rewrite->generate_rewrite_rules($wp_rewrite->root . 'feed/%feed%/%format%') + $rules;
-	
-	return $rules;
-}
+	print_r($wp_rewrite->rules);
+} // podcasting_rewrite_rules()
 
 // Adds variable to select format for podcasting
 function podcasting_query_vars($vars) {
@@ -540,10 +563,19 @@ function podcasting_query_vars($vars) {
 function podcasting_feed_join($join) {
 	global $wpdb;
 	if ( 'podcast' == get_query_var('feed') ) {
-		$join .= " INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
-		$join .= " INNER JOIN {$wpdb->term_relationships} ON {$wpdb->postmeta}.meta_id = {$wpdb->term_relationships}.object_id";
-		$join .= " INNER JOIN {$wpdb->term_taxonomy} ON {$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id";
-		$join .= " INNER JOIN {$wpdb->terms} ON {$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id";
+		$meta = "JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
+		$relationships = "JOIN {$wpdb->term_relationships} rel ON ({$wpdb->postmeta}.meta_id = rel.object_id)";
+		$taxonomy = "JOIN {$wpdb->term_taxonomy} ON ({$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id)";
+		$terms = "JOIN {$wpdb->terms} ON ({$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id)";
+		
+		// Add joins while checking the join did not occur already
+		if ( !strstr($join, $meta) )
+			$join .= " INNER {$meta}";		
+		$join .= " INNER {$relationships}";		
+		if ( !strstr($join, $taxonomy) )
+			$join .= " INNER JOIN {$wpdb->term_taxonomy} ON (rel.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id)";
+		if ( !strstr($join, $terms) )
+			$join .= " INNER {$terms}";
 	}
 	return $join;
 }
