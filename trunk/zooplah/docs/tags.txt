@@ -33,18 +33,18 @@ future, though all it will really do is add bloat and perhaps
 bugs to the code.
 
 Currently implemented tags:
+<$EntryAuthor$>
+	The author of the current entry or blog.
+	Attributes: None
 <$EntryTitle$>
-	The title of the current entry/blog.
-	Attributes: None
+	The title of the current entry or blog.
+	Attributes:
+	lang
+		Does nothing.  Must be "en".
 
-<Entries>
-	Contains information about each entry.
-	Attributes: None.
-	(Not fully implemented)
-<NoEntries>
-	Contains the text to display if no entry is found.
-	Attributes: None
-	(Not fully implemented)
+<TranslatableString>
+	A string to be translated.  It is to be used alone and
+	not in attribute values nor nested in other tags.
 
 ISSUES
 Currently, tag and attribute names are case sensitive.  That may

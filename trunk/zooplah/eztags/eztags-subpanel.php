@@ -2,7 +2,7 @@
 
 /* The "Easier Theme Editor" subpanel page
  * It's just a hack of the theme editor
-*/
+ */
 
 require_once 'eztags-mediator.php';
 
@@ -60,7 +60,9 @@ case 'update':
 	$location = wp_kses_no_null($location);
 	$strip = array('%0d', '%0a');
 	$location = str_replace($strip, '', $location);
-	header("Location: $location");
+	@header("Location: $location");
+	echo '<script type="text/javascript">location.replace(\'' . $location . '\');</script>';
+
 	exit();
 
 break;

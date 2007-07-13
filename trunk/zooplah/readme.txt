@@ -18,11 +18,11 @@ I wouldn't recommend trying it out yet.  It's not even open to
 testers yet.
 
 == Use ==
-See tags.txt.  It's actually quite easy.
+See docs/tags.txt.  It's actually quite easy.
 
 == Development ==
 IMPROVING THE PLUGIN
-See specs.txt for how the plugin works.  If you want to make it
+See docs/specs.txt for how the plugin works.  If you want to make it
 better, then by all means*...  Note:  For everyone's sake, please
 wait until after Summer of Code 2007 (let's say, until September).
 The plugin won't be done before then and I'm sure my mentor won't
@@ -58,3 +58,7 @@ places on your computer.
 * After saving the file, rediretion to the editor doesn't work.
   The files are saved to the disk, but you have to reclick on
   a couple links to resume editing.
+* Not all PHP will be converted to an easier format.  Just ignore
+  the parts that you don't understand.
+* Installing the plugin to a subdirectory wp-content/plugins
+  doesn't seem to work.
