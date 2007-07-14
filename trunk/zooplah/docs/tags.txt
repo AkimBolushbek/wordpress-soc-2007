@@ -36,6 +36,12 @@ Currently implemented tags:
 <$EntryAuthor$>
 	The author of the current entry or blog.
 	Attributes: None
+<$EntryID$>
+	The ID of the current entry.
+	Attributes: None
+<$EntryPermalink$>
+	The URL of the current entry.
+	Attributes: None
 <$EntryTitle$>
 	The title of the current entry or blog.
 	Attributes:
@@ -43,9 +49,17 @@ Currently implemented tags:
 		Does nothing.  Must be "en".
 
 <TranslatableString>
-	A string to be translated.  It is to be used alone and
-	not in attribute values nor nested in other tags.
+	A string to be translated.
+	Attributes: None
+	Notes:
+		This tag must contain a string contained in the
+		localization table (e.g. eo.po).
 
-ISSUES
-Currently, tag and attribute names are case sensitive.  That may
-change in the future, but be cautious for now.
+NOTES
+1. Currently, tag and attribute names are case sensitive.
+   That may change in the future, but be cautious for now.
+2. Not all PHP is converted.
+3. PHP sections start with "<?php" and ends with "?>".  Easier
+   template tags must be placed outside of PHP sections.  It's
+   best to only use easier template tags in areas where others are
+   present.

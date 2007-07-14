@@ -14,6 +14,16 @@ function eztags_from_e(&$ct)
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
 }
 
+function eztags_from_id(&$ct)
+{
+	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryId$>&lt;?php', $ct);
+}
+
+function eztags_from_permalink(&$ct)
+{
+	$ct = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $ct);
+}
+
 function eztags_from_title(&$ct)
 {
 	preg_match('/the_title\(([^\)]*)\);?/', $ct, $matches);
@@ -30,6 +40,8 @@ function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
 	eztags_from_e($ct);
+	eztags_from_id($ct);
+	eztags_from_permalink($ct);
 	eztags_from_title($ct);
 }
 

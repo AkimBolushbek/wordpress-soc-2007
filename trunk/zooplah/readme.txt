@@ -32,7 +32,7 @@ improve it.
 
 IF A THEME DOESN'T WORK
 That's a very real possibility.  Please don't report bugs or do
-anything to your plugin until after Summer of Code 2007.  Before
+anything to your theme until after Summer of Code 2007.  Before
 then, the plugin will be considered unfinished and subject to
 major modifications, improvements, etc.  However, after that
 time, two courses of action are possible.
@@ -42,11 +42,11 @@ theme, it probably will be easier to change the theme to a more
 coherent format.  That will help on both our sides.
 
 * LICENSING
-This plugin is licensed under the GPL.  It had to be.  I personally
-like the BSD-style licenses better.  They give you more freedom, I
-think and require that you indicate the origin of your code (that
-I wrote the original code).  But I wasn't given a choice in the
-matter.
+This plugin is licensed under the GPL.  It had to be.  I
+personally like the BSD-style licenses better.  They give you
+more freedom, I think, and require only that you indicate the
+origin of your code (that I wrote the original code).  But I
+wasn't given a choice in the matter.
 
 The full text is available in your WordPress install, on gnu.org,
 and if you use third-party free software, probably in hundreds of
@@ -60,5 +60,5 @@ places on your computer.
   a couple links to resume editing.
 * Not all PHP will be converted to an easier format.  Just ignore
   the parts that you don't understand.
-* Installing the plugin to a subdirectory wp-content/plugins
+* Installing the plugin to a subdirectory of wp-content/plugins
   doesn't seem to work.
