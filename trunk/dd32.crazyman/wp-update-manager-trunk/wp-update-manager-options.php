@@ -281,7 +281,7 @@ $items = get_option('wpum_items');
 		</tr>
 		</thead>
 	<?php foreach((array)$items as $id=>$item){ 
-			$style = ('class="alternate"' == $style|| 'class="alternate active"' == $style) ? '' : 'alternate';
+			$style = ('class="alternate"' == $style) ? '' : 'class="alternate"';
 		?>
 		<tr <?php echo $style; ?>>
 			<td><?php echo $item['name']; ?></td>
