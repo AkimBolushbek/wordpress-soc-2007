@@ -100,11 +100,11 @@ function wpupdate_themeSearchHTML($theme){
 				</span>
 			</div>\n";
 }
-function wpupdate_pluginSearchHTML($plugin){
+function wpupdate_pluginSearchHTML($plugin,$wordwrap=25){
 	return '<div class="plugin"><span>
 			<h3>'.$plugin['Name'].'</h3>
 				<p>
-				' . wordwrap($plugin['Desc'],25,"<br/>\n") . '
+				' . wordwrap($plugin['Desc'],$wordwrap,"<br/>\n") . '
 				</p>
 				<p>
 				<a href="plugins.php?page=wp-update/wp-update-plugins-install.php&wp-id='.urlencode($plugin['Id']).'">' . __('Install') . '</a> 
@@ -124,5 +124,27 @@ function succeeded($result=false,$args=''){
 		return $r['before'] . '<span style="color:' . $r['true-colour'] . '">' . __($r['true']) . '</span>' . $r['after'];
 	else
 		return $r['before'] . '<span style="color:' . $r['false-colour'] . '">' . __($r['false']) . '</span>' . $r['after'];
+}
+function wpupdate_url_to_file($url=false){
+	//WARNING: The file is not automatically deleted, The script must unlink() the file.
+	if( ! $url )
+		return false;
+
+	$tmpfname = tempnam('/tmp', 'wpupdate');
+	if( ! $tmpfname )
+		return false;
+
+	$handle = fopen($tmpfname, 'w');
+	if( ! $handle )
+		return false;
+
+	require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
+	$snoopy = new Snoopy();
+	$snoopy->fetch($url);
+	
+	fwrite($handle, $snoopy->results);
+	fclose($handle);
+
+	return $tmpfname;
 }
 ?>
