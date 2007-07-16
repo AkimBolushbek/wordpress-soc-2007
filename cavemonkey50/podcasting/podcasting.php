@@ -399,15 +399,15 @@ function podcasting_edit_form() {
 							echo '<option value="' . $pod_format->slug . '"' . $selected . '>' . $pod_format->name . '</option>';
 						} ?>
 					</select></td>
-					<td class="pod-title"><abbr title="Up to 12 comma-separated words which iTunes uses for search placement.">Keywords</abbr></td>
+					<td class="pod-title"><a href="#">Keywords<span>Up to 12 comma-separated words which iTunes uses for search placement.</span></a></td>
 					<td colspan="4"><input type="text" name="pod_keywords_<?php echo $enclosure['meta_id']; ?>" class="pod_keywords" value="<?php echo stripslashes($enclosure_itunes['keywords']); ?>" /></td>
 				</tr>
 				<tr>
-					<td class="pod-title"><abbr title="Author name if different than default.">Author</abbr></td>
+					<td class="pod-title"><a href="#">Author<span>Author name if different than default.</span></a></td>
 					<td><input type="text" name="pod_author_<?php echo $enclosure['meta_id']; ?>" class="pod_author" value="<?php echo stripslashes($enclosure_itunes['author']); ?>" /></td>
-					<td class="pod-title"><abbr title="Length of the podcast in HH:MM:SS format.">Length</abbr></td>
+					<td class="pod-title"><a href="#">Length<span>Length of the podcast in HH:MM:SS format.</span></a></td>
 					<td class="pod-length"><input type="text" name="pod_length_<?php echo $enclosure['meta_id']; ?>" class="pod_length" value="<?php echo stripslashes($enclosure_itunes['length']); ?>" /></td>
-					<td class="pod-title"><abbr title="Explicit setting if different than default.">Explicit</abbr></td>
+					<td class="pod-title"><a href="#">Explicit<span>Explicit setting if different than default.</span></a></td>
 					<td class="pod-explicit"><select name="pod_explicit_<?php echo $enclosure['meta_id']; ?>" class="pod_format">
 						<?php $explicits = array('', 'no', 'yes', 'clean');
 						foreach ($explicits as $explicit) {
