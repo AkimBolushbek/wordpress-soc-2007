@@ -52,8 +52,8 @@ Currently implemented tags:
 	A string to be translated.
 	Attributes: None
 	Notes:
-		This tag must contain a string contained in the
-		localization table (e.g. eo.po).
+		The content of this tag is a string contained in
+		the localization table (e.g. eo.po).
 
 NOTES
 1. Currently, tag and attribute names are case sensitive.
@@ -63,3 +63,5 @@ NOTES
    template tags must be placed outside of PHP sections.  It's
    best to only use easier template tags in areas where others are
    present.
+4. Whitespace before the final greater-than sign in a tag is
+   currently not allowed.
