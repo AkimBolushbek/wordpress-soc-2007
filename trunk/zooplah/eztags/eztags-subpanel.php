@@ -61,7 +61,7 @@ case 'update':
 	$strip = array('%0d', '%0a');
 	$location = str_replace($strip, '', $location);
 	@header("Location: $location");
-	echo '<script type="text/javascript">location.replace(\'' . $location . '\');</script>';
+	echo "<meta http-equiv='refresh' content='0; $location' />";
 
 	exit();
 
