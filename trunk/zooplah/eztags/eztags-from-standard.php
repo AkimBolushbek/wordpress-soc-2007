@@ -1,13 +1,23 @@
 <?php
 
+/* Converts standard tags to easy tags.
+ * Contains functions for the conversion; format:
+ * function eztags_from_tag_name(&$ct)
+ */
+
 function eztags_from_author(&$ct)
 {
 	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
+function eztags_from_comment_id(&$ct)
+{
+	$ct = preg_replace('/comment_ID\(\s*\);?/', '?&gt;<$CommentID$>&lt;?php', $ct);
+}
+
 function eztags_from_e(&$ct)
 {
-	preg_match('/_e\(([^\)]+)\);?/', $ct, $matches);
+	preg_match('/_e\((.+)\)\;?/', $ct, $matches);
 	list($match, $content) = $matches;
 	$content = preg_replace('/\'|&quot;/', '', $content);
 
@@ -39,6 +49,7 @@ function eztags_from_title(&$ct)
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
+	eztags_from_comment_id($ct);
 	eztags_from_e($ct);
 	eztags_from_id($ct);
 	eztags_from_permalink($ct);
