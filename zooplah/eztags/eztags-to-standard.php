@@ -8,6 +8,7 @@ function eztags_to_translatable(&$content)
 
 function eztags_parse_ez(&$content)
 {
+	$content = str_replace('<$CommentID$>', '<?php comment_ID(); ?>', $content);
 	$content = str_replace('<$EntryTitle lang="en"$>', '<?php the_title(); ?>', $content);
 
 	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
