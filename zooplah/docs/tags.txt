@@ -17,11 +17,7 @@ So the format is:
 <$Tag [attributes]$>
 
 Attributes work just like in HTML:
-<$EntryTitle before="<h2>" after="</h2>"$>
-Note that this example is contrived.  It would be better to do:
-<h2><$EntryTitle$></h2>
-Also note that the before and after attributes have been
-removed.  I'll have to come up with a better example.
+<$EntryTitle lang="en"$>
 
 Attributes are usually (always?) optional.  Space after the tag is
 unnecessary if you don't use attributes.  I know all of this stuff
@@ -59,9 +55,14 @@ NOTES
 1. Currently, tag and attribute names are case sensitive.
    That may change in the future, but be cautious for now.
 2. Not all PHP is converted.
-3. PHP sections start with "<?php" and ends with "?>".  Easier
+3. PHP sections start with <?php and ends with ?>.  Easier
    template tags must be placed outside of PHP sections.  It's
    best to only use easier template tags in areas where others are
    present.
-4. Whitespace before the final greater-than sign in a tag is
-   currently not allowed.
+4. Clarification: There must be no spaces in the less-than
+   sign, dollar sign and tag name.  Similarly, there must be no
+   space before the final dollar sign or between the final dollar
+   sign and the final greater-than sign.  If there's no dollar
+   sign in the tag, the same rules apply according to logic: no
+   space before the initial less-than-sign or after the final
+   greater-than sign.
