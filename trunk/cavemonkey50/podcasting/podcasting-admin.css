@@ -53,6 +53,34 @@ table.pod_format td.pod-format-feed {
 	border-bottom: 1px dotted #c3c3c3;
 }
 
+#podcasting table.pod_enclosure a {
+	position: relative;
+	color: #000;
+	text-decoration: none;
+	border-bottom: 1px dotted #aaa;
+}
+
+#podcasting table.pod_enclosure a span {
+	display: none;
+}
+
+podcasting table.pod_enclosure a:hover {
+	font-size: 100%; /* FIX IE BUG */
+}
+
+#podcasting table.pod_enclosure a:hover span {
+	display: block;
+	position: absolute;
+	font-size: .78em;
+	padding: 5px;
+	width: 250px;
+	top: 12px;
+	left: 5px;
+	background: #ffc;
+	border: 1px solid #666;
+	z-index: 1;
+}
+
 table.pod_new_enclosure {
 	width: 100%;
 }
