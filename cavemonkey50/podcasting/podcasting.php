@@ -562,20 +562,11 @@ function podcasting_query_vars($vars) {
 // Add the join needed for enclosures only
 function podcasting_feed_join($join) {
 	global $wpdb;
-	if ( 'podcast' == get_query_var('feed') ) {
-		$meta = "JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id";
-		$relationships = "JOIN {$wpdb->term_relationships} rel ON ({$wpdb->postmeta}.meta_id = rel.object_id)";
-		$taxonomy = "JOIN {$wpdb->term_taxonomy} ON ({$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id)";
-		$terms = "JOIN {$wpdb->terms} ON ({$wpdb->term_taxonomy}.term_id = {$wpdb->terms}.term_id)";
-		
-		// Add joins while checking the join did not occur already
-		if ( !strstr($join, $meta) )
-			$join .= " INNER {$meta}";		
-		$join .= " INNER {$relationships}";		
-		if ( !strstr($join, $taxonomy) )
-			$join .= " INNER JOIN {$wpdb->term_taxonomy} ON (rel.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id)";
-		if ( !strstr($join, $terms) )
-			$join .= " INNER {$terms}";
+	if ( 'podcast' == get_query_var('feed') ) {		
+		$join .= " INNER JOIN {$wpdb->postmeta} pod_meta ON {$wpdb->posts}.ID = pod_meta.post_id";		
+		$join .= " INNER JOIN {$wpdb->term_relationships} pod_rel ON (pod_meta.meta_id = pod_rel.object_id)";		
+		$join .= " INNER JOIN {$wpdb->term_taxonomy} pod_tax ON (pod_rel.term_taxonomy_id = pod_tax.term_taxonomy_id)";
+		$join .= " INNER JOIN {$wpdb->terms} pod_terms ON (pod_tax.term_id = pod_terms.term_id)";
 	}
 	return $join;
 }
@@ -586,8 +577,8 @@ function podcasting_feed_where($where) {
 	if ( 'podcast' == get_query_var('feed') ) {
 		$podcast_format = ( '' == get_query_var('format') ) ? 'default-format' : get_query_var('format');
 		
-		$where .= " AND {$wpdb->postmeta}.meta_key = 'enclosure'";
-		$where .= " AND {$wpdb->terms}.slug = '{$podcast_format}'";
+		$where .= " AND pod_meta.meta_key = 'enclosure'";
+		$where .= " AND pod_terms.slug = '{$podcast_format}'";
 	}
 	return $where;
 }
