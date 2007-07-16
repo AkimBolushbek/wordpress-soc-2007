@@ -16,7 +16,7 @@ function eztags_from_e(&$ct)
 
 function eztags_from_id(&$ct)
 {
-	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryId$>&lt;?php', $ct);
+	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryID$>&lt;?php', $ct);
 }
 
 function eztags_from_permalink(&$ct)
