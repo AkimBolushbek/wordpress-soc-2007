@@ -8,6 +8,7 @@ function eztags_to_translatable(&$content)
 
 function eztags_parse_ez(&$content)
 {
+	$content = str_replace('<$CommentAuthorLink$>', '<?php comment_author_link(); ?>', $content);
 	$content = str_replace('<$CommentID$>', '<?php comment_ID(); ?>', $content);
 	$content = str_replace('<$CommentText$>', '<?php comment_text(); ?>', $content);
 
