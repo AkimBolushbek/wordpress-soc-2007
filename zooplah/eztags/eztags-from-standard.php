@@ -10,6 +10,11 @@ function eztags_from_author(&$ct)
 	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
+function eztags_from_comment_author_link(&$ct)
+{
+	$ct = preg_replace('/comment_author_link\(\s*\);?/', '?&gt;<$CommentAuthorLink$>&lt;?php', $ct);
+}
+
 function eztags_from_comment_id(&$ct)
 {
 	$ct = preg_replace('/comment_ID\(\s*\);?/', '?&gt;<$CommentID$>&lt;?php', $ct);
@@ -22,7 +27,7 @@ function eztags_from_comment_text(&$ct)
 
 function eztags_from_e(&$ct)
 {
-	preg_match('/_e\((.+)\)\;?/', $ct, $matches);
+	preg_match('/_e\(([^\);]+)\);/', $ct, $matches);
 	list($match, $content) = $matches;
 	$content = preg_replace('/\'|&quot;/', '', $content);
 
@@ -54,6 +59,7 @@ function eztags_from_title(&$ct)
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
+	eztags_from_comment_author_link($ct);
 	eztags_from_comment_id($ct);
 	eztags_from_comment_text($ct);
 	eztags_from_e($ct);
