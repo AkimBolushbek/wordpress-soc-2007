@@ -29,6 +29,16 @@ future, though all it will really do is add bloat and perhaps
 bugs to the code.
 
 Currently implemented tags:
+<$CommentAuthorLink$>
+	Link to the website of the author of the current comment,
+	if he or she has one.
+	Attributes: None
+<$CommentID$>
+	The ID of the current comment.
+	Attributes: None
+<$CommentText$>
+	Text of the current comment.
+	Attributes: None
 <$EntryAuthor$>
 	The author of the current entry or blog.
 	Attributes: None
