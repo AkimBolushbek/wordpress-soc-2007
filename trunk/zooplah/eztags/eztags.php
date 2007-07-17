@@ -3,12 +3,12 @@
 Plugin Name: Easier Template Tags
 Plugin URI: http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/
 Description: Converts Blogger-style template tags to WordPress template tags
-Version: <a href="http://en.wikipedia.org/wiki/Sir_Hugo_Drax">Drax</a>
+Version: <a href="http://en.wikipedia.org/wiki/Auric_Goldfinger">Goldfinger</a>
 Author: Keith Bowes
 Author URI: http://zooplah.farvista.net/
 */
 
-/*  Copyright YEAR  PLUGIN_AUTHOR_NAME  (email : PLUGIN AUTHOR EMAIL)
+/*  Copyright 2007  Easier Template Tags
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
