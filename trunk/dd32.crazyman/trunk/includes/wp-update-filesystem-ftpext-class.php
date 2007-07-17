@@ -28,7 +28,7 @@ class WP_Filesystem_FTPext{
 		//Set defaults:
 		if( ! isset($opt['port']) || empty($opt['port']) )
 			$opt['port'] = 21;
-		if( ! isset($opt['hostname']) || empty($opt['host']) )
+		if( ! isset($opt['hostname']) || empty($opt['hostname']) )
 			$opt['hostname'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
 		if( isset($opt['base']) && ! empty($opt['base']) )
 			$this->wp_base = $opt['base'];
@@ -36,24 +36,22 @@ class WP_Filesystem_FTPext{
 		//Check if the options provided are OK.
 		if( ! isset($opt['username']) || ! isset($opt['password']) ||
 			 empty ($opt['username']) ||  empty ($opt['password']) ){
-			 echo 'no auth details';
+			 wp_die('You need to specify the Username and/or password.');
 			 return false;
 		}
 		
-		
 		//All is A-OK.
-		if( $opt['ssl'] && function_exists('ftp_ssl_connect') ){
+		if( !empty($opt['ssl']) && function_exists('ftp_ssl_connect') ){
 			$this->link = ftp_ssl_connect($opt['hostname'], $opt['port'],$this->timeout);
 		} else {
 			$this->link = ftp_connect($opt['hostname'], $opt['port'],$this->timeout);
 		}
 		if( ! $this->link ){
-			echo 'no connect';
+			wp_die('FTP didnt connect, Most likely cause is a non-existant hostname');
 			return false;
 		}
-		
 		if( false == (ftp_login($this->link,$opt['username'], $opt['password']) ) ){
-			echo 'no login';
+			wp_die('Your FTP username/password combination was wrong.');
 			return false;
 		}
 		
@@ -65,6 +63,7 @@ class WP_Filesystem_FTPext{
 		if( false === ftp_chdir($this->link, $base) )
 			return false;
 		if( $this->exists($base . '/wp-settings.php') ){
+			//echo "found " . $base . '/wp-settings.php<br>';
 			$this->wp_base = $base;
 			return $this->wp_base;
 		}
@@ -84,6 +83,10 @@ class WP_Filesystem_FTPext{
 			}
 		}
 
+		if( $base == '/' )
+			return false;
+		//If we get this far, somethings gone wrong, change to / and restart the process.
+		return $this->find_base_dir('/');
 	}
 	function get_base_dir($base = '.'){
 		if( empty($this->wp_base) )

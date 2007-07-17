@@ -86,8 +86,16 @@ $wpupdate = new WP_Update;
 				<?php _e('Source'); ?>: <strong><?php echo $_GET['url']; ?></strong><br />
 			<?php } ?>
 			<?php
-				$file = $_FILES['pluginfile']['tmp_name'];
-				$fileinfo = $_FILES['pluginfile'];
+				if( $_FILES ){
+					$file = $_FILES['pluginfile']['tmp_name'];
+					$fileinfo = $_FILES['pluginfile'];
+				} elseif( isset($_GET['url']) ){
+					$file = wpupdate_url_to_file($_GET['url']);
+					$fileinfo = pathinfo($_GET['url']);
+					$fileinfo['name'] = $fileinfo['basename'];
+				} else {
+					die('unsuported method');
+				}
 				$result = $wpupdate->installPlugin($file,$fileinfo);
 				if( isset($result['Error']) ){
 					echo '<div class="error">' . __('Errors Occured:') . '<br />' . implode('<br />', $result['Error']) . '</div>';

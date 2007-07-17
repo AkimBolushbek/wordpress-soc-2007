@@ -41,10 +41,12 @@ function wpupdate_admin_init(){
 	
 	add_options_page('Wp-Update','Wp-Update',8,'wp-update/wp-update-options.php');
 	
-	//Enqueue jQuery if we're on a page we're modifying
+	//Enqueue jQuery if we're on a page we're modifying //TODO: change to admin_print_scripts-
 	if(	'themes.php' == $pagenow || 
-		'plugins.php' == $pagenow)
-		wp_enqueue_script('interface'); //jQuery
+		'plugins.php' == $pagenow ||
+		( 'options-general.php' == $pagenow && 
+			isset( $_GET['page'] ) && 'wp-update/wp-update-options.php' == $_GET['page']))
+		wp_enqueue_script('jquery');
 }
 function wpupdate_plugins($arg = ''){
 	global $wpdb,$menu,$submenu;

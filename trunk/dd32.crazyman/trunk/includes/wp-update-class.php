@@ -482,13 +482,13 @@ class WP_Update{
 					if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
 						if( ! version_compare( $wp_version, $reqInfo['Min'], '>=' ) ){
 							$pluginCompatible = false;
-							$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+							$errors[] = sprintf(__('Requires %s %s'),$reqInfo['Name'],$reqInfo['Min']);
 						}
 					}
 					//Check the Maximum version that its been tested with
 					if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
 						if( version_compare( $wp_version, $reqInfo['Tested'], '>' ) ){
-							$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+							$errors[] = sprintf(__('Only tested Upto %s %s'),$reqInfo['Name'],$reqInfo['Tested']);
 						}
 					}
 					break;
@@ -496,12 +496,12 @@ class WP_Update{
 					if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
 						if( ! version_compare( phpversion(), $reqInfo['Min'], '>=' ) ){
 							$pluginCompatible = false;
-							$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+							$errors[] = sprintf(__('Requires %s %s'),$reqInfo['Name'],$reqInfo['Min']);
 						}
 					}
 					if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
 						if( version_compare( phpversion(), $reqInfo['Tested'], '>' ) ){
-							$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+							$errors[] = sprintf(__('Only tested Upto %s %s'),$reqInfo['Name'],$reqInfo['Tested']);
 						}
 					}
 					break;
@@ -509,63 +509,61 @@ class WP_Update{
 					if( isset($reqInfo['Min']) && !empty($reqInfo['Min']) ){
 						if( ! version_compare( mysql_get_server_info(), $reqInfo['Min'], '>=' ) ){
 							$pluginCompatible = false;
-							$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
+							$errors[] = sprintf(__('Requires %s %s'),$reqInfo['Name'],$reqInfo['Min']);
 						}
 					}
 					if( isset($reqInfo['Tested']) && !empty($reqInfo['Tested']) ){
 						if( version_compare( mysql_get_server_info(), $reqInfo['Tested'], '>' ) ){
-							$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
+							$errors[] = sprintf(__('Only tested Upto %s %s'),$reqInfo['Name'],$reqInfo['Tested']);
 						}
 					}
 					break;
 				case "Plugin":
+					$foundPlugin = false;
 					$plugins = wpupdate_get_plugins();
 					foreach($plugins as $plugin){
 						if( false !== strcasecmp($plugin['Name'], $reqInfo['Name']) ){
 							if( isset($reqInfo['Min']) ){
 								if( ! version_compare( $plugin['Version'], $reqInfo['Min'], '>=' ) ){
 									$pluginCompatible = false;
-									$errors[] = sprintf('Requires WordPress Plugin %s %s',$reqInfo['Name'],$reqInfo['Min']);
+									$errors[] = sprintf(__('Requires WordPress Plugin %s %s'),$reqInfo['Name'],$reqInfo['Min']);
 								}
 							}
 							if( isset($reqInfo['Tested']) ){
 								if( version_compare( $plugin['Version'], $reqInfo['Tested'], '>' ) ){
-									$errors[] = sprintf('Only tested with version %s of the plugin %s',$reqInfo['Tested'], $reqInfo['Name']);
+									$errors[] = sprintf(__('Only tested with version %s of the plugin %s'),$reqInfo['Tested'], $reqInfo['Name']);
 								}
-							}//ISSET
+							}
+							$foundPlugin = true;
 							break;
 						}
 					}
+					if( ! $foundPlugin )
+						$errors[] = sprintf(__('Requires the WordPress Plugin: "%s"'),$reqInfo['Name']);
 					break;
 				case "PHPExt":
 					if( ! extension_loaded( strtolower($reqInfo['Name']) ) ){
-						$errors[] = sprintf('Requires the PHP Extension: "%s"',$reqInfo['Name']);
+						$errors[] = sprintf(__('Requires the PHP Extension: "%s"'),$reqInfo['Name']);
 					} else {
-						//Extension loaded, Check version???
-						$functs = get_extension_funcs( strtolower($reqInfo['Name']) );
-						//Iterate through library functions looking for something for version
-						foreach($functs as $function){
-							//If we've found one with version..
-							if( strpos($function,'version') > -1){
-								$version = @call_user_func($function);
-								if( isset($reqInfo['Min']) ){
-									if( ! version_compare( $version, $reqInfo['Min'], '>=' ) ){
-										$pluginCompatible = false;
-										$errors[] = sprintf('Requires %s %s',$reqInfo['Name'],$reqInfo['Min']);
-									}
-								}
-								if( isset($reqInfo['Tested']) ){
-									if( version_compare( $version, $reqInfo['Tested'], '>' ) ){
-										$errors[] = sprintf('Only tested Upto %s %s',$reqInfo['Name'],$reqInfo['Tested']);
-									}
-								}//ISSET
-								break;
-							}//strpos
-						}//foreach;
+						if( isset($reqInfo['Min']) ){
+							if( ! version_compare( phpversion($reqInfo['Name']), $reqInfo['Min'], '>=' ) ){
+								$pluginCompatible = false;
+								$errors[] = sprintf(__('Requires %s %s'),$reqInfo['Name'],$reqInfo['Min']);
+							}
+						}
+						if( isset($reqInfo['Tested']) ){
+							if( version_compare( phpversion($reqInfo['Name']), $reqInfo['Tested'], '>' ) ){
+								$errors[] = sprintf(__('Only tested Upto %s %s'),$reqInfo['Name'],$reqInfo['Tested']);
+							}
+						}
 					}
 					break;
 				default:
-					do_action('wpupdate_requirement-'.$reqInfo['Type'], &$pluginUpdateInfo, &$reqInfo, &$pluginCompatible, &$errors);
+					/* array(&..) because PHP5 requires pass-by-reference to be specifically stated in function declaration; 
+						when using func_get_args() as d_action does, everything is passed by value, 
+						allthough objects passed by reference, and references in arrays are kept intact. 
+						This allows for Errors and Compatibility to be passed back to the function */
+					do_action('wpupdate_requirement-'.$reqInfo['Type'], array(&$pluginUpdateInfo, &$reqInfo, &$pluginCompatible,&$errors));
 			} //end switch()
 		} //end foreach()
 
