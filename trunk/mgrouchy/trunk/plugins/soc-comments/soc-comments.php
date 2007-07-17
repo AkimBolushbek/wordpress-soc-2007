@@ -12,6 +12,7 @@ Author URI: http://www.mikegrouchy.com
 //create soc_comments class
 if ( !class_exists( "soc_comments" ) ){
 	class soc_comments {
+	
 		//constructor
 		function soc_comments() {
 		
@@ -26,8 +27,9 @@ if ( !class_exists( "soc_comments" ) ){
 		}
 		
 		//get list of comments
-		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = false, $filter = 'all'  ){
+		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = "" , $filter = 'all'  ){
 			global $wpdb;
+			
 				
 			$ss_params = array(
             	"c_author" => "comment_author",
@@ -39,22 +41,22 @@ if ( !class_exists( "soc_comments" ) ){
 			
 			if ( strcmp( 'all', $filter ) == 0 ) $filter = '';
 			else $filter = "AND comment_type = '$filter'";
+			
 			$start = (int) $start;
 			$num = (int) $num;
 			$sort = $wpdb->escape($sort);     
+			$order = "DESC";
 
 			//set up our vars for sorting
-			if ( $sort ) {
-				if ( isset( $ss_params[$sort] ) )
-					$sort = $ss_params[$sort];
+			if ( isset( $ss_params[$sort] ) ){
+				$sort = $ss_params[$sort];
+				if ( $sort != "comment_date" ) $order = "ASC";
 			}
 			else {
 				$sort = "comment_date";
 			}
-			if ( $sort == "comment_date" ) $order = "DESC";
-			else $order = "ASC";
-       		
-       		 //if we have a search string
+       		 
+			 //if we have a search string
     	    if ( $s ) {
 				$s = $wpdb->escape($s);
   	        	$sfield = $wpdb->escape($sfield);
@@ -181,7 +183,6 @@ if (class_exists("soc_comments")) {
 if (isset($soc_com)) {
 	add_action( 'load-edit-comments.php', array( &$soc_com,'replace_edit_comment' ), 9 );
 	wp_register_script('soc-comments-js',  '/wp-content/plugins/soc-comments/js/soc-comments.js', array('jquery', 'jquery-form'), '0.1');
-	//wp_register_script('soc-comments-css', '/wp-content/plugins/soc-comments/css/soc-comments.css','' , '0.1');
 }
 
 
