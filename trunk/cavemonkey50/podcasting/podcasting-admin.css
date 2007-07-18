@@ -25,10 +25,6 @@ table.pod_format input, table.pod_format select {
 	width: 100%;
 }
 
-table.pod_format td.pod-format-feed {
-	padding: 7px 5px;
-}
-
 #podcasting table.pod_enclosure .pod-length {
 	width: 60px;
 }

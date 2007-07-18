@@ -61,6 +61,7 @@ function podcasting_install() {
 	add_option('pod_itunes_explicit', '', 'iTunes explicit');
 	add_option('pod_itunes_ownername', '', 'iTunes owner name');
 	add_option('pod_itunes_owneremail', '', 'iTunes owner email');
+	add_option('pod_formats', '', 'Explict settings for podcast formats');
 }
 
 // Run on WordPress load
@@ -88,7 +89,7 @@ if ( !function_exists('wp_nonce_field') ) {
 
 // Podcasting options page
 function podcasting_options_page() {
-	// Store options if postback
+	// Store options if postback	
 	if ( isset($_POST['Submit']) ) {
 		// Prevent attacks
 		check_admin_referer('$podcasting_nonce', $podcasting_nonce);
@@ -108,6 +109,20 @@ function podcasting_options_page() {
 		update_option('pod_itunes_explicit', $_POST['pod_itunes_explicit']);
 		update_option('pod_itunes_ownername', $_POST['pod_itunes_ownername']);
 		update_option('pod_itunes_owneremail', $_POST['pod_itunes_owneremail']);
+		
+		// Add a new format
+		if ( isset($_POST['pod_format_name']) ) {
+			$args = ( '' != $_POST['pod_format_slug'] ) ? array('slug' => $_POST['pod_format_slug']) : '';
+			$format = wp_insert_term($_POST['pod_format_name'], 'podcast_format', $args);
+			print_r($format);
+			$format = get_term($format['term_id'], 'podcast_format');
+			print_r($format);
+			
+			$pod_explicits = unserialize(get_option('pod_formats'));
+			$pod_explicits[$format->slug] = $_POST['pod_format_explicit'];
+			print_r($pod_explicits);			
+			update_option('pod_formats', serialize($pod_explicits));
+		}
 	}
 	
 	// iTunes category options
@@ -129,6 +144,8 @@ function podcasting_options_page() {
 		'Technology', 'Technology||Gadgets', 'Technology||Tech News', 'Technology||Podcasting', 'Technology||Software How-To',
 		'TV &amp; Film'
 		);
+		
+	$pod_formats = get_terms('podcast_format', 'get=all');
 	?>
 	
 	<form method="post" action="options-general.php?page=podcasting.php">
@@ -281,32 +298,49 @@ function podcasting_options_page() {
 			<input type="submit" name="Submit" value="Update Options &raquo;" />
 		</p>
 		
+		<?php if ( count($pod_formats) > 1 ) { ?>
 		<fieldset class="options">
 			<legend>Formats</legend>
-			<table cellpadding="3" class="pod_format">
-				<tr>
-					<td class="pod-title">Format Feed</td>
-					<td class="pod-format-feed" colspan="6">test</td>
-				</tr>
-				<tr>
-					<td class="pod-title">Format Name</td>
-					<td><input type="text" name="pod_format_name_" class="pod_format_name" value="" /></input>					
-					<td class="pod-title">Format Slug</td>
-					<td><input type="text" name="pod_format_slug_" class="pod_format_slug" value="" /></input></td>					
-					<td class="pod-title">Explicit</td>
-					<td><select name="pod_format_explicit_" class="pod_format_explicit">
-						<?php $explicits = array('', 'no', 'yes', 'clean');
-						foreach ($explicits as $explicit) {
-							$selected = ($explicit == '') ? ' selected="selected"' : '';
-							echo '<option value="' . $explicit . '"' . $selected . '>' . ucfirst($explicit) . '</option>';
-						} ?>
-					</select></td>					
-					<td class="pod-update">
-						<input name="Submit" type="submit" class="" value="Update" /> 
-						<input name="delete_pod_format_" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast_format', , 'You are about to delete a podcast format.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
-				</tr>
-			</table>
+			<?php foreach ($pod_formats as $pod_format) {
+			if ( 'default-format' != $pod_format->slug ) {
+				if ( $term_count > 0 ) $term_ids .= ','; $term_count++;
+				$term_ids .= $pod_format->term_id; ?>
+				<table cellpadding="3" class="pod_format">
+					<tr>
+						<td class="pod-title">Format Feed</td>
+						<td colspan="6">
+							<input type="text" name="pod_format_feed" class="pod_format_feed" value="<?php
+							echo get_option('home');
+							global $wp_rewrite;
+							if ($wp_rewrite->using_permalinks())
+								echo "/feed/podcast/$pod_format->slug/";
+							else
+								echo "/?feed=podcast&format=$pod_format->slug"; ?>" readonly="readonly" />
+						</td>
+					</tr>
+					<tr>
+						<td class="pod-title">Format Name</td>
+						<td><input type="text" name="pod_format_name_<?php echo $pod_format->term_id; ?>" class="pod_format_name" value="<?php echo $pod_format->name; ?>" />					
+						<td class="pod-title">Format Slug</td>
+						<td><input type="text" name="pod_format_slug_<?php echo $pod_format->term_id; ?>" class="pod_format_slug" value="<?php echo $pod_format->slug; ?>" /></td>					
+						<td class="pod-title">Explicit</td>
+						<td><select name="pod_format_explicit_<?php echo $pod_format->term_id; ?>" class="pod_format_explicit">
+							<?php $explicits = array('', 'no', 'yes', 'clean');
+							$format_explicit = unserialize(get_option('pod_formats'));
+							foreach ($explicits as $explicit) {
+								$selected = ($explicit == $format_explicit[$pod_format->slug]) ? ' selected="selected"' : '';
+								echo '<option value="' . $explicit . '"' . $selected . '>' . ucfirst($explicit) . '</option>';
+							} ?>
+						</select></td>					
+						<td class="pod-update">
+							<input name="Submit" type="submit" class="" value="Update" /> 
+							<input name="delete_pod_format_<?php echo $pod_format->slug; ?>" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast_format', , 'You are about to delete a podcast format. All episodes currently assigned to this format will become assigned to no format.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
+					</tr>
+				</table>
+				<input name="term_ids" type="hidden" value="<?php echo $term_ids; ?>" />
+			<?php } } ?>
 		</fieldset>
+		<?php } ?>
 		
 		<fieldset class="options">
 			<legend>Add a New Format</legend>
@@ -430,7 +464,8 @@ function podcasting_edit_form() {
 				<td><input type="text" name="pod_new_file" class="pod_new_file" value="" /></td>
 				<td class="pod-new-format"><select name="pod_format" class="pod_new_format">
 					<?php foreach ($pod_formats as $pod_format) {
-						echo '<option value="' . $pod_format->slug . '">' . $pod_format->name . '</option>';
+						$selected = ( 'default-format' == $pod_format->slug ) ? 'selected="selected"' : '';
+						echo '<option value="' . $pod_format->slug . '"' . $selected . '>' . $pod_format->name . '</option>';
 					} ?>
 				</select></td>
 				<td class="submit"><input name="save" type="submit" class="" value="Add" /></td>
@@ -549,8 +584,6 @@ function podcasting_rewrite_rules($wp_rewrite) {
 	);
 
 	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
-	
-	print_r($wp_rewrite->rules);
 } // podcasting_rewrite_rules()
 
 // Adds variable to select format for podcasting
@@ -608,8 +641,12 @@ function podcasting_add_itunes_xml() {
 
 // Change the podcast title
 function podcasting_blogname_filter($title) {
-	if ( 'podcast' == get_query_var('feed') )
+	if ( 'podcast' == get_query_var('feed') ) {
+		$podcast_format = get_term_by('slug', get_query_var('format'), 'podcast_format');
 		$title = stripslashes(get_option('pod_title'));
+		if ( 'default-format' != get_query_var('format') && '' != get_query_var('format') && !empty($podcast_format) )
+			$title .= " ($podcast_format->name)";
+	}
 	return $title;
 }
 
