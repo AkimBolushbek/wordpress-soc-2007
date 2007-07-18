@@ -9,6 +9,9 @@ Author URI: http://www.mikegrouchy.com
 
 */
 
+//get our plugin dir
+$plugindir = get_option('homeurl'). '/wp-content/plugins/soc-comments/' ;
+
 //create soc_comments class
 if ( !class_exists( "soc_comments" ) ){
 	class soc_comments {
@@ -182,7 +185,7 @@ if (class_exists("soc_comments")) {
 
 if (isset($soc_com)) {
 	add_action( 'load-edit-comments.php', array( &$soc_com,'replace_edit_comment' ), 9 );
-	wp_register_script('soc-comments-js',  '/wp-content/plugins/soc-comments/js/soc-comments.js', array('jquery', 'jquery-form'), '0.1');
+	wp_register_script('soc-comments-js',  $plugindir . '/js/soc-comments.js', array('jquery', 'jquery-form'), '0.1');
 }
 
 
