@@ -6,6 +6,11 @@ Description: A Plugin to keep WordPress Plugin and Themes up to date.
 Version: 0.1
 Author: Dion Hulse
 Author URI: http://dd32.id.au/
+Update URI: http://dd32.id.au/pluginupdate/wp-update/
+
+WordPress Update (wp-Update for short) is a plugin which allows you to view any plugin updates which are available for your currently installed plugins.
+It also has the ability to install Themes and Plugins via the WordPress Administration Console as well as upgrading current plugins.
+
 */
 
 /*
@@ -25,28 +30,40 @@ add_action('init', 'wpupdate_init');
 function wpupdate_admin_init(){
 	global $pagenow;
 	//Override Plugins and Themes pages.
-	add_action('load-plugins.php', 'wpupdate_plugins', 9);
-	add_action('load-themes.php', 'wpupdate_themes', 9);
-	//Add extra Subpages. ; Perhaps hard-code them..?
+	add_action('load-plugins.php', 'wpupdate_plugins');
+	add_action('load-themes.php', 'wpupdate_themes');
+	
+	//Add extra Subpages.
 	if( get_option('update_install_enable') ){
 		add_submenu_page('plugins.php','Plugin Install','Plugin Install','edit_plugins','wp-update/wp-update-plugins-install.php');
 		add_submenu_page('themes.php','Theme Install','Theme Install','edit_themes','wp-update/wp-update-themes-install.php');
 	}
 	if( get_option('update_plugin_search_enable') )
 		add_submenu_page('plugins.php','Plugin Search','Plugin Search','edit_plugins','wp-update/wp-update-plugins-search.php');
-		
+
 	if( get_option('update_theme_search_enable') )
 		add_submenu_page('themes.php','Theme Search','Theme Search','edit_themes','wp-update/wp-update-themes-search.php');
-	
-	
-	add_options_page('Wp-Update','Wp-Update',8,'wp-update/wp-update-options.php');
-	
-	//Enqueue jQuery if we're on a page we're modifying //TODO: change to admin_print_scripts-
-	if(	'themes.php' == $pagenow || 
-		'plugins.php' == $pagenow ||
-		( 'options-general.php' == $pagenow && 
-			isset( $_GET['page'] ) && 'wp-update/wp-update-options.php' == $_GET['page']))
-		wp_enqueue_script('jquery');
+
+
+	add_options_page('Wp-Update','Wp-Update','administrator','wp-update/wp-update-options.php');
+
+	//Enqueue jQuery if we're on a page we're modifying
+	if(	!isset($_GET['page']) && ('themes.php' == $pagenow || 'plugins.php' == $pagenow) )
+		wpupdate_head();
+
+	//Plugin pages
+	add_action('admin_print_scripts-wp-update/wp-update-plugins-install.php','wpupdate_head');
+	add_action('admin_print_scripts-wp-update/wp-update-plugins-search.php','wpupdate_head');
+
+	//Theme pages
+	add_action('admin_print_scripts-wp-update/wp-update-themes-install.php','wpupdate_head');
+	add_action('admin_print_scripts-wp-update/wp-update-themes-search.php','wpupdate_head');
+
+	//Option pages
+	add_action('admin_print_scripts-wp-update/wp-update-options.php','wpupdate_head');
+}
+function wpupdate_head(){
+	wp_enqueue_script('jquery');
 }
 function wpupdate_plugins($arg = ''){
 	global $wpdb,$menu,$submenu;
