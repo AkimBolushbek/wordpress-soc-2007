@@ -53,6 +53,14 @@ Currently implemented tags:
 	Attributes:
 	lang
 		Does nothing.  Must be "en".
+<$LanguageAttributes$>
+	The HTML attributes for the proper display of the content,
+	based on the server computer's locale.
+	Attributes: None
+<$WPLoginOut$>
+	Provide a link to the log-in or log-out page, depending
+	on your log-in status.
+	Attributes: None
 
 <TranslatableString>
 	A string to be translated.
@@ -60,6 +68,8 @@ Currently implemented tags:
 	Notes:
 		The content of this tag is a string contained in
 		the localization table (e.g. eo.po).
+		Converting the PHP function to this tag is
+		extremely buggy right now.
 
 NOTES
 1. Currently, tag and attribute names are case sensitive.

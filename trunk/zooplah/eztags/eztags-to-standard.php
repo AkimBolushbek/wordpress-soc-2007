@@ -17,6 +17,8 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);
 	$content = str_replace('<$EntryPermalink$>', '<?php the_permalink(); ?>', $content);
+	$content = str_replace('<$LanguageAttributes$>', '<?php language_attributes(); ?>', $content);
+	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
 
 	eztags_to_translatable($content);
 }
