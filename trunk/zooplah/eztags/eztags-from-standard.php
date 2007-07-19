@@ -42,7 +42,7 @@ function eztags_from_id(&$ct)
 
 function eztags_from_language_attributes(&$ct)
 {
-	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$LanguageAttributes$>&lt;php', $ct);
+	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$LanguageAttributes$>&lt;?php', $ct);
 }
 
 function eztags_from_login(&$ct)
