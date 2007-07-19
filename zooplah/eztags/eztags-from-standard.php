@@ -29,7 +29,8 @@ function eztags_from_e(&$ct)
 {
 	preg_match('/_e\(([^\);]+)\);/', $ct, $matches);
 	list($match, $content) = $matches;
-	$content = preg_replace('/\'|&quot;/', '', $content);
+	$content = preg_replace('/\'/', '', $content);
+	$content = preg_replace('/&quot;/', '', $content);
 
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
 }
@@ -37,6 +38,16 @@ function eztags_from_e(&$ct)
 function eztags_from_id(&$ct)
 {
 	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryID$>&lt;?php', $ct);
+}
+
+function eztags_from_language_attributes(&$ct)
+{
+	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$LanguageAttributes$>&lt;php', $ct);
+}
+
+function eztags_from_login(&$ct)
+{
+	$ct = preg_replace('/wp_loginout\(\s*\);?/', '?&gt;<$WPLoginOut$>&lt;?php', $ct);
 }
 
 function eztags_from_permalink(&$ct)
@@ -50,7 +61,8 @@ function eztags_from_title(&$ct)
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
-	$attrs = preg_replace('/\'|\&quot;/', '', $attrs);
+	$attrs = preg_replace('/\'/', '', $attrs);
+	$attrs = preg_replace('/&quot;/', '', $attrs);
 	list($before, $after) = $attrs;
 
 	$ct = str_replace($match, "?&gt;$before<\$EntryTitle lang=\"en\"\$>$after&lt;?php", $ct);
@@ -64,13 +76,15 @@ function eztags_parse_from(&$ct)
 	eztags_from_comment_text($ct);
 	eztags_from_e($ct);
 	eztags_from_id($ct);
+	eztags_from_language_attributes($ct);
+	eztags_from_login($ct);
 	eztags_from_permalink($ct);
 	eztags_from_title($ct);
 }
 
 function eztags_parse_std(&$content)
 {
-	$arr = preg_split('/\n|\r|\r\n/', $content);
+	$arr = preg_split('/[\n\r]{1,2}/', $content);
 	$n_arr = count($arr);
 
 	$content = '';

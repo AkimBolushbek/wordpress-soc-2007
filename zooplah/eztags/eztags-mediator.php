@@ -12,7 +12,7 @@ function remove_empty_php(&$content)
 
 function remove_extra_lines(&$content)
 {
-	$content = preg_replace('/[\n|\r|\r\n]{2,}/m', "\n\n", $content);
+	$content = preg_replace('/[\n\r]{2,}/m', "\n\n", $content);
 }
 
 /* Replace Standard tags with Easy tags */
