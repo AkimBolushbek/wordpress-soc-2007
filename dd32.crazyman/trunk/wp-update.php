@@ -64,6 +64,7 @@ function wpupdate_admin_init(){
 }
 function wpupdate_head(){
 	wp_enqueue_script('jquery');
+	wp_deregister_script('prototype'); //Deregister the prototype script so that it cant be used while on a wpupdate page.
 }
 function wpupdate_plugins($arg = ''){
 	global $wpdb,$menu,$submenu;
