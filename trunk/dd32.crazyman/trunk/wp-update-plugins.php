@@ -277,10 +277,13 @@ if (empty($plugins)) {
 		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>$updateText</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
-		if ( current_user_can('edit_plugins') )
-		echo "
-		<td>$edit</td>
-		<td>$forceupdate</td>";
+		if ( current_user_can('edit_plugins') ){
+			echo "\n
+			";
+			if( '' != $edit )
+				echo "<td>$edit</td>";
+			echo "<td>$forceupdate</td>";
+		}
 		echo "
 	</tr>";
 	}
