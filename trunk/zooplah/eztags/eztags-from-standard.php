@@ -55,6 +55,13 @@ function eztags_from_permalink(&$ct)
 	$ct = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $ct);
 }
 
+function eztags_from_time(&$ct)
+{
+	$ct = preg_replace('/the_time\(([^\)]*)\)/', '?&gt;<$EntryTime format=$1$>&lt;?php', $ct);
+	$ct = str_replace('\'', '&quot;', $ct);
+	$ct = str_replace(' format=$', '$', $ct);
+}
+
 function eztags_from_title(&$ct)
 {
 	preg_match('/the_title\(([^\)]*)\);?/', $ct, $matches);
@@ -79,6 +86,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_language_attributes($ct);
 	eztags_from_login($ct);
 	eztags_from_permalink($ct);
+	eztags_from_time($ct);
 	eztags_from_title($ct);
 }
 
