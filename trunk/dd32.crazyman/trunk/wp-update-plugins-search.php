@@ -15,11 +15,6 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 	else
 		$tagSearch = $_GET['tag'];
 }
-
-//$pluginInfo = $wpupdate->getPluginInformationWordPressOrg("http://wordpress.org/extend/plugins/google-sitemap-generator-ultimate-tag-warrior-tags-addon/");
-//var_dump($pluginInfo);
-
-//var_dump($tags);
 ?>
 <style type="text/css">
 	.taglist {
@@ -74,6 +69,7 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 		$resultText = 'Plugins Tagged: ' . $tagSearch;
 		$results = $wpupdate->getPluginsByTag($tagSearch);
 	}
+
 	if( !empty($searchTerm) || !empty($tagSearch) ){
 		if( empty($results)) {
 			_e('No results');
@@ -84,11 +80,14 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 					echo wpupdate_pluginSearchHTML($plugin);
 				
 				if( $results['info']['page'] < $results['info']['pages'] ){
-					echo '&nbsp;<div class="plugin" id="load-more"><span><img style="display:none" src="'.get_option('siteurl'). '/wp-content/plugins/wp-update/images/loading.gif" id="loading-image" /><br/><a href="#load-more" onclick="loadMore()">'.__('Next Page').'</a></span></div>';
+					echo '&nbsp;<div class="plugin" id="load-more"><span><img style="display:none" src="'.get_option('siteurl'). '/wp-content/plugins/wp-update/images/loading.gif" id="loading-image" /><br/><a href="#load-more" onclick="return loadMore()">'.__('Next Page').'</a></span></div>';
 					?>
 					<script type="text/javascript">
 						//<!CDATA[[
-							var searchOptions = {"tag": "<?php echo $tagSearch; ?>",
+							var searchOptions = {<?php if( !empty($tagSearch) )
+															echo '"tag": "'.$tagSearch.'"';
+														else
+															echo '"term":"' . $searchTerm . '"'; ?>,
 												"page":<?php echo $results['info']['page']; ?>,
 												"pages":<?php echo $results['info']['pages']; ?>};
 						//]]>
@@ -105,9 +104,10 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 		<p>
 <?php
 	$tags = $wpupdate->getPluginSearchTags();
-	$url = $pagenow . '?page=' . $_GET['page'];
-	foreach($tags as $tag)
-		echo "<a href='$url&tag={$tag['name']}' title='{$tag['number']} plugins' rel='tag' style='font-size: {$tag['pointsize']}pt;'>{$tag['name']}</a> ";
+
+	$url = $pagenow . '?page=' . $_GET['page'] . '&tag=%s';
+
+	echo wpupdate_generate_tagcloud($tags,'link=' . urlencode($url));
 ?>
 		</p>
 	</div>
