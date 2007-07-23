@@ -21,10 +21,8 @@ class WP_Filesystem_FTPext{
 	
 	function WP_Filesystem_FTPext($opt=''){
 		//Check if possible to use ftp functions.
-		if( ! function_exists('ftp_connect') )
+		if( ! extension_loaded('ftp') )
 			return false;
-		//Check if options provided
-
 		//Set defaults:
 		if( ! isset($opt['port']) || empty($opt['port']) )
 			$opt['port'] = 21;
@@ -50,20 +48,20 @@ class WP_Filesystem_FTPext{
 			wp_die('FTP didnt connect, Most likely cause is a non-existant hostname');
 			return false;
 		}
-		if( false == (ftp_login($this->link,$opt['username'], $opt['password']) ) ){
+		if( ! ftp_login($this->link,$opt['username'], $opt['password']) ){
 			wp_die('Your FTP username/password combination was wrong.');
 			return false;
-		}
-		
+		}		
 	}
-	function find_base_dir($base = '.'){
+	//TODO: Localise
+	function find_base_dir($base = '.',$echo = false){
 		if( $base == '.' ) $base = $this->cwd();
 		if( empty( $base ) ) $base = '/';
-		//echo "Changing to $base;<br>";
+		if($echo) echo "Changing to $base;<br>";
 		if( false === ftp_chdir($this->link, $base) )
 			return false;
 		if( $this->exists($base . '/wp-settings.php') ){
-			//echo "found " . $base . '/wp-settings.php<br>';
+			if($echo) echo "Found " . $base . '/wp-settings.php<br>';
 			$this->wp_base = $base;
 			return $this->wp_base;
 		}
@@ -78,15 +76,15 @@ class WP_Filesystem_FTPext{
 		//var_dump($arrPath);
 		foreach($arrPath as $key=>$folder){
 			if( $this->is_dir($base . $folder) ){
-				//echo "Found $folder; Changing to $base$folder/<br>";
-				return $this->find_base_dir($base . $folder . '/');
+				if($echo) echo "Found $folder; Changing to $base$folder/<br>";
+				return $this->find_base_dir($base . $folder . '/',$echo);
 			}
 		}
 
 		if( $base == '/' )
 			return false;
 		//If we get this far, somethings gone wrong, change to / and restart the process.
-		return $this->find_base_dir('/');
+		return $this->find_base_dir('/',$echo);
 	}
 	function get_base_dir($base = '.'){
 		if( empty($this->wp_base) )
