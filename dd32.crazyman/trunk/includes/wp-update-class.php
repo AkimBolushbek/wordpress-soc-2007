@@ -8,6 +8,20 @@ class WP_Update{
 	function WP_Update(){
 		include_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 		require_once('wp-update-functions.php');
+		$this->loadPlugins();
+	}
+	/**
+	 * Loads any wp-update Extensions which are set.
+	 *
+	 * @return null
+	 */	
+	function loadPlugins(){
+		if( ! is_dir(ABSPATH . '/wp-content/plugins/wp-update/extensions') )
+			return;
+		$dir = @dir(ABSPATH . '/wp-content/plugins/wp-update/extensions');
+		while (false !== ($file= $dir->read())) {
+			@ include ( $dir->path . '/' . $file );
+		}
 	}
 	/**
 	 * Searches for a Plugin/Theme based upon tags/terms
@@ -23,8 +37,7 @@ class WP_Update{
 		if('themes' == $item){
 			return $this->searchThemes($tags,$page);
 		} else {
-			//Assume its plugins. if('plugins' == $item)
-			return $this->searchPlugins( join(' ',$tags) );
+			return apply_filters('wpupdate_pluginSearchProviders',array('info'=>array('terms'=>$tags,'page'=>$page),'results'=>array()));
 		}
 	}
 	/*** THEME SEARCH FUNCTIONS ****/
@@ -142,18 +155,11 @@ class WP_Update{
 	
 	/** PLUGIN TAG FUNCTIONS **/
 	/**
-	 * Retrieves the current tag list from wordpress.org
+	 * Retrieves the current tag list from the Tag Providers
 	 * @return array of tags
 	 */
 	function getPluginSearchTags(){
-		$tags = wp_cache_get('wpupdate_PluginSearchTags', 'wpupdate');
-		if(!$tags){
-			$snoopy = new Snoopy();
-			$snoopy->fetch('http://wordpress.org/extend/plugins/tags/');
-			$tags = $this->parseTagHTML($snoopy->results);
-			wp_cache_set('wpupdate_PluginSearchTags', $tags, 'wpupdate', 43200); //12*60*60=43200
-		}
-		return $tags;
+		return apply_filters('wpupdate_pluginTagList',array());
 	}
 	/**
 	 * Returns plugins from WordPress.org of the specified tag
@@ -162,112 +168,12 @@ class WP_Update{
 	 * @return mixed set of plugins
 	 */
 	function getPluginsByTag($tag=false,$page=1){
-		if(!$tag) return;
-		
-		$url = 'http://wordpress.org/extend/plugins/tags/'.$tag;
-		
-		if( $page < 1 || !is_numeric($page) ) $page = 1; //Sanitize
-		if( $page > 1 ) $url .= '/page/' . $page;
-
-		$results = wp_cache_get('wpupdate_search_tag_'.$tag.'-'.$page, 'wpupdate');
-		if( $results )
-			return $results;
-
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		
-		$results = array('results'=>array(),'info'=>array('page'=>$page,'pages'=>1)); //Set a default number of pages, We'll override this later
-
-		preg_match_all('#<h3><a href="(.*?)">(.*?)</a></h3>(.*?)<ul class="plugin-meta">#ims',$snoopy->results,$plugindetails);
-		preg_match_all('#Version</span> (.*?)</li>#i',$snoopy->results,$version);
-		preg_match_all('#Updated</span> (.*?)</li>#i',$snoopy->results,$updated);
-		preg_match_all('#Downloads</span> (.*?)</li>#i',$snoopy->results,$downloads);
-		preg_match_all('#star-rating" style="width: (.*?)px#i',$snoopy->results,$rating);
-		
-		if( empty($plugindetails[1]) )
-			return false;
-
-		for( $i = 0; $i < count($plugindetails[0]); $i++){
-			preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$wordpressId);
-
-			$results['results'][] = array(
-								'Name' 		=> trim($plugindetails[2][$i]),
-								'Desc'		=> trim($plugindetails[3][$i]),
-								'Version' 	=> trim($version[1][$i]),
-								'LastUpdate'=> trim($updated[1][$i]),
-								'Id'=> $wordpressId[1],
-								'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
-								'PluginHome'=> trim($plugindetails[1][$i]),
-								'Tags'		=> array($tag),
-								'Rating'	=> trim($rating[1][$i])
-								);
-		}
-		if ( preg_match_all("#<a class='page-numbers' href='/extend/plugins/tags/post/page/(\d+)'>(\d+)</a>#",$snoopy->results,$pages) ){
-			$results['info']['pages'] = (int)$pages[2][ count( $pages[2]) - 1 ];
-		}
-		wp_cache_set('wpupdate_search_tag_'.$tag.'-'.$page, $results, 'wpupdate', 21600);
-		return $results;
-	}
-	/**
-	 * Parses the Plugin page for the Search Tags
-	 * @param string $html the HTML of the plugin page
-	 * @return array tags including the url, number, name and pointsize
-	 */
-	function parseTagHTML($html){
-		$ret = array();
-		preg_match_all("#<a href='(.*)' title='(\d+) topics' rel='tag' style='font-size: ([\d\.]+)pt;'>(.*)</a>#i",$html,$tags);
-				
-		for( $i = 0; $i < count($tags[0]); $i++){
-			$ret[] = array(
-						'name' => $tags[4][$i],
-						'url'  => $tags[1][$i],
-						'number'  => $tags[2][$i],
-						'pointsize' => $tags[3][$i]
-						);
-		}
-		return $ret;
-	}
-	
-	/** PLUGIN SEARCH FUNCTIONS **/
-	/**
-	 * Searches WordPress.org/extend/plugins/ for a term
-	 * @param string $term the search term
-	 * @return array of the search results
-	 */
-	function searchPlugins($term){
-		$results = wp_cache_get('wpupdate_search_'.rawurlencode($term), 'wpupdate');
-		if( $results )
-			return $results;
-
-		$url = 'http://wordpress.org/extend/plugins/search.php?q='.rawurlencode($term);
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		$results = array('results'=>array(),'info'=>array('page'=>1,'pages'=>1));
-		preg_match_all('#<h2>(Plugin title matches|Relevant plugins)</h2>(.*?)</ol>#ims',$snoopy->results,$mat);
-		for( $i=0; $i < count($mat[1]); $i++){
-			$regex = ('Plugin title matches' == $mat[1][$i]) ? 
-						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<small>(.*?)</small>#ims' : 
-						'#<li><h4><a href="(.*?)">(.*?)</a></h4>\n<p>(.*?)</p>#ims';
-
-			preg_match_all($regex,$mat[2][$i],$matPlugins);
-
-			for( $j=0; $j < count($matPlugins[1]); $j++){
-				preg_match('#plugins/(.*?)/#',$matPlugins[1][$j],$wordpressId);
-				$results['results'][] = array(
-							'Name' 		=> trim($matPlugins[2][$j],'<p></p>'),
-							'Desc'		=> trim($matPlugins[3][$j]),
-							'Version' 	=> '',
-							'LastUpdate'=> '',
-							'Id'		=> $wordpressId[1],
-							'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
-							'PluginHome'=> trim($matPlugins[1][$j]),
-							'Tags'		=> array($term),
-							'Rating'	=> ''
-							);
-			}
-		}
-		wp_cache_set('wpupdate_search_'.rawurlencode($term), $results, 'wpupdate', 21600); //6*60*60=21600
-		return $results;
+		$results = array('results'=>array(),
+						'info'=>array('terms'=>$tag,
+									  'page'=>$page,
+									  'pages'=>1)//Set a default number of pages, We'll override this later
+					); 
+		return apply_filters('wpupdate_pluginTagSearch',$results);
 	}
 	
 	/** PLUGIN UPDATE FUNCTIONS **/
@@ -337,9 +243,11 @@ class WP_Update{
 		
 		$pluginUpdateInfo = false;
 		//If cached requests are allowed, retrieve it
-		if( ! $skipcache ) $pluginUpdateInfo = wp_cache_get('wpupdate_'.$pluginfile, 'wpupdate');
+		if( ! $skipcache ) 
+			$pluginUpdateInfo = wp_cache_get('wpupdate_'.$pluginfile, 'wpupdate');
 		//If no data is available, And we're not forcing a check, return an error
-		if( ! $pluginUpdateInfo && ! $forcecheck ) return array('Errors'=>array('Not Cached'));
+		if( ! $pluginUpdateInfo && ! $forcecheck )
+			return array('Errors'=>array('Not Cached'));
 		
 		//Get the fields from the plugin file.
 		$pluginData = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $pluginfile);
@@ -351,10 +259,10 @@ class WP_Update{
 				//We have a custom update URL.
 				$pluginUpdateInfo = $this->checkPluginUpdateCustom($pluginData['Update']);
 			}
-			//Else, We check wordpress.org..  (not } else { as the custom update url may fail)
-			if( !$pluginUpdateInfo && get_option('update_location_wordpressorg') ){
+			//Else, We check the plugin searches  (not } else { as the custom update url may fail)
+			if( !$pluginUpdateInfo && get_option('update_location_search') ){
 				//Find the plugin:
-				$plugins = $this->searchPlugins($pluginData['Name']);
+				$plugins = $this->search('plugins',$pluginData['Name']);
 				if( ! empty($plugins) ){
 					foreach( (array)$plugins['results'] as $result){
 						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
@@ -368,7 +276,8 @@ class WP_Update{
 			
 			//Update cache:
 			//If Expire is not set, or Expire is not valid
-			if( !empty($pluginUpdateInfo) && !isset($pluginUpdateInfo['Expire']) && ! (int) $pluginUpdateInfo['Expire'] > 0) $pluginUpdateInfo['Expire'] = 7*24*60*60;
+			if( !empty($pluginUpdateInfo) && ( !isset($pluginUpdateInfo['Expire']) || ! is_numeric($pluginUpdateInfo['Expire']) ) )
+				$pluginUpdateInfo['Expire'] = 7*24*60*60;
 			//If no update info is available, we cant find it.
 			if( empty($pluginUpdateInfo) )
 				$pluginUpdateInfo = array('Errors'=>array('Not Found'), 'Expire' =>7*24*60*60); //,'(Will check again in 1 week)'
@@ -382,7 +291,7 @@ class WP_Update{
 		
 		//If no Plugin data available, Or the Plugin version is not specified, we cant do anything for the plugin.
 		if( !$pluginUpdateInfo || !$pluginUpdateInfo['Version'] )
-			return array('Errors'=>array('Not Compatible','(No Version specified on update page)'));
+			return array( 'Errors' =>array('Not Compatible','(No Version specified on update page)'));
 
 		$pluginUpdateInfo = apply_filters('wpupdate_plugin-updateinfo-' . $pluginUpdateInfo, $pluginUpdateInfo);
 
@@ -390,9 +299,9 @@ class WP_Update{
 			//Theres a new version available!, Now, Check its Requirements.
 			return array_merge($this->checkPluginCompatible($pluginUpdateInfo), 
 								array(
-									'Update'=>true,
-									'Version'=>$pluginUpdateInfo['Version'], 
-									'PluginInfo' => $pluginUpdateInfo
+									'Update'	=>true,
+									'Version'	=>$pluginUpdateInfo['Version'], 
+									'PluginInfo'=> $pluginUpdateInfo
 									) );
 		} else {
 			//The currently installed version is the latest availaable.
@@ -560,7 +469,7 @@ class WP_Update{
 					break;
 				default:
 					/* array(&..) because PHP5 requires pass-by-reference to be specifically stated in function declaration; 
-						when using func_get_args() as d_action does, everything is passed by value, 
+						when using func_get_args() as do_action does, everything is passed by value, 
 						allthough objects passed by reference, and references in arrays are kept intact. 
 						This allows for Errors and Compatibility to be passed back to the function */
 					do_action('wpupdate_requirement-'.$reqInfo['Type'], array(&$pluginUpdateInfo, &$reqInfo, &$pluginCompatible,&$errors));

@@ -27,15 +27,17 @@ switch($_GET['action']){
 			echo wpupdate_themeSearchHTML($theme);
 		break;
 	case 'pluginSearch':
+		$page = (int)$_POST['page'];
 		if( isset($_POST['tag']) ){
-			$page = (int)$_POST['page'];
 			$results = $wpupdate->getPluginsByTag($_POST['tag'],$page);
-
-			if( !isset($results['results']) || empty($results['results']) )
-				die('no more results');
+		} elseif ( isset($_POST['term']) ) {
+			$results = $wpupdate->search('plugins',$_POST['term'],$page);
+		}
+		if( !isset($results['results']) || empty($results['results']) )
+			echo __('no more results');
+		else 
 			foreach($results['results'] as $plugin)
 				echo wpupdate_pluginSearchHTML($plugin);
-		}
 		break;
 	case 'filesystem_get_ftp_path':
 		print_r($_POST);

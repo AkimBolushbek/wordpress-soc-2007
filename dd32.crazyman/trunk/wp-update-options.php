@@ -12,7 +12,7 @@
 		$update_autoinstall_enable 	= isset($_POST['update_autoinstall_enable']);
 		$update_check_inactive 		= isset($_POST['update_check_inactive']);
 		
-		$update_location_wordpressorg = isset($_POST['update_location_wordpressorg']);
+		$update_location_search		= isset($_POST['update_location_search']);
 		$update_location_custom 	= isset($_POST['update_location_custom']);
 		
 		$update_autocheck_nightly	= isset($_POST['update_autocheck_nightly']);
@@ -27,8 +27,7 @@
 		update_option('update_upgrade_enable',		$update_upgrade_enable);
 		update_option('update_autoinstall_enable',	$update_autoinstall_enable);
 		update_option('update_check_inactive',		$update_check_inactive);
-		update_option('update_location_wordpressorg',$update_location_wordpressorg);
-		update_option('update_location_wppluginsnet',$update_location_wppluginsnet);
+		update_option('update_location_search',		$update_location_search);
 		update_option('update_location_custom',		$update_location_custom);
 		update_option('update_autocheck_nightly',	$update_autocheck_nightly);
 		update_option('update_email_enable',		$update_email_enable);
@@ -61,8 +60,8 @@
 	</p>
 	<p>
 		<h3>Plugin/Theme Update Options</h3>
-		<input type="checkbox" name="update_location_wordpressorg" <?php checked(true,get_option('update_location_wordpressorg')) ?> />
-		<?php _e('Enable Update notifications from Wordpres.Org/extend/'); ?><br />
+		<input type="checkbox" name="update_location_search" <?php checked(true,get_option('update_location_search')) ?> />
+		<?php _e('Enable Searching for Plugin update notifications'); ?><br />
 		<input type="checkbox" name="update_location_custom" <?php checked(true,get_option('update_location_custom'))?> />
 		<?php _e('Enable Update notifications from Plugin-Specific sites'); ?><br />
 	</p>
