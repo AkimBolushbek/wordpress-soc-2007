@@ -101,22 +101,30 @@
 	<div class="section" id="filesystem-ftp">
 	<script type="text/javascript">
 		function filesystem_ftp_detect(){
+			var ssl = 0;
+			if( undefined == $('input[@name="filesystem[ftp][ssl]"]').attr('checked') )
+				ssl = 0;
+			else
+				ssl = 1
+			
 			$.post('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=filesystem_get_ftp_path',
 			  { hostname: $('input[@name="filesystem[ftp][hostname]"]').val(), 
 			  	username: $('input[@name="filesystem[ftp][username]"]').val(), 
 				password: $('input[@name="filesystem[ftp][password]"]').val(), 
-				ssl: $('input[@name="filesystem[ftp][ssl]"]').attr('checked'),
+				ssl: ssl,
 				method: $('select[@name="filesystem[ftp][method]"]').val()  },
-			  function(json){
-				alert("JSON Data: " + json);
+			  function(data){
+			  	$('#ftp-status').html( data );
+				//alert("JSON Data: " + data);
+				$('input[@name="filesystem[ftp][basedir]"]').val( data.match(/Path: (.*?)</)[1].split(',') ); //Match Path: /blah/<br>
 			  }
 			);
 		}
 	</script>
 		<h3>FTP Options</h3>
-		<strong>Hostname:</strong><input type="text" name="filesystem[ftp][hostname]"  /><br />
-		<strong>Username:</strong><input type="text" name="filesystem[ftp][username]" /><br />
-		<strong>Password:</strong><input type="password" name="filesystem[ftp][password]" />&nbsp;
+		<strong>Hostname:</strong><input type="text" name="filesystem[ftp][hostname]" value="localhost" /><br />
+		<strong>Username:</strong><input type="text" name="filesystem[ftp][username]" value="dd32" /><br />
+		<strong>Password:</strong><input type="password" name="filesystem[ftp][password]" value="talktalk" />&nbsp;
 								  <input type="checkbox" name="filesystem[ftp][passwordsave]" />Save Password<br />
 		<strong>Base Directory:</strong><input type="text" name="filesystem[ftp][basedir]" />&nbsp;<input type="button" value="Automatically Detect" onclick="filesystem_ftp_detect();" /><br />
 		
@@ -124,9 +132,10 @@
 		<input type="checkbox" name="filesystem[ftp][ssl]" /> Secure connection <em>(sFTP)</em><br />
 		FTP Connection: <select name="filesystem[ftp][method]" >
 							<option value="phpext"<?php if( !extension_loaded('ftp') ){ echo ' disabled="disabled"';} ?>>PHP FTP Extension</option>
-							<option value="phpsockets"<?php if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} ?>>PHP Sockets</option>
+							<option value="phpsocket"<?php if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} ?>>PHP Sockets</option>
 							<option value="phpstream"<?php if( !function_exists('fsockopen') ){ echo ' disabled="disabled"';} ?>>PHP Stream Sockets</option>
 						</select>
+		<div id="ftp-status">&nbsp;</div>
 		
 	</div>
 	<div class="section" id="filesystem-direct">

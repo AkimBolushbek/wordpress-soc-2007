@@ -19,18 +19,20 @@ function _WP_Filesystem_bestOption($preference='direct'){
 			if( getmyuid() == fileowner(tempnam("/tmp", "FOO")) )
 				return 'direct';
 			break;
-		case 'ftpext':
+		case 'phpext':
 			if( extension_loaded('ftp') )
 				return 'ftpext';
 			break;
-		case 'ftpsocket':
-			if( function_exists('socket_create') )
+		case 'phpsocket':
+			if( extension_loaded('sockets') )
 				return 'ftpsocket';
+			break;
+		case 'phpstream':
 			break;
 	}
 	if( getmyuid() == fileowner(tempnam("/tmp", "FOO")) ) return 'direct';
-	if( extension_loaded('ftp')) return 'ftpext';
-	if( function_exists('socket_create') ) return 'ftpsocket';
+	if( extension_loaded('ftp') ) return 'ftpext';
+	if( extension_loaded('sockets') ) return 'ftpsocket';
 	return false;
 }
 ?>

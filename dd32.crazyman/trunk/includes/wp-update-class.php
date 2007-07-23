@@ -6,7 +6,7 @@
  */
 class WP_Update{
 	function WP_Update(){
-		include_once( ABSPATH . 'wp-includes/class-snoopy.php' );
+		require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 		require_once('wp-update-functions.php');
 		$this->loadPlugins();
 	}
@@ -16,9 +16,9 @@ class WP_Update{
 	 * @return null
 	 */	
 	function loadPlugins(){
-		if( ! is_dir(ABSPATH . '/wp-content/plugins/wp-update/extensions') )
+		if( ! is_dir(ABSPATH . 'wp-content/plugins/wp-update/extensions') )
 			return;
-		$dir = @dir(ABSPATH . '/wp-content/plugins/wp-update/extensions');
+		$dir = @dir(ABSPATH . 'wp-content/plugins/wp-update/extensions');
 		while (false !== ($file= $dir->read())) {
 			@ include ( $dir->path . '/' . $file );
 		}
