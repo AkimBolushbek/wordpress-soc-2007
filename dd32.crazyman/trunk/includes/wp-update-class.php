@@ -28,16 +28,32 @@ class WP_Update{
 	 * @param string $item Search type, "themes"||"plugins"
 	 * @return mixed Array holding results on success, false on failure
 	 */
-	function search($item='themes',$tags=array(),$page=1){
-		if(0 == count($tags))
-			return false; //Must specify search terms.
+	function search($item='themes',$terms=array(),$page=1){
+
 		if( empty($page) || ! is_numeric($page) )
 			$page = 1;
+		if( ! is_array($terms) )
+			$tags = array($terms);
 
 		if('themes' == $item){
-			return $this->searchThemes($tags,$page);
+			return apply_filters('wpupdate_themeSearchProviders',
+					array('results'=>array(),
+							'info'=>array(
+								'page'=>$page,
+								'pages'=>0,
+								'searchOptions'=>$terms['searchOptions'],
+								'sortby'=>$terms['sortby'],
+								'order'=>$terms['order'],
+								'andor'=>$terms['andor']
+								)
+							));	
 		} else {
-			return apply_filters('wpupdate_pluginSearchProviders',array('info'=>array('terms'=>$tags,'page'=>$page),'results'=>array()));
+			return apply_filters('wpupdate_pluginSearchProviders',
+					array('results'=>array(),
+							'info'=>array(
+								'terms'=>$terms,
+								'page'=>$page)
+							));
 		}
 	}
 	/*** THEME SEARCH FUNCTIONS ****/
@@ -47,112 +63,9 @@ class WP_Update{
 	 * @return mixed Array holding results on success, null on failure
 	 */
 	function getThemesFeatured(){
-		$themes = wp_cache_get('wpupdate_ThemesFeatured', 'wpupdate');
-		if( !$themes ){
-			$snoopy = new Snoopy();
-			$snoopy->fetch('http://wordpress.org/extend/themes/themes.php');
-			$themes = $this->parseThemesFeaturedHTML($snoopy->results);
-			wp_cache_set('wpupdate_ThemesFeatured', $themes, 'wpupdate', 86400); //24*60*60=86400
-		}
-		return $themes;
-	}
-	/**
-	 * Parses the Featured themes page on wordpress.org
-	 * @param string $html the HTML of the theme page
-	 * @return array of parsed page
-	 */
-	function parseThemesFeaturedHTML($html){
-		preg_match_all('#<div class="featured" id="(.*)">#',$html,$ids);
-		preg_match_all('#<p><img src="(.*?)" width="420" height="350" /></p>#',$html,$img);
-		preg_match_all('#<h1>(.*?)</h1>#',$html,$name);
-		preg_match_all('#<p>Design by <a href="(.*?)" target="_parent">(.*?)</a></p>#',$html,$author);
-		preg_match_all('#<p class="download"><a href="(.*?)">Download</a></p>#', $html, $download);
-		
-		$ret = array();
-		for($i=0; $i < count( $ids[1] ); $i++){
-			$ret[] = array(
-						'id' 		=> $ids[1][$i],
-						'thumbnail' => 'http://wordpress.org' . $img[1][$i],
-						'name' 		=> $name[1][$i],
-				   'authorhomepage' => $author[1][$i],
-						'author' 	=> $author[2][$i],
-						'download' 	=> $download[1][$i]
-						);
-		}
-		return $ret;
-	}
-	/** THEME SEARCH **/
-	/**
-	 * Searches for a theme
-	 * @param array $options tags/terms to search for
-	 * @param int $page the pagenumber we're displaying
-	 * @param int $items the number of items to have displayed
-	 * @return mixed Array holding results on success
- 	 * @todo remove the iterative loading of themes until the number is found
-	 */
-	function searchThemes($options,$page=1){
-
-		$urlpart = array();
-		foreach($options as $postname=>$postvalue){
-			if(is_array($postvalue)){
-				foreach($postvalue as $subpostvalue)
-					$urlpart[] = urlencode($postname.'[]').'='.urlencode($subpostvalue);
-			} else {
-				$urlpart[] = urlencode($postname).'='.urlencode($postvalue);
-			}
-		}
-		$url = implode('&',$urlpart);
-		$url = 'http://themes.wordpress.net/?' . $url . '&paged=' . $page;
-
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		$html = $snoopy->results;
-		$themes = array(
-						'results' => $this->parseThemeHTML($html),
-						'info' 	  => array('page'=>$page, 'pages'=>1)
-						);
-		
-		/* Check the number of pages, If this isnt the last page, change it. */
-		if ( preg_match('#<div id="bottompagenav">.*>(\d+)</a></p></div>#',$html,$pages) )
-			$themes['info']['pages'] = $pages[1];
-
-		return $themes;
-	}
-	/**
-	 * Parses a theme page from themes.wordpress.net/
-	 * @param string $html the HTML of the theme page
-	 * @return array of parsed page
-	 */
-	function parseThemeHTML($html){
-		preg_match_all('#<a href="(.*?)" rel="bookmark" title="(.*?)"><img src="/snapshots/(\d+?)-thumb.jpg" alt="\2" /></a>#i',$html,$mat1);
-		preg_match_all('#Download \((\d+)\)#i',$html,$mat2);
-		$ret = array();
-		
-		$totalItems = count($mat2[1]);
-		
-		if( false == $mat1 )
-			return false;
-		
-		for($i = 0; $i < $totalItems; $i++){
-			$id = $mat1[3][$i];
-			$ret[] = array(
-							'name'=>$mat1[2][$i],
-							'url'=>$mat1[1][$i],
-							'id'=>$id,
-							'download'=>'http://themes.wordpress.net/download.php?theme='.$id,
-							'downloadcount'=>$mat2[1][$i],
-							'snapshot'=> array(
-										'thumb'=>'http://themes.wordpress.net/snapshots/'.$id.'-thumb.jpg',
-										'medium'=>'http://themes.wordpress.net/snapshots/'.$id.'-medium.jpg',
-										'big'=>'http://themes.wordpress.net/snapshots/'.$id.'-big.jpg'
-										),
-							'testrun'=>'http://themes.wordpress.net/testrun/?wptheme='.$id
-							);
-		}
-		return $ret;
+		return apply_filters('wpupdate_themesFeatured',array('results'=>array(),'info'=>array()));
 	}
 	/*** PLUGIN FUNCTIONS ***/
-	
 	/** PLUGIN TAG FUNCTIONS **/
 	/**
 	 * Retrieves the current tag list from the Tag Providers
@@ -267,7 +180,7 @@ class WP_Update{
 					foreach( (array)$plugins['results'] as $result){
 						if( 0 === strcasecmp($result['Name'],$pluginData['Name']) ){
 							//return information:
-							$pluginUpdateInfo = $this->checkPluginUpdateWordpressOrg($result['PluginHome']);
+							$pluginUpdateInfo = $this->checkPluginUpdateURL($result['UpdateURL']);
 							break;
 						}
 					}
@@ -308,71 +221,18 @@ class WP_Update{
 			return array('Update'=>false);
 		}
 	}
-	/**
-	 * Parses the WordPress.org plugin page for an individual plugins details
-	 * @param string $uri the URL of the Plugin page to parse
-	 * @return mixed array of Plugin details
-	 */
-	function checkPluginUpdateWordpressOrg($id){
-		if ( ! $id ) return false;
-		
-		if ( false === strpos($id,'http://') ){
-			$url = 'http://wordpress.org/extend/plugins/'.$id.'/';
-		} else {
-			//TODO: Check if the provided URL has a #...
-			$url = $id;
-			preg_match('#plugins/(.*?)/#',$id,$_id);
-			$id = $_id[1];
-		}
-
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
-		preg_match('#<strong>Version:<\/strong> ([\.\d]+?)<\/li>#',$snoopy->results,$version);
-		preg_match('#<strong>Last Updated:</strong> ([\d\-]+)#',$snoopy->results,$lastupdate);
-		preg_match("#<a href='(.*?)'>Download#",$snoopy->results,$download);
-		preg_match("#<a href='(.*?)'>Author Homepage#",$snoopy->results,$authorhomepage);
-		preg_match("#<\/li>.*<li><a href='(.*?)'>Plugin Homepage#",$snoopy->results,$pluginhomepage);
-		preg_match("#<a href='http:\/\/wordpress.org\/extend\/plugins\/profile\/(.*?)'>(.*?)<\/a>#",$snoopy->results,$authordetails);
-		preg_match('#star-rating" style="width: ([\d\.]+)px"#',$snoopy->results,$rating);
-		preg_match('#<div id="plugin-tags">(.*?)</div>#s',$snoopy->results,$tag_section);
-			preg_match_all("#<a href='http:\/\/wordpress.org\/extend\/plugins\/tags\/(.*?)'>(.*?)<\/a>#",$tag_section[1],$tags);
-		preg_match('#<div id="related">(.*?)</div>#s',$snoopy->results,$related_section);
-			preg_match_all("#<a href='http:\/\/wordpress.org\/extend\/plugins\/plugin\/(.*?)\/'>(.*?)<\/a>#",$related_section[1],$relatedplugins);
-		
-		preg_match('#<li><strong>Requires WordPress Version:</strong> ([\d\.]+)#', $snoopy->results, $req_version);
-		preg_match('#<li><strong>Compatible up to:</strong> ([\d\.]+)#',$snoopy->results, $compat_version);
-		
-		if ( !empty($req_version) || !empty($compat_version) ){
-			$wordpress = array('Name' => 'WordPress',
-							   'Type' => 'WordPress');
-			if( !empty($req_version) ) $wordpress['Min'] = $req_version[1];
-			if( !empty($compat_version) ) $wordpress['Tested'] = $compat_version[1];
-			$requirements[] = $wordpress;
-		}
 	
-		for($i=0; $i<count($tags[0]); $i++)
-			$final_tags[ $tags[1][$i] ] = $tags[2][$i];
-		
-		for($i=0; $i<count($relatedplugins[0]); $i++)
-			$final_related[ $relatedplugins[1][$i] ] = $relatedplugins[2][$i];
-		
-		return array(
-					'Name' 		=>	trim($name[1]),
-					'Version'	=>	trim($version[1]),
-					'LastUpdate'=>	trim($lastupdate[1]),
-					'Id'		=> 	$id,
-					'Download'	=>	trim($download[1]),
-					'Author'	=>	trim($authordetails[2]),
-					/* 'WPAuthor'	=>	trim($authordetails[1]),*/
-					'AuthorHome'=>	trim($authorhomepage[1]),
-					'PluginHome'=>	trim($pluginhomepage[1]),
-					'Rating'	=>	trim($rating[1]),
-					'Tags'		=>	$final_tags,
-					'Related'	=>	$final_related,
-					'Requirements' => $requirements,
-					'Expire'	=> 7*24*60*60
-					);
+	
+	function checkPluginUpdateURL($url){
+		$update = null;
+		//First, Get the Hostname
+		$components = parse_url($url);
+		//Second, Run it through a filter to see if any extension picks it up as a known handle
+		$update = apply_filters('wpupdate_checkPluginUpdate-' . strtolower($components['host']), $url);
+		//Third, If no plugin picked it up, Query the URL directly.
+		if ( ! $update )
+			$update = $this->checkPluginUpdateCustom($url);
+		return $update;
 	}
 	
 	function checkPluginCompatible($pluginUpdateInfo){
