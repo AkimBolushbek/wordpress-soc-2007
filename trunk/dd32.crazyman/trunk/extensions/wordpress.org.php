@@ -45,6 +45,7 @@ function wpupdate_wordpressorg_search($args){
 						'Id'		=> $wordpressId[1],
 						'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
 						'PluginHome'=> trim($matPlugins[1][$j]),
+						'UpdateURL' => trim($matPlugins[1][$j]),
 						'Tags'		=> array($term),
 						'Rating'	=> ''
 						);
@@ -56,7 +57,7 @@ function wpupdate_wordpressorg_search($args){
 	return $args;
 } 
 
-add_filter('wpupdate_pluginTagList','wpupdate_wordpressorg_taglist');
+add_filter('wpupdate_pluginTagList','wpupdate_wordpressorg_taglist',1);
 function wpupdate_wordpressorg_taglist($tags){
 
 	$arrTags = wp_cache_get('wpupdate_searchPluginsWordpressOrg_TagList', 'wpupdate');
@@ -78,56 +79,155 @@ function wpupdate_wordpressorg_taglist($tags){
 	return $tags;
 }
 
-add_filter('wpupdate_pluginTagSearch','wpupdate_wordpressorg_tagsearch');
+add_filter('wpupdate_pluginTagSearch','wpupdate_wordpressorg_tagsearch',1);
 function wpupdate_wordpressorg_tagsearch($args){
-
-		$results = wp_cache_get('wpupdate_pluginSearchTag_wordpressorg_'.$args['info']['terms'].'-'.$args['info']['page'], 'wpupdate');
-		if( $results ){
-			$args['results'] = array_merge($args['results'],$results);
-			return $args;
-		}
-
-		$url = 'http://wordpress.org/extend/plugins/tags/' . $args['info']['terms'];
-		if( $args['info']['page'] > 1 ) $url .= '/page/' . $args['info']['page'];
-
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		
-		$results = array();
-
-		preg_match_all('#<h3><a href="(.*?)">(.*?)</a></h3>(.*?)<ul class="plugin-meta">#ims',$snoopy->results,$plugindetails);
-		preg_match_all('#Version</span> (.*?)</li>#i',$snoopy->results,$version);
-		preg_match_all('#Updated</span> (.*?)</li>#i',$snoopy->results,$updated);
-		preg_match_all('#Downloads</span> (.*?)</li>#i',$snoopy->results,$downloads);
-		preg_match_all('#star-rating" style="width: (.*?)px#i',$snoopy->results,$rating);
-		
-		if( empty($plugindetails[1]) )
-			return $args;
-
-		for( $i = 0; $i < count($plugindetails[0]); $i++){
-			preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$wordpressId);
-
-			$results[] = array(
-								'Name' 		=> trim($plugindetails[2][$i]),
-								'Desc'		=> trim($plugindetails[3][$i]),
-								'Version' 	=> trim($version[1][$i]),
-								'LastUpdate'=> trim($updated[1][$i]),
-								'Id'=> $wordpressId[1],
-								'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
-								'PluginHome'=> trim($plugindetails[1][$i]),
-								'Tags'		=> array($tag),
-								'Rating'	=> trim($rating[1][$i])
-								);
-		}
-		if ( preg_match_all("#<a class='page-numbers' href='/extend/plugins/tags/post/page/(\d+)'>(\d+)</a>#",$snoopy->results,$pages) ){
-			$pages = (int)$pages[2][ count($pages[2]) - 1 ];
-			if( $pages > $args['info']['pages'] )
-				$args['info']['pages'] = $pages;
-		}
-		wp_cache_set('wpupdate_pluginSearchTag_wordpressorg_'.$results['info']['terms'].'-'.$results['info']['page'], $results, 'wpupdate', 21600);
-		
+	$results = wp_cache_get('wpupdate_pluginSearchTag_wordpressorg_'.$args['info']['terms'].'-'.$args['info']['page'], 'wpupdate');
+	if( $results ){
 		$args['results'] = array_merge($args['results'],$results);
 		return $args;
+	}
+
+	$url = 'http://wordpress.org/extend/plugins/tags/' . $args['info']['terms'];
+	if( $args['info']['page'] > 1 ) $url .= '/page/' . $args['info']['page'];
+
+	$snoopy = new Snoopy();
+	$snoopy->fetch($url);
+	
+	$results = array();
+
+	preg_match_all('#<h3><a href="(.*?)">(.*?)</a></h3>(.*?)<ul class="plugin-meta">#ims',$snoopy->results,$plugindetails);
+	preg_match_all('#Version</span> (.*?)</li>#i',$snoopy->results,$version);
+	preg_match_all('#Updated</span> (.*?)</li>#i',$snoopy->results,$updated);
+	preg_match_all('#Downloads</span> (.*?)</li>#i',$snoopy->results,$downloads);
+	preg_match_all('#star-rating" style="width: (.*?)px#i',$snoopy->results,$rating);
+	
+	if( empty($plugindetails[1]) )
+		return $args;
+
+	for( $i = 0; $i < count($plugindetails[0]); $i++){
+		preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$wordpressId);
+
+		$results[] = array(
+							'Name' 		=> trim($plugindetails[2][$i]),
+							'Desc'		=> trim($plugindetails[3][$i]),
+							'Version' 	=> trim($version[1][$i]),
+							'LastUpdate'=> trim($updated[1][$i]),
+							'Id'=> $wordpressId[1],
+							'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
+							'PluginHome'=> trim($plugindetails[1][$i]),
+							'Tags'		=> array($tag),
+							'Rating'	=> trim($rating[1][$i])
+							);
+	}
+	if ( preg_match_all("#<a class='page-numbers' href='/extend/plugins/tags/post/page/(\d+)'>(\d+)</a>#",$snoopy->results,$pages) ){
+		$pages = (int)$pages[2][ count($pages[2]) - 1 ];
+		if( $pages > $args['info']['pages'] )
+			$args['info']['pages'] = $pages;
+			//TODO: Pages isnt cached when results are cached, could lead to issues?
+	}
+	wp_cache_set('wpupdate_pluginSearchTag_wordpressorg_'.$results['info']['terms'].'-'.$results['info']['page'], $results, 'wpupdate', 21600);
+	
+	$args['results'] = array_merge($args['results'],$results);
+	return $args;
 }
 
+add_filter('wpupdate_checkPluginUpdate-wordpress.org','checkPluginUpdateWordpressOrg');
+/**
+ * Parses the WordPress.org plugin page for an individual plugins details
+ *
+ * @param string $url the URL of the Plugin page to parse
+ * @return mixed array of Plugin details
+ * 
+ * @TODO Caching
+ */
+function checkPluginUpdateWordpressOrg($url){
+	if ( ! $url ) return false;
+	
+	if ( false !== strpos($id,'http://') ){
+		$url = $id;
+		preg_match('!plugins/(.*?)/!',$id,$_id);
+		$id = $_id[1];
+	}
+
+	$snoopy = new Snoopy();
+	$snoopy->fetch($url);
+	preg_match('#<h2>(.*)</h2>#',$snoopy->results,$name);
+	preg_match('#<strong>Version:<\/strong> ([\.\d]+?)<\/li>#',$snoopy->results,$version);
+	preg_match('#<strong>Last Updated:</strong> ([\d\-]+)#',$snoopy->results,$lastupdate);
+	preg_match("#<a href='(.*?)'>Download#",$snoopy->results,$download);
+	preg_match("#<a href='(.*?)'>Author Homepage#",$snoopy->results,$authorhomepage);
+	preg_match("#<\/li>.*<li><a href='(.*?)'>Plugin Homepage#",$snoopy->results,$pluginhomepage);
+	preg_match("#<a href='http:\/\/wordpress.org\/extend\/plugins\/profile\/(.*?)'>(.*?)<\/a>#",$snoopy->results,$authordetails);
+	preg_match('#star-rating" style="width: ([\d\.]+)px"#',$snoopy->results,$rating);
+	preg_match('#<div id="plugin-tags">(.*?)</div>#s',$snoopy->results,$tag_section);
+		preg_match_all("#<a href='http:\/\/wordpress.org\/extend\/plugins\/tags\/(.*?)'>(.*?)<\/a>#",$tag_section[1],$tags);
+	preg_match('#<div id="related">(.*?)</div>#s',$snoopy->results,$related_section);
+		preg_match_all("#<a href='http:\/\/wordpress.org\/extend\/plugins\/plugin\/(.*?)\/'>(.*?)<\/a>#",$related_section[1],$relatedplugins);
+	
+	preg_match('#<li><strong>Requires WordPress Version:</strong> ([\d\.]+)#', $snoopy->results, $req_version);
+	preg_match('#<li><strong>Compatible up to:</strong> ([\d\.]+)#',$snoopy->results, $compat_version);
+	
+	if ( !empty($req_version) || !empty($compat_version) ){
+		$wordpress = array('Name' => 'WordPress',
+						   'Type' => 'WordPress');
+		if( !empty($req_version) ) $wordpress['Min'] = $req_version[1];
+		if( !empty($compat_version) ) $wordpress['Tested'] = $compat_version[1];
+		$requirements[] = $wordpress;
+	}
+
+	for($i=0; $i<count($tags[0]); $i++)
+		$final_tags[ $tags[1][$i] ] = $tags[2][$i];
+	
+	for($i=0; $i<count($relatedplugins[0]); $i++)
+		$final_related[ $relatedplugins[1][$i] ] = $relatedplugins[2][$i];
+	
+	return array(
+				'Name' 		=>	trim($name[1]),
+				'Version'	=>	trim($version[1]),
+				'LastUpdate'=>	trim($lastupdate[1]),
+				'Id'		=> 	$id,
+				'Download'	=>	trim($download[1]),
+				'Author'	=>	trim($authordetails[2]),
+				'AuthorHome'=>	trim($authorhomepage[1]),
+				'PluginHome'=>	trim($pluginhomepage[1]),
+				'UpdateURL' =>  trim($pluginhomepage[1]),
+				'Rating'	=>	trim($rating[1]),
+				'Tags'		=>	$final_tags,
+				'Related'	=>	$final_related,
+				'Requirements' => $requirements,
+				'Expire'	=> 7*24*60*60
+				);
+}
+add_filter('wpupdate_themesFeatured','wpupdate_WordpressOrg_featured');
+function wpupdate_WordpressOrg_featured($args){
+	$themes = wp_cache_get('wpupdate_wordpressorg_ThemesFeatured', 'wpupdate');
+	if( ! $themes ){
+		$themes = array();
+		$snoopy = new Snoopy();
+		$snoopy->fetch('http://wordpress.org/extend/themes/themes.php');
+
+		preg_match_all('#<div class="featured" id="(.*)">#',$snoopy->results,$ids);
+		preg_match_all('#<p><img src="(.*?)" width="420" height="350" /></p>#',$snoopy->results,$img);
+		preg_match_all('#<h1>(.*?)</h1>#',$html,$name);
+		preg_match_all('#<p>Design by <a href="(.*?)" target="_parent">(.*?)</a></p>#',$snoopy->results,$author);
+		preg_match_all('#<p class="download"><a href="(.*?)">Download</a></p>#', $snoopy->results, $download);
+
+		for($i=0; $i < count( $ids[1] ); $i++){
+			$themes[] = array(
+						'id' 		=> $ids[1][$i],
+						'thumbnail' => 'http://wordpress.org' . $img[1][$i],
+						'name' 		=> $name[1][$i],
+				   'authorhomepage' => $author[1][$i],
+						'author' 	=> $author[2][$i],
+						'download' 	=> $download[1][$i]
+						);
+		}
+
+		wp_cache_set('wpupdate_wordpressorg_ThemesFeatured', $themes, 'wpupdate', 86400); //24*60*60=86400
+	} // end if (!$themes)
+	if( $themes )
+		$args['results'] = array_merge($args['results'], (array)$themes);
+
+	return $args;
+}
 ?>
