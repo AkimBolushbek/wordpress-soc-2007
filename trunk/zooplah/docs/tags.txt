@@ -50,9 +50,7 @@ Currently implemented tags:
 	Attributes: None
 <$EntryTitle$>
 	The title of the current entry or blog.
-	Attributes:
-	lang
-		Does nothing.  Must be "en".
+	Attributes: None
 <$LanguageAttributes$>
 	The HTML attributes for the proper display of the content,
 	based on the server computer's locale.

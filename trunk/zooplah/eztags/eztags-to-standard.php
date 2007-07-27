@@ -26,7 +26,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$CommentID$>', '<?php comment_ID(); ?>', $content);
 	$content = str_replace('<$CommentText$>', '<?php comment_text(); ?>', $content);
 
-	$content = str_replace('<$EntryTitle lang="en"$>', '<?php the_title(); ?>', $content);
+	$content = str_replace('<$EntryTitle$>', '<?php the_title(); ?>', $content);
 
 	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);
