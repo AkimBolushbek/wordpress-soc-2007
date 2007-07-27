@@ -92,7 +92,7 @@ $items = get_option('wpum_items');
 		},
 		addTabs: function(container){
 			$(this.tabContainer[container] + '>ul>li>a').bind('click', {'container': container}, 
-			function(){
+			function(event){
 				if( this.href.indexOf('#') > -1){
 					var tabname = this.href.substr(this.href.indexOf('#'));
 					$.tabs.openTab(tabname,event.data.container);
@@ -102,7 +102,7 @@ $items = get_option('wpum_items');
 		},
 		addTab: function(tab,container){
 		$(this.tabContainer[container] + '>ul>li>a[@href=#' + tab + ']').bind('click', {'container': container},
-			function(){
+			function(event){
 				if( this.href.indexOf('#') > -1){
 					var tabname = this.href.substr(this.href.indexOf('#'));
 					$.tabs.openTab(tabname,event.data.container);

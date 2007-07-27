@@ -26,46 +26,61 @@ function wpupdatemanager_template($arg){
 			break;
 		}
 	}
-	
-	echo '<?xml version="1.0" encoding="iso-8859-1"?>';
-	if( $itemId === false ){
-		/* Plugin not found: array('Errors'=> array('Unknown Plugin') )*/
-		die('<error>Item not Found</error>');
-	}
-
-	echo "<{$items[$itemId]['type']}>\n";
-									
-	echo "<Name>{$items[$itemId]['name']}</Name>\n";
-	echo "<Version>{$items[$itemId]['version']}</Version>\n";
-	echo "<LastUpdate>{$items[$itemId]['lastupdated']}</LastUpdate>\n";
-	echo "<Download>{$items[$itemId]['download']}</Download>\n";
-	echo "<Author>{$items[$itemId]['author']}</Author>\n";
-	echo "<AuthorHome>{$items[$itemId]['authorhome']}</AuthorHome>\n";
-	echo "<PluginHome>{$items[$itemId]['pluginhome']}</PluginHome>\n";
-	echo "<Expire>".(7*24*60*60)."</Expire>\n";
-	
-	if( count($items[$itemId]['requirements']) > 0 ){
-		echo "<Requirements>\n";
-		foreach($items[$itemId]['requirements'] as $id=>$req){
-			echo "<Requirement>\n";
-				echo "<Type>{$req['type']}</Type>\n";
-				echo "<Name>{$req['name']}</Name>\n";
-				echo "<Min>{$req['min']}</Min>\n";
-				echo "<Tested>{$req['tested']}</Tested>\n";
-			echo "</Requirement>\n";
-		}
-		echo "</Requirements>\n";
-	}
-
-	echo "</{$items[$itemId]['type']}>\n";
-
+	//Spit out the XML for it.
+	wpupdatemanager_generate_xml($items[$itemId]);
+	//Debug purposes, Display friendly formatted array
 	if( isset($_GET['debug']) ){
 		echo "<pre>";
 		var_dump($items[$itemId]);
 		echo "</pre>";
 	}
-		
 	die();
+}
+
+function wpupdatemanager_generate_xml($items=false){
+	/*echo '<?xml version="1.0" encoding="iso-8859-1"?>', "\n";*/
+	if( ! $items || empty($items) )
+		die('<error>Item not Found</error>'); //End output of the routine at this point
+	if( isset($items['name']) )//Is this a multi dimension array, or just a single array of a plugin?
+		$items = array($items); //set to a multi dimension
+
+	$validTypes = array('plugin','theme');
+	foreach($items as $plugin){
+		if( 'theme' != $plugin['type'] )
+			$plugin['type'] = 'plugin'; //Not a theme means it _must_ be a plugin
+			
+		echo "<{$plugin['type']}>\n";
+			//echo accepts multiple arguements, no need to contact items together with .
+			echo "\t<Name>"       ,	htmlentities($plugin['name']) 		, "</Name>\n";
+			echo "\t<Version>"    ,	htmlentities($plugin['version']) 	, "</Version>\n";
+			echo "\t<LastUpdate>" , htmlentities($plugin['lastupdated']), "</LastUpdate>\n";
+			echo "\t<Download>"   ,	htmlentities($plugin['download']) 	, "</Download>\n";
+			echo "\t<Author>" 	  ,	htmlentities($plugin['author']) 	, "</Author>\n";
+			echo "\t<AuthorHome>" , htmlentities($plugin['authorhome']) , "</AuthorHome>\n";
+			echo "\t<PluginHome>" , htmlentities($plugin['pluginhome']) , "</PluginHome>\n";
+			
+			echo "\t<Expire>". ( isset($plugin['expire']) ? $plugin['expire'] : 7*24*60*60 ) . "</Expire>\n"; //Default to recheck in a week
+
+			if( count($plugin['requirements']) > 0 ){
+				echo "\t<Requirements>\n";
+				foreach($plugin['requirements'] as $req){
+					if( empty($req['type']) )
+						continue; //If the Requirement type is not set, then we ignore it.
+					echo "\t\t<Requirement>\n";
+						if( !empty($req['type']) )
+							echo "\t\t\t<Type>{$req['type']}</Type>\n";
+						if( !empty($req['name']) )
+							echo "\t\t\t<Name>{$req['name']}</Name>\n";
+						if( !empty($req['min']) )
+							echo "\t\t\t<Min>{$req['min']}</Min>\n";
+						if( !empty($req['tested']) )
+							echo "\t\t\t<Tested>{$req['tested']}</Tested>\n";
+					echo "\t\t</Requirement>\n";
+				}
+				echo "\t</Requirements>\n";
+			}// end if count( requirements)
+		echo "</{$plugin['type']}>\n";
+	} //end foreach(items)
 }
 
 //Add the administrative menus, only 'Administrators' can access it for now.
