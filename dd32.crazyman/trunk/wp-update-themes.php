@@ -142,7 +142,7 @@ if ( count($broken_themes) ) {
 <div id="featured">
 <?php
 	$themes = $wpupdate->getThemesFeatured();
-	foreach($themes as $theme){
+	foreach($themes['results'] as $theme){
 	/*[id] => almost-spring
     [thumbnail] => http://wordpress.org/extend/themes/t/almost-spring.png
     [name] => Almost Spring

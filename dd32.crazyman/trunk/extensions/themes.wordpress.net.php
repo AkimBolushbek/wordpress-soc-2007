@@ -6,10 +6,9 @@ function wpupdate_themeswordpressnet_search($args){
 	$url = 'http://themes.wordpress.net/?' . $url . '&submit=Show';
 	if( $args['info']['page'] > 1)
 		$url .= '&paged=' . $args['info']['page'];
-var_dump($url);
-var_dump('wpupdate_searchThemesThemesWordpressNet_'.md5($url));
+
 	$results = wp_cache_get('wpupdate_searchThemesThemesWordpressNet_'.md5($url), 'wpupdate');
-var_dump($results);
+
 	if( ! $results ){
 		$results = array('results'=>array(),'pages'=>0);
 		$snoopy = new Snoopy();
@@ -60,7 +59,7 @@ $tags = array( 	1 => '1 column', 2 => '2 columns',	3 => '3 columns', 4 => '4 col
 				27 => 'Rounded corners', 28 => 'Left sidebar', 29 => 'Right sidebar',
 				30 => 'No images' ); //17~21 do not exist.
 	$string = array();
-	foreach($options['searchOptions'] as $name){
+	foreach( (array) $options['searchOptions'] as $name){
 		if( false !== ( $id = array_search($name,$tags) ) )
 			$string[] = 'cats%5B%5D='.$id; //cats%5B%5D = cats[]
 	}
