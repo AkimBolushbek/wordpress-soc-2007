@@ -107,21 +107,15 @@ $wpupdate = new WP_Update;
 </script>
 <?php
 if( isset($_POST['submit']) ){
-
-$taglist = array();
-foreach( (array)$_POST['searchOptions'] as $option){
-	$taglist[] = urldecode($option);
-}
-$taglist = implode(', ' . $_POST['andor'] . ' ',$taglist);
+	foreach( (array)$_POST['searchOptions'] as $id=>$option)
+		$_POST['searchOptions'][$id] = urldecode($option);
+	
+	$taglist = implode(', ' . $_POST['andor'] . ' ',$_POST['searchOptions']);
+	
+	$searchResults = $wpupdate->search('themes',$_POST,1); 
 ?>
 <h2><?php _e('Search Results') ?></h2>
 <p><?php _e('Search results for Themes tagged with ') ?><strong><span id='taglist'><?php echo $taglist; ?></span></strong></p>
-<?php 
-	foreach( (array) $_POST['searchOptions'] as $id => $value)
-		$_POST['searchOptions'][$id] = urldecode($value);
-
-	$searchResults = $wpupdate->search('themes',$_POST,1); 
-?>
 <style type="text/css">
 	.themeinfo{
 		display:inline;
@@ -158,10 +152,10 @@ if( !isset($searchResults['results']) || empty($searchResults['results']) ){
 
 	if( $searchResults['info']['page'] < $searchResults['info']['pages'] )
 		echo '&nbsp;<div class="themeinfo" id="load-more"><span><img style="display:none" src="'.get_option('siteurl'). '/wp-content/plugins/wp-update/images/loading.gif" id="loading-image" /><br/><a href="#load-more" onclick="loadMore()" title="'.$searchResults['info']['pages'].' Pages">'.__('Page').' <b id="pagenumber">2</b> &raquo;</a></span></div>';
-}
+} //end search results
 ?>
 </div>
 <?php
-} //end if Search
+} //end if Search submitted
 ?>
 </div>

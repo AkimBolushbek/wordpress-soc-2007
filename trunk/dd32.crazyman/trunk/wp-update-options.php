@@ -86,25 +86,48 @@
 		else
 			echo '<div class="updated"><p>' . __('<strong>Note:</strong>With the current server configuration, <strong>"FTP"</strong> Filesystem access is recomended.') . '</p></div>';
 	}
+	if( isset($_POST['submit_filesystem']) ){
+		var_dump($_POST);
+		if( 'direct' == $_POST['filesystem']['type'] )
+			update_option('wpfs_method','direct');
+		else
+			update_option('wpfs_method',$_POST['filesystem']['ftp']['method']);
+
+		$ftp = array();
+		$ftp['method'] = $_POST['filesystem']['ftp']['method'];
+		$ftp['hostname'] = $_POST['filesystem']['ftp']['hostname'];
+		$ftp['username'] = $_POST['filesystem']['ftp']['username']; //Underscores have been used to prevent browser "wands" from attacking the field
+		$ftp['password'] = false;
+		$ftp['passwordsave'] = false;
+		$ftp['basedir'] = $_POST['filesystem']['ftp']['basedir'];
+		$ftp['ssl'] = isset($_POST['filesystem']['ftp']['ssl']);		
+
+		if( isset($_POST['filesystem']['ftp']['passwordsave']) ){
+			$password = $_POST['filesystem']['ftp']['password'];
+			$_ftp = get_option('wpfs_ftp');
+			if ( '********' == $password || empty($password) )
+				$password = $_ftp['password'];
+			$ftp['password'] = $password;
+		} 
+		update_option('wpfs_ftp',$ftp);
+		var_dump($ftp);
+	}//end if filesystem 
 	
-	
-	
+	$method = 'direct' == get_option('wpfs_method') ? 'direct' : 'ftp';
 ?>
 
 
 <div class="wrap">
 	<h2> Filesystem Options </h2>
 	<form name="filesystem" method="post">
-	<strong>FTP:</strong> <input type="radio" name="filesystem[type]" value="ftp" onchange="$('#filesystem-ftp').show(); $('#filesystem-direct').hide();" /> &nbsp;
-	<strong>Direct:</strong> <input type="radio" name="filesystem[type]" value="direct" onchange="$('#filesystem-direct').show(); $('#filesystem-ftp').hide();" /><br />
+	<strong>FTP:</strong> <input type="radio" name="filesystem[type]" value="ftp" onchange="$('#filesystem-ftp').show(); $('#filesystem-direct').hide();"<?php checked('ftp',$method); ?> /> &nbsp;
+	<strong>Direct:</strong> <input type="radio" name="filesystem[type]" value="direct" onchange="$('#filesystem-direct').show(); $('#filesystem-ftp').hide();"<?php checked('direct',$method); ?> /><br />
 	
-	<div class="section" id="filesystem-ftp">
+	<div class="section" id="filesystem-ftp" style="<?php if('ftp' != $method) { echo 'display:none';} ?>">
 	<script type="text/javascript">
 		function filesystem_ftp_detect(){
 			var ssl = 0;
-			if( undefined == $('input[@name="filesystem[ftp][ssl]"]').attr('checked') )
-				ssl = 0;
-			else
+			if( undefined != $('input[@name="filesystem[ftp][ssl]"]').attr('checked') )
 				ssl = 1
 			
 			$.post('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=filesystem_get_ftp_path',
@@ -121,24 +144,31 @@
 			);
 		}
 	</script>
+		<?php $ftp = get_option('wpfs_ftp'); ?>
 		<h3>FTP Options</h3>
-		<strong>Hostname:</strong><input type="text" name="filesystem[ftp][hostname]" value="localhost" /><br />
-		<strong>Username:</strong><input type="text" name="filesystem[ftp][username]" value="dd32" /><br />
-		<strong>Password:</strong><input type="password" name="filesystem[ftp][password]" value="talktalk" />&nbsp;
-								  <input type="checkbox" name="filesystem[ftp][passwordsave]" />Save Password<br />
-		<strong>Base Directory:</strong><input type="text" name="filesystem[ftp][basedir]" />&nbsp;<input type="button" value="Automatically Detect" onclick="filesystem_ftp_detect();" /><br />
+		<strong>Hostname:</strong><input type="text" name="filesystem[ftp][hostname]" value="<?php echo attribute_escape($ftp['hostname']); ?>" autocomplete="off" /><br />
+		<strong>Username:</strong><input type="text" name="filesystem[ftp][username]" value="<?php echo attribute_escape($ftp['username']); ?>" autocomplete="off" /><br />
+		<strong>Password:</strong><input type="password" name="filesystem[ftp][password]" value="<?php if($ftp['password']){ echo "********";} ?>" autocomplete="off" />&nbsp;
+								  <input type="checkbox" name="filesystem[ftp][passwordsave]" <?php checked(empty($ftp['password']),false); ?> />Save Password<br />
+		<strong>Base Directory:</strong><input type="text" name="filesystem[ftp][basedir]" value="<?php echo attribute_escape($ftp['basedir']); ?>" autocomplete="off" />&nbsp;<input type="button" value="Automatically Detect" onclick="filesystem_ftp_detect();" /><br />
 		
 		<h3>Connection Options</h3>
-		<input type="checkbox" name="filesystem[ftp][ssl]" /> Secure connection <em>(sFTP)</em><br />
+		<input type="checkbox" name="filesystem[ftp][ssl]"<?php checked($ftp['ssl'],true); ?> /> Secure connection <em>(sFTP)</em><br />
 		FTP Connection: <select name="filesystem[ftp][method]" >
-							<option value="phpext"<?php if( !extension_loaded('ftp') ){ echo ' disabled="disabled"';} ?>>PHP FTP Extension</option>
-							<option value="phpsocket"<?php if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} ?>>PHP Sockets</option>
-							<option value="phpstream"<?php if( !function_exists('fsockopen') ){ echo ' disabled="disabled"';} ?>>PHP Stream Sockets</option>
+							<option value="phpext"
+								<?php if( !extension_loaded('ftp') ){ echo ' disabled="disabled"';} 
+										selected('phpext',$ftp['method']); ?>>PHP FTP Extension</option>
+							<option value="phpsocket"
+								<?php if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} 
+										selected('phpsocket',$ftp['method']); ?>>PHP Sockets</option>
+							<option value="phpstream"
+								<?php if( !function_exists('fsockopen') ){ echo ' disabled="disabled"';} 
+										selected('phpstream',$ftp['method']); ?>>PHP Stream Sockets</option>
 						</select>
 		<div id="ftp-status">&nbsp;</div>
 		
 	</div>
-	<div class="section" id="filesystem-direct">
+	<div class="section" id="filesystem-direct" style="<?php if('direct' != $method) { echo 'display:none';} ?>">
 		<h3>Direct Access Options</h3>
 		<strong>Base Directory:</strong><input type="text" name="filesystem[direct][basedir]" id="fs-direct-base" value="" />&nbsp;
 						<input type="button" value="Reset" onclick="$('#fs-direct-base').val('<?php echo attribute_escape(addslashes(ABSPATH)); ?>');" /><br />		
@@ -147,42 +177,5 @@
 	<p class="submit">
 		<input type="submit" name="submit_filesystem" value="<?php _e('Save Filesystem Information &raquo;') ?>" />
 	</p>
-	</form>
-</div>
-
-
-<?php
-	if( isset($_POST['submit_ftp']) ){
-		$ftpinfo = array(
-						'host' => $_POST['ftp_host'],
-						'username' => $_POST['ftp_user'],
-						'base'  => $_POST['ftp_dir'],
-						'ssl' => $_POST['ftp_host_ssl']
-						);
-		if( 'on' == $_POST['ftp_pass_save'] && !empty($_POST['ftp_pass']) ){
-			$ftpinfo['password'] = $_POST['ftp_pass'];
-		}
-		
-		update_option('wpupdate_ftp',$ftpinfo);
-		echo '<div class="updated"><p>' . __('FTP Options Saved') . '</p></div>';
-		var_dump($ftpinfo);
-	}
-	$ftpinfo = get_option('wpupdate_ftp');
-?>
-<div class="wrap">
-	<h2>FTP Options</h2>
-	<form method="POST">
-	<fieldset>
-		<p>
-		<label for="ftp_host"><strong><?php _e('Hostname:') ?></strong></label><input type="text" name="ftp_host" value="<?php echo $ftpinfo['host']; ?>" /> &nbsp; (
-		<label for="ftp_host_ssl"><?php _e('SFTP:') ?></label>&nbsp;<input type="checkbox" name="ftp_host_ssl" <?php checked('1',$ftpinfo['ssl']); ?> />)<br />
-		<label for="ftp_user"><strong><?php _e('Username:') ?></strong></label><input type="text" name="ftp_user" value="<?php echo $ftpinfo['username']; ?>" /><br />
-		<label for="ftp_dir"><strong><?php _e('Directory:') ?></strong></label><input type="text" name="ftp_dir" value="<?php echo $ftpinfo['base']; ?>" /><br />
-		<label for="ftp_pass"><strong><?php _e('Password:') ?></strong></label><input type="password" name="ftp_pass" value="" /> &nbsp; ( <label for="ftp_pass_save"><?php _e('Save Password:') ?></label>&nbsp;<input type="checkbox" name="ftp_pass_save" <?php if('' != $ftpinfo['password']){ echo 'checked="checked"'; } ?> />)<br />
-		</p>
-		<p class="submit">
-			<input type="submit" name="submit_ftp" value="<?php _e('Save FTP Information &raquo;') ?>" />
-		</p>
-	</fieldset>
 	</form>
 </div>
