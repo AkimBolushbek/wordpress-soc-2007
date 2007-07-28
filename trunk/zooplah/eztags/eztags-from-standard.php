@@ -57,9 +57,7 @@ function eztags_from_permalink(&$ct)
 
 function eztags_from_time(&$ct)
 {
-	$ct = preg_replace('/the_time\(([^\)]*)\)/', '?&gt;<$EntryTime format=$1$>&lt;?php', $ct);
-	$ct = str_replace('\'', '&quot;', $ct);
-	$ct = str_replace(' format=$', '$', $ct);
+	$ct = preg_replace('/the_time\(\s*\);?/', '?&gt;<$EntryTime$>&lt;?php', $ct);
 }
 
 function eztags_from_title(&$ct)
