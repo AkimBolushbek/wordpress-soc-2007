@@ -21,6 +21,8 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$LanguageAttributes$>', '<?php language_attributes(); ?>', $content);
 	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
 
+	$content = preg_replace('/<EntryCategory>([^>]*)<\/EntryCategory>/', '<?php the_category(\'$1\'); ?>', $content);
+
 	eztags_to_translatable($content);
 }
 
