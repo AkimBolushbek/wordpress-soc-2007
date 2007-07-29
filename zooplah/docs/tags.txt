@@ -48,6 +48,9 @@ Currently implemented tags:
 <$EntryPermalink$>
 	The URL of the current entry.
 	Attributes: None
+<$EntryTime$>
+	The time the entry was initially posted.
+	Attributes: None
 <$EntryTitle$>
 	The title of the current entry or blog.
 	Attributes: None
