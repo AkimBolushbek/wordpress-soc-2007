@@ -63,6 +63,11 @@ Currently implemented tags:
 	on your log-in status.
 	Attributes: None
 
+<EntryCategory>
+	The current category of the current entry.
+	Attributes: None
+	Notes: The content is the character(s) used for separating
+               various categories.
 <TranslatableString>
 	A string to be translated.
 	Attributes: None
