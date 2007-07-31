@@ -4,11 +4,14 @@ class WP_Filesystem_Direct{
 	function WP_Filesystem_Direct($arg){
 		
 	}
+	function connect(){
+		return;
+	}
 	function find_base_dir($base = '.'){
-		return ABSPATH;
+		return str_replace('\\','/',ABSPATH);
 	}
 	function get_base_dir($base = '.'){
-		return ABSPATH;
+		return str_replace('\\','/',ABSPATH);
 	}
 	function get_contents($file){
 		return @file_get_contents($file);
@@ -293,6 +296,9 @@ class WP_Filesystem_Direct{
 			}
 		}
 		return $ret;
+	}
+	function __destruct(){
+		return;
 	}
 }
 ?>

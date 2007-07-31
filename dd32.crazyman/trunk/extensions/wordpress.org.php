@@ -7,7 +7,10 @@ add_filter('wpupdate_pluginSearchProviders','wpupdate_wordpressorg_search',1);
  * @return mixed $args Search results Struct.
  */
 function wpupdate_wordpressorg_search($args){
-	$term = join(' ',$args['info']['terms']);
+	if( is_array($args['info']['terms']) )
+		$term = join(' ',$args['info']['terms']);
+	else
+		$term = $args['info']['terms'];
 	$results = wp_cache_get('wpupdate_searchPluginsWordpressOrg_'.rawurlencode($term), 'wpupdate');
 	if( $results ){
 		$args['results'] = array_merge($args['results'],$results);

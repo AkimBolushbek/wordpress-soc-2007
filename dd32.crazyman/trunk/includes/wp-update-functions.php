@@ -41,7 +41,7 @@ function wpupdate_get_plugin_data( $plugin_file ) {
 	return array ('Name' => $name, 'Title' => $plugin, 'Description' => $description, 'Author' => $author, 'Version' => $version, 'Update' => $update_uri );
 }
 
-function wpupdate_get_plugins() {
+function wpupdate_get_plugins($plugin_root='') {
 	global $wp_plugins;
 
 	if ( isset( $wp_plugins ) ) {
@@ -49,7 +49,8 @@ function wpupdate_get_plugins() {
 	}
 
 	$wp_plugins = array ();
-	$plugin_root = ABSPATH . PLUGINDIR;
+	if( empty($plugin_root) )
+		$plugin_root = ABSPATH . PLUGINDIR;
 
 	// Files in wp-content/plugins directory
 	$plugins_dir = @ dir( $plugin_root);

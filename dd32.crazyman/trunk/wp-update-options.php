@@ -171,7 +171,7 @@
 	<div class="section" id="filesystem-direct" style="<?php if('direct' != $method) { echo 'display:none';} ?>">
 		<h3>Direct Access Options</h3>
 		<strong>Base Directory:</strong><input type="text" name="filesystem[direct][basedir]" id="fs-direct-base" value="" />&nbsp;
-						<input type="button" value="Reset" onclick="$('#fs-direct-base').val('<?php echo attribute_escape(addslashes(ABSPATH)); ?>');" /><br />		
+						<input type="button" value="Reset" onclick="$('#fs-direct-base').val('<?php echo attribute_escape(addslashes(str_replace('\\','/',ABSPATH))); ?>');" /><br />		
 	</div>
 	
 	<p class="submit">
