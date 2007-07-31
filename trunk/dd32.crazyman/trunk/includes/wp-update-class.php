@@ -130,7 +130,7 @@ class WP_Update{
 			$updateText = __('Update Available').':<br/>';
 			$updateText .= '<strong>' . $updateStat['Version'] . '</strong>';
 			if( get_option('update_install_enable') )
-				$updateText .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'">'.__('Install').'</a>';
+				$updateText .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'&upgrade='.$pluginfile.'">'.__('Install').'</a>';
 			if( isset($updateStat['Errors']) ){
 				$updateText .= '<br />' . implode('<br />',$updateStat['Errors']);
 			}
@@ -379,7 +379,7 @@ class WP_Update{
 						preg_match('#<type>(.*?)<\/type>#i',$_requirements[1][$i],$type);
 						preg_match('#<minversion>(.*?)<\/minversion>#i',$_requirements[1][$i],$min);
 						preg_match('#<tested>(.*?)<\/tested>#i',$_requirements[1][$i],$tested);
-						$requirements[] = array('Name'=>$name[1],'Type'=>$type[1],'Min'=>$min[1],'Tested'=>$tested[1]);
+						$requirements[] = array('Name'=>$name[1], 'Type'=>$type[1], 'Min'=>$min[1], 'Tested'=>$tested[1]);
 					}
 		return array(
 						'Name' => $pluginname[1],
@@ -394,15 +394,20 @@ class WP_Update{
 					);
 	}
 	/** INSTALL FUNCITONS **/
-	
 	function installPlugin($filename,$fileinfo=array()){
+		return $this->installItem($filename, $fileinfo, 'wp-content/plugins/');
+	}
+	function installTheme($filename,$fileinfo=array()){
+		return $this->installItem($filename, $fileinfo, 'wp-content/themes/');
+	}
+	function installItem($filename,$fileinfo=array(),$destination=''){
 		require_once('wp-update-filesystem-class.php');
 		require_once('pclzip.lib.php');	
 		$messages = array();
 		
 		if( ! $filename )
 			return false;
-
+		/* NOTE: If this uses too much memory, it might be possible to just extract each file as needed rather than extracting entire archive into memory */
 		$archive = new PclZip($filename);
 		//Check to see if its a Valid archive
 		if( false == ($archiveFiles = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING)) ){
@@ -418,8 +423,17 @@ class WP_Update{
 			return array('Errors'=>array('Filesystem options not set correctly'));
 		
 		//First of all, Does the zip file contain a base folder?
-		$base = $fs->get_base_dir() . 'wp-content/plugins/';
+		$base = $fs->get_base_dir() . $destination;
 		$messages[] = "Base Directory: <strong>$base</strong>";
+		
+		//Check if the destination directory exists, If not, create it.
+		$path = explode('/',$base);
+		$tmppath = '';
+		for( $j = 0; $j < count($path) - 1; $j++ ){
+				$tmppath .= $path[$j] . '/';
+				if( ! $fs->is_dir($tmppath) )
+					$messages[] = __('<strong>Creating folder</strong>: ') . $tmppath . succeeded( $fs->mkdir($tmppath) );
+		}
 		
 		if( count($archiveFiles) > 1){
 			//Multiple files, they'll need to be in a folder
@@ -456,145 +470,6 @@ class WP_Update{
 							succeeded( $fs->put_contents($base.$archiveFile['filename'], $archiveFile['content']) );
 		}
 		return $messages;
-	}
-	
-	/**
-	 * Installs a theme from a given URL
-	 * @param string $url the URL of the theme to install
-	 * @return void
-	 */
-	function installThemeFromURL($url){
-		$snoopy = new Snoopy();
-		$snoopy->fetch($url);
-		
-		$tmpfname = tempnam('/tmp', 'theme');
-
-		$handle = fopen($tmpfname, 'w');
-		fwrite($handle, $snoopy->results);
-		fclose($handle);
-
-		$this->installTheme($tmpfname, array('name'=>basename($url),'type'=>'application/zip'));
-		
-		unlink($tmpfname);
-	}
-	/**
-	 * Installs a theme from a local File
-	 * @param string $file the Location of the local file
-	 * @param mixed $fileinfo Info given about the file, Similar to $_FILES
-	 * @return void
-	 */
-	function installTheme($file,$fileinfo=array()){
-		require_once('pclzip.lib.php');
-
-		if( !empty($fileinfo) && ! strpos($fileinfo['type'],'zip') > 0 ){
-			//Invalid File given.
-			$step = 1;
-			echo '<strong>Invalid Archive selected</strong><br/>';
-		} else {
-			//potentially Valid.
-			$archive = new PclZip($file);
-			if( false == ($archiveFiles = $archive->listContent()) ){
-				$step = 1;
-				echo '<strong>Invalid Archive selected<br/>'.$archive->errorInfo(true).'</strong><br/>';
-			} else {
-				//Seems its OK!
-				echo '<strong>Valid Archive selected</strong><br/>';
-				$this->installThemeStep2($archive,$fileinfo);
-			}
-		}
-	}
-	/**
-	 * Installs a theme from a open Archive
-	 * @param mixed $archive the PCLZip Archive Object of the archive
-	 * @param mixed $fileinfo Info given about the file, Similar to $_FILES
-	 * @return false on failure, null otherwise
-	 * @todo move the OK/FAIL messages to own function
-	 */
-	function installThemeStep2($archive,$fileinfo=array()){
-		if( ! $archive) return false;
-		if( false === ($files = $archive->listContent()) ) return false;
-
-		/* Filesystem */
-		require_once('wp-update-filesystem-class.php');
-		$fs = WP_Filesystem();
-		if( ! $fs )
-			wp_die('Error: Check your Filesystem settings in wp-update Options.');
-			
-		//First of all, Does the zip file contain a base folder?
-		$base = $fs->get_base_dir() . 'wp-content/themes/';
-		$baseFolderName = false;
-		foreach((array)$files as $thisFileInfo){
-			//If no Slash then it needs to be put in a folder
-			if( false === strpos($thisFileInfo['filename'],'/') ){
-				$baseFolderName = true;
-				break;
-			}
-		}
-		
-		if( $baseFolderName ){
-			//The theme file files's are not contained within a single folder, So we need to put them into a subfolder:
-			echo __('<Strong>Installing</strong>: ').$base.'<br/>';
-			
-			echo __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip');
-			if( $fs->mkdir( $base . basename($fileinfo['name'],'.zip') ) )
-				echo ' <span style="color: green;">['.__('OK').']</span><br>';
-			else
-				echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-				
-			$base .= basename($fileinfo['name'],'.zip') . '/';				
-		} else {
-			//All files are within a folder inside the archive:
-			$tmppath = '';
-			$path = explode('/',$files[0]['filename']);
-			echo __('<Strong>Installing to</strong>: ').$base . $path[0].'<br/>';
-			
-			//Loop through the folder list and create any needed folders
-			for( $j = 0; $j < count($path) - 1; $j++ ){
-				$tmppath .= $path[$j] . '/';
-				if( ! $fs->is_dir($base . $tmppath) ){
-					echo __('<strong>Creating folder</strong>: ') . $tmppath;
-					if( $fs->mkdir($base . $tmppath) )
-						echo ' <span style="color: green;">['.__('OK').']</span><br>';
-					else
-						echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-				}//end if
-			}//end for
-		}//end if($baseFolderName
-
-		//Extract each file into the array
-		$files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
-		
-		for( $i=1; $i<count($files); $i++){
-			//If a folder, Create
-	  		if( $files[$i]['folder'] ){
-				echo __('<strong>Creating folder</strong>: ') . $files[$i]['filename'];
-				if( $fs->mkdir($base.$files[$i]['filename']) )
-					echo ' <span style="color: green;">['.__('OK').']</span><br>';
-				else
-					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-			} else {
-				//File here, We need to make sure all the folders it needs are created allready
-				$tmppath = '';
-				$path = explode('/',$files[$i]['filename']);
-				for( $j = 0; $j < count($path) - 1; $j++ ){
-					$tmppath .= $path[$j] . '/';
-					if( ! $fs->is_dir($base . $tmppath) ){
-						echo __('<strong>Creating folder</strong>: ') . $base . $tmppath;
-						if( $fs->mkdir($base . $tmppath) )
-							echo ' <span style="color: green;">['.__('OK').']</span><br>';
-						else
-							echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-					}
-				}
-				//Inflate the file now.
-				echo __('<strong>Inflating File</strong>: ') . $files[$i]['filename'];
-		  		if( $fs->put_contents($base.$files[$i]['filename'], $files[$i]['content']) )
-					echo ' <span style="color: green;">['.__('OK').']</span><br>';
-				else
-					echo ' <span style="color: red;">['.__('FAILED').']</span><br>';
-			}// end if(folder)
-		}//end for
-		return true;
-	}//end function installThemeStep2
+	} //end installItem()
 }
 ?>

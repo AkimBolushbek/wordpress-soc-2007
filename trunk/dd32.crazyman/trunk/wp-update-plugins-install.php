@@ -1,12 +1,18 @@
 <?php
-if( !get_option('update_install_enable') ){
+if( !get_option('update_install_enable') || !defined('ABSPATH') ){
 	echo '<div class="error"><h1>Not Enabled</h1></div>';
 	return;
 }
-	
+
 require_once('includes/wp-update-class.php');
 global $wpupdate;
 $wpupdate = new WP_Update;
+if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
+	//Lets rely on a sepate file for upgrade proceedure
+	include 'wp-update-plugins-upgrade.php';
+	return;
+}
+
 ?>
 <style type="text/css">
 
@@ -94,11 +100,11 @@ $wpupdate = new WP_Update;
 					$fileinfo = pathinfo($_GET['url']);
 					$fileinfo['name'] = $fileinfo['basename'];
 				} else {
-					die('unsuported method');
+					wp_die(__('Unsupported Method Called'));
 				}
-				$result = $wpupdate->installPlugin($file,$fileinfo);
+				$result = $wpupdate->installTheme($file,$fileinfo);
 				if( isset($result['Error']) ){
-					echo '<div class="error">' . __('Errors Occured:') . '<br />' . implode('<br />', $result['Error']) . '</div>';
+					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';
 				}
 				unset($result['Error']);
 				foreach((array)$result as $message){

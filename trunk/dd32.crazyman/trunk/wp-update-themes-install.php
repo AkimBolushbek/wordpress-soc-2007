@@ -6,21 +6,6 @@ if( !get_option('update_install_enable') ){
 require_once('includes/wp-update-class.php');
 global $wpupdate;
 $wpupdate = new WP_Update;
-$step = isset($_GET['step']) ? (int)$_GET['step'] : ( isset($_POST['step']) ? (int)$_POST['step'] : 1);
-
-if( isset($_POST['submit']) || isset($_GET['url']) ){
-	
-	switch($step - 1){ //-1 as we want to process for the step we just completed.
-		case 0:
-			break;
-		case 1:
-			if( ! ( isset($_GET['url']) || $_FILES['themefile']['tmp_name'] ) )
-				$step--;
-			break;	
-		case 2:
-			break;
-	}
-}
 ?>
 <style>
 	.section{
@@ -28,37 +13,68 @@ if( isset($_POST['submit']) || isset($_GET['url']) ){
 	}
 </style>
 <div class="wrap">
-	<h2>Install a Theme</h2>
-<?php
-	switch($step){
-		case 2:
-			step2();
-			break;
-		case 1:
-		default:
-			step1();
+	<h2><?php _e('Install a Theme'); ?></h2>
+<?php 
+if( !empty($_FILES) || !empty($_GET['url']) ){ 
+	if( isset($_GET['url']) ){
+		//Download file
+		$filename = attribute_escape($_GET['url']); //TODO?
+	} elseif ( ! empty($_FILES['themefile']['tmp_name']) ) {
+		$filename = $_FILES['themefile']['name'];
 	}
 ?>
-<?php 
-function step1(){
-	global $wpupdate,$error;
- ?>
-	<h3>Step 1:</h3>
+	
+	<h3><?php _e('Step 2'); ?></h3>
 		<div class="section">
-			<h4>Upload file</h4>
+		<h4><?php _e('Installing..'); ?></h4>
+		<p>
+			<?php _e('Filename'); ?>: <strong><?php echo basename($filename); ?></strong><br />
+			<?php if( isset($_GET['url']) ){ ?>
+				<?php _e('Source'); ?>: <strong><?php echo $_GET['url']; ?></strong><br />
+			<?php } ?>
+			<?php
+				if( $_FILES ){
+					$file = $_FILES['themefile']['tmp_name'];
+					$fileinfo = $_FILES['themefile'];
+				} elseif( isset($_GET['url']) ){
+					$file = wpupdate_url_to_file($_GET['url']);
+					$fileinfo = pathinfo($_GET['url']);
+					$fileinfo['name'] = $fileinfo['basename'];
+				} else {
+					wp_die(__('Unsupported Method Called'));
+				}
+				$result = $wpupdate->installTheme($file,$fileinfo);
+				if( isset($result['Error']) ){
+					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';
+				}
+				unset($result['Error']);
+				foreach((array)$result as $message){
+					echo $message . '<br />';
+				}
+				var_dump($result);
+			?>
+<?php
+}
+
+?>
+<?php if( empty($_GET['url']) && empty($_FILES) ){ ?>
+	<h3><?php _e('Step 1:'); ?></h3>
+		<div class="section">
+			<h4><?php _e('Upload file'); ?></h4>
 			<p>
 			<form enctype="multipart/form-data" name="installlocalfile" method="POST">
 			<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ((int)ini_get('post_max_size'))*1024*1024; ?>" />
 			<input type="hidden" name="step" value="2" />
-			Select File: <input type="file" name="themefile" />&nbsp;<input type="submit" name="submit" value="Upload &raquo;" /><br />
-			<strong>Max filesize:</strong><?php echo ini_get('post_max_size'); ?>
+			<?php _e('Select File'); ?>: <input type="file" name="themefile" />&nbsp;<input type="submit" name="submit" value="<?php _e('Upload &raquo;'); ?>" /><br />
+			<strong><?php _e('Max filesize'); ?>:</strong><?php echo ini_get('post_max_size'); ?>
 			</form>
-			OR
-			<h4>Via a Search</h4>
-			<p>To install themes directly without uploading them yourself, Please use the <a href="themes.php?page=wp-update/wp-update-themes-search.php">Theme Search</a> tab, and select "Install" on the item.</p>
+			<?php _e('OR'); ?>
+			<h4><?php _e('Via a Search'); ?></h4>
+			<p><?php _e('To install themes directly without uploading them yourself, Please use the <a href="themes.php?page=wp-update/wp-update-themes-search.php">Theme Search</a> tab, and select "Install" on the item.'); ?></p>
 			</p>
 		</div>
-<?php } ?>
+<?php } /* end if empty && empty */?>
+
 <?php 
 function step2(){ 
 	global $wpupdate;

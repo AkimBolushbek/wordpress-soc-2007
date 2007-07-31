@@ -2,6 +2,8 @@
 class WP_Filesystem_FTPext{
 	var $link;
 	var $timeout = 5;
+	var $errors = array();
+	var $options = array();
 	
 	var $wp_base = '';
 	
@@ -12,6 +14,7 @@ class WP_Filesystem_FTPext{
 							'js'=>FTP_ASCII,
 							'html'=>FTP_ASCII,
 							'htm'=>FTP_ASCII,
+							'xml'=>FTP_ASCII,
 							
 							'jpg'=>FTP_BINARY,
 							'png'=>FTP_BINARY,
@@ -25,43 +28,56 @@ class WP_Filesystem_FTPext{
 			return false;
 		//Set defaults:
 		if( ! isset($opt['port']) || empty($opt['port']) )
-			$opt['port'] = 21;
+			$this->options['port'] = 21;
+		else
+			$this->options['port'] = $opt['port'];
+
 		if( ! isset($opt['hostname']) || empty($opt['hostname']) )
-			$opt['hostname'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
+			$this->errors['require']['hostname'] = __('Hostname');//$opt['hostname'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
+		else
+			$this->options['hostname'] = $opt['hostname'];
+
 		if( isset($opt['base']) && ! empty($opt['base']) )
 			$this->wp_base = $opt['base'];
-		
+
 		//Check if the options provided are OK.
-		if( ! isset($opt['username']) || ! isset($opt['password']) ||
-			 empty ($opt['username']) ||  empty ($opt['password']) ){
-			 wp_die('You need to specify the Username and/or password.');
-			 return false;
-		}
+		if( ! isset($opt['username']) || empty ($opt['username']) )
+			$this->errors['require']['username'] = __('Username');
+		else
+			$this->options['username'] = $opt['username'];
+
+		if( ! isset($opt['password']) ||  empty ($opt['password']) )
+			$this->errors['require']['password'] = __('Password');	
+		else
+			$this->options['password'] = $opt['password'];
 		
-		//All is A-OK.
-		if( !empty($opt['ssl']) && function_exists('ftp_ssl_connect') ){
-			$this->link = ftp_ssl_connect($opt['hostname'], $opt['port'],$this->timeout);
+		$this->options['ssl'] = ( isset($opt['ssl']) && !empty($opt['ssl']) );
+	}
+	function connect(){
+		if( $this->options['ssl'] && function_exists('ftp_ssl_connect') ){
+			$this->link = ftp_ssl_connect($this->options['hostname'], $this->options['port'],$this->timeout);
 		} else {
-			$this->link = ftp_connect($opt['hostname'], $opt['port'],$this->timeout);
+			$this->link = ftp_connect($this->options['hostname'], $this->options['port'],$this->timeout);
 		}
 		if( ! $this->link ){
-			wp_die('FTP didnt connect, Most likely cause is a non-existant hostname');
+			$this->errors['server'] = __('Failed to connect to FTP Server') . ' ' . $this->options['hostname'] . ':' . $this->options['port'];
 			return false;
 		}
 		if( ! ftp_login($this->link,$opt['username'], $opt['password']) ){
-			wp_die('Your FTP username/password combination was wrong.');
+			$this->errors['auth'] = __('Username/Password incorrect') . ' ' . 
+				$this->options['username'] . ':********@' .$this->options['hostname'] . ':' . $this->options['port'];
 			return false;
-		}		
+		}
+		return true;
 	}
-	//TODO: Localise
 	function find_base_dir($base = '.',$echo = false){
 		if( $base == '.' ) $base = $this->cwd();
 		if( empty( $base ) ) $base = '/';
-		if($echo) echo "Changing to $base;<br>";
+		if($echo) echo __('Changing to ') . $base  .'<br>';
 		if( false === ftp_chdir($this->link, $base) )
 			return false;
 		if( $this->exists($base . '/wp-settings.php') ){
-			if($echo) echo "Found " . $base . '/wp-settings.php<br>';
+			if($echo) echo __('Found ') . $base . '/wp-settings.php<br>';
 			$this->wp_base = $base;
 			return $this->wp_base;
 		}
@@ -76,7 +92,7 @@ class WP_Filesystem_FTPext{
 		//var_dump($arrPath);
 		foreach($arrPath as $key=>$folder){
 			if( $this->is_dir($base . $folder) ){
-				if($echo) echo "Found $folder; Changing to $base$folder/<br>";
+				if($echo) echo __('Found ') . $folder . ' ' . __('Changing to') . ' ' . $base . $folder . '/<br>';
 				return $this->find_base_dir($base . $folder . '/',$echo);
 			}
 		}
@@ -341,6 +357,10 @@ class WP_Filesystem_FTPext{
 			}
 		}
 		return $ret;
+	}
+	function __destruct(){
+		if( $this->link )
+			ftp_close($this->link);
 	}
 }
 ?>
