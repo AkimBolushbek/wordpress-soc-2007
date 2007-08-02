@@ -33,11 +33,19 @@ Currently implemented tags:
 	Link to the website of the author of the current comment,
 	if he or she has one.
 	Attributes: None
+<$CommentDate$>
+	The date of the current comment, formatted according to
+	your settings.
+	Attributes: None
 <$CommentID$>
 	The ID of the current comment.
 	Attributes: None
 <$CommentText$>
 	Text of the current comment.
+	Attributes: None
+<$CommentTime$>
+	The time of the current comment, formatted according to
+	your settings.
 	Attributes: None
 <$EntryAuthor$>
 	The author of the current entry or blog.
@@ -51,6 +59,7 @@ Currently implemented tags:
 <$EntryTime$>
 	The time the entry was initially posted.
 	Attributes: None
+	Notes: It's formatted according to your settings.
 <$EntryTitle$>
 	The title of the current entry or blog.
 	Attributes: None
