@@ -20,7 +20,10 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);
 	$content = str_replace('<$EntryPermalink$>', '<?php the_permalink(); ?>', $content);
 	$content = str_replace('<$EntryTime$>', '<?php the_time(); ?>', $content);
+	$content = str_replace('<$EntryTrackbackURL$>', '<?php trackback_url(); ?>', $content);
+
 	$content = str_replace('<$LanguageAttributes$>', '<?php language_attributes(); ?>', $content);
+
 	$content = str_replace('<$WPCalendar$>', '<?php get_calendar(true); ?>', $content);
 	$content = str_replace('<$WPCalendar3$>', '<?php get_calendar(false); ?>', $content);
 	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
