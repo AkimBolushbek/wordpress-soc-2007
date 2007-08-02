@@ -38,7 +38,7 @@ function wpupdatemanager_template($arg){
 }
 
 function wpupdatemanager_generate_xml($items=false){
-	/*echo '<?xml version="1.0" encoding="iso-8859-1"?>', "\n";*/
+	echo '<?xml version="1.0" encoding="iso-8859-1"?>', "\n";
 	if( ! $items || empty($items) )
 		die('<error>Item not Found</error>'); //End output of the routine at this point
 	if( isset($items['name']) )//Is this a multi dimension array, or just a single array of a plugin?
