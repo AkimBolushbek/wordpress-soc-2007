@@ -9,8 +9,10 @@ function eztags_to_translatable(&$content)
 function eztags_parse_ez(&$content)
 {
 	$content = str_replace('<$CommentAuthorLink$>', '<?php comment_author_link(); ?>', $content);
+	$content = str_replace('<$CommentDate$>', '<?php comment_date(); ?>', $content);
 	$content = str_replace('<$CommentID$>', '<?php comment_ID(); ?>', $content);
 	$content = str_replace('<$CommentText$>', '<?php comment_text(); ?>', $content);
+	$content = str_replace('<$CommentTime$>', '<?php comment_time(); ?>', $content);
 
 	$content = str_replace('<$EntryTitle$>', '<?php the_title(); ?>', $content);
 
