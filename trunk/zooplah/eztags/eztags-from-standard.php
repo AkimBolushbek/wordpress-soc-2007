@@ -99,6 +99,11 @@ function eztags_from_title(&$ct)
 	$ct = str_replace($match, "?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
 }
 
+function eztags_from_trackback_url(&$ct)
+{
+	$ct = preg_replace('/trackback_url\(\);?/', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
+}
+
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
@@ -116,6 +121,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_permalink($ct);
 	eztags_from_time($ct);
 	eztags_from_title($ct);
+	eztags_from_trackback_url($ct);
 }
 
 function eztags_parse_std(&$content)

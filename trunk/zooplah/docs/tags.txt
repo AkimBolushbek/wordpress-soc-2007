@@ -47,6 +47,7 @@ Currently implemented tags:
 	The time of the current comment, formatted according to
 	your settings.
 	Attributes: None
+
 <$EntryAuthor$>
 	The author of the current entry or blog.
 	Attributes: None
@@ -63,10 +64,15 @@ Currently implemented tags:
 <$EntryTitle$>
 	The title of the current entry or blog.
 	Attributes: None
+<$EntryTrackbackURL$>
+	The trackback URL for the current entry or blog.
+	Attributes: None
+
 <$LanguageAttributes$>
 	The HTML attributes for the proper display of the content,
 	based on the server computer's locale.
 	Attributes: None
+
 <$WPCalendar$>
 	Displays a calendar with a one-letter day abbreviation.
 	Attributes: None
