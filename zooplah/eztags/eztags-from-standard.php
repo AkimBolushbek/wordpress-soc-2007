@@ -10,6 +10,17 @@ function eztags_from_author(&$ct)
 	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
+function eztags_from_calendar(&$ct)
+{
+	preg_match('/get_calendar\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $arg) = $matches;
+
+	if ($arg == 'false')
+		$ct = str_replace($match, '?&gt;<$WPCalendar3$>&lt;?php', $ct);
+	else
+		$ct = str_replace($match, '?&gt;<$WPCalendar$>&lt;?php', $ct);
+}
+
 function eztags_from_category(&$ct)
 {
 	$ct = preg_replace('/the_category\(\'?([^\']*)\'?\);?/', '?&gt;<EntryCategory>$1</EntryCategory>&lt;?php', $ct);
@@ -81,6 +92,7 @@ function eztags_from_title(&$ct)
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
+	eztags_from_calendar($ct);
 	eztags_from_category($ct);
 	eztags_from_comment_author_link($ct);
 	eztags_from_comment_id($ct);
