@@ -61,6 +61,10 @@ function wpupdate_admin_init(){
 
 	//Option pages
 	add_action('admin_print_scripts-wp-update/wp-update-options.php','wpupdate_head');
+	
+	//Notices (If the user is allowed to touch the plugins..)
+	if ( current_user_can('edit_plugins') ) 
+		add_action('admin_notices','wpupdate_notices');
 }
 function wpupdate_head(){
 	wp_enqueue_script('jquery');
@@ -75,6 +79,28 @@ function wpupdate_themes($arg = ''){
 	global $wpdb,$menu,$submenu;
 	include('wp-update-themes.php');
 	exit;
+}
+
+function wpupdate_notices(){
+	$updates = get_option('wpupdate_notifications');
+	if( ! $updates )
+		return;
+	foreach((array)$updates as $plugin_file => $plugin_info){
+		if( true == $plugin_info['HideUpdate'] )
+			continue;
+		$plugins[] = $plugin_info['PluginInfo']['Name'] . ' ' . $plugin_info['PluginInfo']['Version'];
+	}
+	if( empty($plugins) )
+		return;
+	echo '<div class="updated"><p>';
+		printf(__('You have %d update(s) available.'),count($plugins));
+		echo '&nbsp;<a href="plugins.php">' . __('Plugin page &raquo;') . '</a>';
+		echo '<br /><strong>';
+			echo implode(', ',$plugins);
+		echo '</strong>';
+		echo '<span style="float:right;"><a href="plugins.php?action=hidenotifications">' . __('Hide these updates') . '</a></span>';
+	echo '</p></div>';
+	return;
 }
 
 ?>

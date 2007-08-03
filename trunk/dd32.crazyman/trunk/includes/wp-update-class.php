@@ -19,9 +19,8 @@ class WP_Update{
 		if( ! is_dir(ABSPATH . 'wp-content/plugins/wp-update/extensions') )
 			return;
 		$dir = @dir(ABSPATH . 'wp-content/plugins/wp-update/extensions');
-		while (false !== ($file= $dir->read())) {
+		while (false !== ($file = $dir->read()))
 			@ include ( $dir->path . '/' . $file );
-		}
 	}
 	/**
 	 * Searches for a Plugin/Theme based upon tags/terms
@@ -126,6 +125,7 @@ class WP_Update{
 			false === $updateStat['Update'] ){
 			$updateText = __('Latest Installed');
 		} else {
+			$this->updateNotifications(); //update notifications.
 			//Else, Theres an update available:
 			$updateText = __('Update Available').':<br/>';
 			$updateText .= '<strong>' . $updateStat['Version'] . '</strong>';
@@ -185,7 +185,7 @@ class WP_Update{
 						}
 					}
 				}
-			}//end get_option('update_location_wordpressorg')
+			}//end get_option('update_location_search')
 			
 			//Update cache:
 			//If Expire is not set, or Expire is not valid
@@ -393,6 +393,57 @@ class WP_Update{
 						'Requirements' => $requirements
 					);
 	}
+	
+	function updateNotifications(){
+		$previous = get_option('wpupdate_notifications');
+		$new = array();
+		//Check for the current updates.
+		$plugins = wpupdate_get_plugins();
+		foreach((array)$plugins as $plugin_file => $plugin_info){
+			$plugin = $this->checkPluginUpdate($plugin_file);
+			if( isset($plugin['Update']) && true == $plugin['Update'] )
+				$new[ $plugin_file ] = $plugin;
+		}
+		//Next, Clear any updates which have been installed
+		foreach((array)$previous as $plugin_file => $plugin_info){
+			if( ! isset($new[ $plugin_file ]) ){
+				unset ($previous[ $plugin_file ]);
+			} else {
+				//Item exists.
+				if( $previous[ $plugin_file ]['HideUpdate'] && 
+						$previous[ $plugin_file ]['Version'] == $new[ $plugin_file ]['Version'])//Only honour it if the versions are the same
+					$new[ $plugin_file ]['HideUpdate'] = true;
+				else
+					$new[ $plugin_file ]['HideUpdate'] = false;
+			}
+		}
+		update_option('wpupdate_notifications',$new);
+		//Now $previous contains the updates that were available last time, $new contains those which are available this time.
+
+		if( $new !== $previous ){
+			$enabled = get_option('update_email_enable');
+			$email = get_option('update_email_email');
+			if( $enabled && !empty($email) ){
+				$updatedPlugins = array();
+				foreach($new as $plugin_file => $plugin_info){
+					if( true == $plugin_info['HideUpdate'] )
+						continue;
+					$updatedPlugins[] = $plugin_info['PluginInfo']['Name'] . ' ' . $plugin_info['PluginInfo']['Version'] . "\n";
+				}
+				if( $pluginsCount > 0){
+					$message = sprintf(__('You have %d update(s) available.'),count($updatedPlugins));
+					$message .= "\n\n";
+					$message .= implode("\n",$updatedPlugins);
+					$message .= "\n\n";
+					$message .= __('Wordpress Admin page:') . ' ' . get_bloginfo('wpurl') . '/wp-admin/plugins.php';
+					
+					$subject = get_bloginfo('name') . ': New Updates available for install';
+					wp_mail( $email, $subject, $message);
+				}//End if plugins
+			}//end if enabled
+		}//end if changes.
+	}//end function updateNotifications()
+	
 	/** INSTALL FUNCITONS **/
 	function installPlugin($filename,$fileinfo=array()){
 		return $this->installItem($filename, $fileinfo, 'wp-content/plugins/');

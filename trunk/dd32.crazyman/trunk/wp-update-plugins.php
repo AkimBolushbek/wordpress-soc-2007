@@ -6,7 +6,14 @@ global $wpupdate;
 $wpupdate = new WP_Update;
 
 if ( isset($_GET['action']) ) {
-	if ('activate' == $_GET['action']) {
+	if ('hidenotifications' == $_GET['action']){
+		$notices = get_option('wpupdate_notifications');
+		foreach($notices as $plugin_file=>$plugin_info){
+			$notices[ $plugin_file ]['HideUpdate'] = true; //Hide all the updates available.
+		}
+		update_option('wpupdate_notifications',$notices);
+		wp_redirect($_SERVER["HTTP_REFERER"]); //Redirect back to where they came from.
+	} elseif ('activate' == $_GET['action']) {
 		check_admin_referer('activate-plugin_' . $_GET['plugin']);
 		$current = get_option('active_plugins');
 		$plugin = trim($_GET['plugin']);
