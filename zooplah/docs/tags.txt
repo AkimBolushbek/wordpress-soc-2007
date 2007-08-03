@@ -72,7 +72,7 @@ Currently implemented tags:
 	Displays a calendar with a one-letter day abbreviation.
 	Attributes: None
 <$WPCalendar3$>
-	Displays a calendar with a day abbreviation accourding to
+	Displays a calendar with a day abbreviation according to
 	your locale settings (typically three characters; hence
 	the name).
 	Attributes: None
@@ -93,6 +93,11 @@ Currently implemented tags:
 	Attributes: None
 	Notes: The content is the character(s) used for separating
                the categories.
+<EntryContent>
+	Displays the content of the current entry.
+	Attributes: None
+	Notes: The content of this attribute is a localizable string
+		that will be displayed when excerpts are used.
 <TranslatableString>
 	A string to be translated.
 	Attributes: None
