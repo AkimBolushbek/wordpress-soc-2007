@@ -10,6 +10,11 @@ function eztags_from_author(&$ct)
 	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
+function eztags_from_blog_info(&$ct)
+{
+	$ct = preg_replace('/bloginfo\(([^\)]+)\);?/', '?&gt;<$WPInfo:$1$>&lt;?php', $ct);
+}
+
 function eztags_from_calendar(&$ct)
 {
 	preg_match('/get_calendar\(([^\)]*)\);?/', $ct, $matches);
@@ -53,8 +58,12 @@ function eztags_from_comment_time(&$ct)
 
 function eztags_from_content(&$ct)
 {
+	$in_ct = $ct;
+
 	$ct = preg_replace('/the_content\(__\((.*)\)\);/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
-	$ct = str_replace("'", '', $ct);
+
+	if ( $ct !== $in_ct )
+		$ct = str_replace("'", '', $ct);
 }
 
 function eztags_from_date(&$ct)
@@ -127,6 +136,7 @@ function eztags_from_trackback_url(&$ct)
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
+	eztags_from_blog_info($ct);
 	eztags_from_calendar($ct);
 	eztags_from_category($ct);
 	eztags_from_comment_author_link($ct);
