@@ -23,7 +23,7 @@ function eztags_from_calendar(&$ct)
 
 function eztags_from_category(&$ct)
 {
-	$ct = preg_replace('/the_category\(\'?([^\']*)\'?\);?/', '?&gt;<EntryCategory>$1</EntryCategory>&lt;?php', $ct);
+	$ct = preg_replace('/the_category\(\'?([^\']*)\'?\);?/', '?&gt;<EntryCategories>$1</EntryCategories>&lt;?php', $ct);
 }
 
 function eztags_from_comment_author_link(&$ct)
@@ -68,7 +68,7 @@ function eztags_from_id(&$ct)
 
 function eztags_from_language_attributes(&$ct)
 {
-	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$LanguageAttributes$>&lt;?php', $ct);
+	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$WPLanguageAttributes$>&lt;?php', $ct);
 }
 
 function eztags_from_login(&$ct)

@@ -13,19 +13,19 @@ with PHP functions.  Those without dollar signs are containers
 and may or may not actually correspond to PHP code.
 
 So the format is:
-<ContainerTag [attributes]>content</ContainerTag>
-<$Tag [attributes]$>
+<ContainerTag[ attributes]>content</ContainerTag>
+<$Tag[ attributes]$>
 
 Attributes work just like in HTML:
 <$EntryTitle lang="en"$>
 
 Attributes are usually (always?) optional.  Space after the tag is
-unnecessary if you don't use attributes.  I know all of this stuff
+forbidden if you don't use attributes.  I know all of this stuff
 is HTML 101, but I want this to be pretty easy for anyone.
 
 Currently, tags and attributes are case-sensitive, and (double)
-quotes around attributes are required.  That may change in the
-future, though all it will really do is add bloat and perhaps
+quotes around attribute values are required.  That may change in
+the future, though all it will really do is add bloat and perhaps
 bugs to the code.
 
 Currently implemented tags:
@@ -68,11 +68,6 @@ Currently implemented tags:
 	The trackback URL for the current entry or blog.
 	Attributes: None
 
-<$LanguageAttributes$>
-	The HTML attributes for the proper display of the content,
-	based on the server computer's locale.
-	Attributes: None
-
 <$WPCalendar$>
 	Displays a calendar with a one-letter day abbreviation.
 	Attributes: None
@@ -83,16 +78,21 @@ Currently implemented tags:
 	Attributes: None
 	Notes: Length of the abbreviation may vary according to
 		different locale settings.
+<$WPLanguageAttributes$>
+	The HTML attributes for the proper display of the content,
+	based on the server computer's locale.
+	Attributes: None
 <$WPLoginOut$>
 	Provide a link to the log-in or log-out page, depending
 	on your log-in status.
 	Attributes: None
 
-<EntryCategory>
-	The current category of the current entry.
+<EntryCategories>
+	Enumerates and displays the categories of the current
+	entry.
 	Attributes: None
 	Notes: The content is the character(s) used for separating
-               various categories.
+               the categories.
 <TranslatableString>
 	A string to be translated.
 	Attributes: None
