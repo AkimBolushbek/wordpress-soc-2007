@@ -22,13 +22,12 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$EntryTime$>', '<?php the_time(); ?>', $content);
 	$content = str_replace('<$EntryTrackbackURL$>', '<?php trackback_url(); ?>', $content);
 
-	$content = str_replace('<$LanguageAttributes$>', '<?php language_attributes(); ?>', $content);
-
 	$content = str_replace('<$WPCalendar$>', '<?php get_calendar(true); ?>', $content);
 	$content = str_replace('<$WPCalendar3$>', '<?php get_calendar(false); ?>', $content);
+	$content = str_replace('<$WPLanguageAttributes$>', '<?php language_attributes(); ?>', $content);
 	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
 
-	$content = preg_replace('/<EntryCategory>([^>]*)<\/EntryCategory>/', '<?php the_category(\'$1\'); ?>', $content);
+	$content = preg_replace('/<EntryCategories>([^>]*)<\/EntryCategories>/', '<?php the_category(\'$1\'); ?>', $content);
 
 	eztags_to_translatable($content);
 }
