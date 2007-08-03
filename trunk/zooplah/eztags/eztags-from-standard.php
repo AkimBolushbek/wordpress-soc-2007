@@ -51,6 +51,26 @@ function eztags_from_comment_time(&$ct)
 	$ct = preg_replace('/comment_time\(\);?/', '?&gt;<$CommentTime$>&lt;?php', $ct);
 }
 
+function eztags_from_content(&$ct)
+{
+	$ct = preg_replace('/the_content\(__\((.*)\)\);/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
+	$ct = str_replace("'", '', $ct);
+}
+
+function eztags_from_date(&$ct)
+{
+	preg_match('/the_date\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $attr) = $matches;
+
+	$attrs = preg_split('/\,\s*/', $attr);
+	$attrs = preg_replace('/\'/', '', $attrs);
+	$attrs = preg_replace('/&quot;/', '', $attrs);
+	list($format, $before, $after) = $attrs;
+
+	if ( !$format )
+		$ct = str_replace($match, "?&gt;$before<\$EntryDate\$>$after&lt;?php", $ct);
+}
+
 function eztags_from_e(&$ct)
 {
 	preg_match('/_e\(([^\);]+)\);/', $ct, $matches);
@@ -114,6 +134,8 @@ function eztags_parse_from(&$ct)
 	eztags_from_comment_date($ct);
 	eztags_from_comment_text($ct);
 	eztags_from_comment_time($ct);
+	eztags_from_content($ct);
+	eztags_from_date($ct);
 	eztags_from_e($ct);
 	eztags_from_id($ct);
 	eztags_from_language_attributes($ct);

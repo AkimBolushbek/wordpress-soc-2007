@@ -17,6 +17,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$EntryTitle$>', '<?php the_title(); ?>', $content);
 
 	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
+	$content = str_replace('<$EntryDate$>', '<?php the_date(); ?>', $content);
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);
 	$content = str_replace('<$EntryPermalink$>', '<?php the_permalink(); ?>', $content);
 	$content = str_replace('<$EntryTime$>', '<?php the_time(); ?>', $content);
@@ -28,6 +29,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
 
 	$content = preg_replace('/<EntryCategories>([^>]*)<\/EntryCategories>/', '<?php the_category(\'$1\'); ?>', $content);
+	$content = preg_replace('/<EntryContent>([^>]*)<\/EntryContent>/', '<?php the_content(__(\'$1\')); ?>', $content);
 
 	eztags_to_translatable($content);
 }
