@@ -94,9 +94,6 @@ Currently implemented tags:
 	Displays the info according to specified item (see below
 	for some of the popular items).
 	Attributes: None
-	Notes: Item should be enclosed in single quotes, but
-	that's not normally necessary.  However, some server
-	configurations may give an error if it's not.
 <$WPInfo:atom_url$>
 	URL to the Atom 1.0 blog feed.
 	Attributes: None
