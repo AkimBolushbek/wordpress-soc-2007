@@ -28,7 +28,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPCalendar$>', '<?php get_calendar(true); ?>', $content);
 	$content = str_replace('<$WPCalendar3$>', '<?php get_calendar(false); ?>', $content);
 	$content = preg_replace('/<\$WPCategories:([^\$]+)\$>/', '<?php wp_list_cats(\'$1\'); ?>', $content);
-	$content = preg_replace('/<\$WPInfo:([^\$]+)\$>/', '<?php bloginfo(' . str_replace("'", '', '$1') . '); ?>', $content);
+	$content = preg_replace('/<\$WPInfo:([^\$]+)\$>/', '<?php bloginfo(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPLanguageAttributes$>', '<?php language_attributes(); ?>', $content);
 	$content = str_replace('<$WPMeta$>', '<?php wp_meta(); ?>', $content);
 	$content = preg_replace('/<\$WPLinkPages:([^\$]*)\$>/', '<?php wp_link_pages(\'$1\'); ?>', $content);

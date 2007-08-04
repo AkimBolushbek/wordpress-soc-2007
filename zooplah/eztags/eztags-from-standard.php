@@ -13,6 +13,7 @@ function eztags_from_author(&$ct)
 function eztags_from_blog_info(&$ct)
 {
 	$ct = preg_replace('/bloginfo\(([^\)]+)\);?/', '?&gt;<$WPInfo:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/<\$WPInfo:\'([^\']+)\'\$>/', '<$WPInfo:$1$>', $ct);
 }
 
 function eztags_from_calendar(&$ct)
