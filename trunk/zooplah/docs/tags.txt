@@ -68,9 +68,14 @@ Currently implemented tags:
 	The trackback URL for the current entry or blog.
 	Attributes: None
 
-<$WPArchives$>
-	Displays the list of archives.
-	Arguments: None
+<$WPArchives:options$>
+	Displays the list of archives, according to the options
+	given (if any).
+	Attributes: None
+<$WPBookmarks:options$>
+	Displays the list of bookmarks, according to the options
+	given (if any)
+	Attributes: None
 <$WPCalendar$>
 	Displays a calendar with a one-letter day abbreviation.
 	Attributes: None
@@ -85,6 +90,13 @@ Currently implemented tags:
 	Displays the categories of the current blog, according
 	to the options given (if any).
 	Attributes: None
+<$WPInfo:item$>
+	Displays the info according to specified item (see below
+	for some of the popular items).
+	Attributes: None
+	Notes: Item should be enclosed in single quotes, but
+	that's not normally necessary.  However, some server
+	configurations may give an error if it's not.
 <$WPInfo:atom_url$>
 	URL to the Atom 1.0 blog feed.
 	Attributes: None
@@ -97,6 +109,9 @@ Currently implemented tags:
 	Attributes: None
 <$WPInfo:description$>
 	The description of the blog.
+	Attributes: None
+<$WPInfo:home$>
+	The home URL, as specified in the blog options.
 	Attributes: None
 <$WPInfo:html_type$>
 	The content type that HTML should be sent as.
@@ -126,6 +141,10 @@ Currently implemented tags:
 <$WPLanguageAttributes$>
 	The HTML attributes for the proper display of the content,
 	based on the server computer's locale.
+	Attributes: None
+<$WPLinkPages:options$>
+	Display numbered links for multi-page blog posts according
+	to the specified options (if any).
 	Attributes: None
 <$WPLinks:_id$>
 	Displays your blogroll links from newest to oldest.
