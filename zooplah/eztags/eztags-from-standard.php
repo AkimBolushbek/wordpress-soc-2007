@@ -90,6 +90,11 @@ function eztags_from_e(&$ct)
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
 }
 
+function eztags_from_get_archives(&$ct)
+{
+	$ct = preg_replace('/wp_get_archives\(\'?([^\']*)\'?\);?/', '?&gt;<$WPArchives:$1$>&lt;?php', $ct);
+}
+
 function eztags_from_id(&$ct)
 {
 	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryID$>&lt;?php', $ct);
@@ -100,14 +105,48 @@ function eztags_from_language_attributes(&$ct)
 	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$WPLanguageAttributes$>&lt;?php', $ct);
 }
 
+function eztags_from_links_list(&$ct)
+{
+	$ct = preg_replace('/get_links_list\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinks:$1$>&lt;?php', $ct);
+	$ct = str_replace('<$WPLinks:$>', '<$WPLinks:name$>', $ct);
+}
+
+function eztags_from_list_cats(&$ct)
+{
+	$ct = preg_replace('/wp_list_cats\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategories:$1$>&lt;?php', $ct);
+}
+
+function eztags_from_list_pages(&$ct)
+{
+	$ct = preg_replace('/wp_list_pages\(\'?([^\']*)\'?\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $ct);
+}
+
 function eztags_from_login(&$ct)
 {
 	$ct = preg_replace('/wp_loginout\(\s*\);?/', '?&gt;<$WPLoginOut$>&lt;?php', $ct);
 }
 
+function eztags_from_meta(&$ct)
+{
+	$ct = preg_replace('/wp_meta\(\s*\);?/', '?&gt;<$WPMeta$>&lt;?php', $ct);
+}
+
 function eztags_from_permalink(&$ct)
 {
 	$ct = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $ct);
+}
+
+function eztags_from_register(&$ct)
+{
+	preg_match('/wp_register\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $attr) = $matches;
+
+	$attrs = preg_split('/\,\s*/', $attr);
+	$attrs = preg_replace('/\'/', '', $attrs);
+	$attrs = preg_replace('/&quot;/', '', $attrs);
+	list($before, $after) = $attrs;
+
+	$ct = str_replace($match, "?&gt;$before<\$WPRegister\$>$after&lt;?php", $ct);
 }
 
 function eztags_from_time(&$ct)
@@ -147,10 +186,16 @@ function eztags_parse_from(&$ct)
 	eztags_from_content($ct);
 	eztags_from_date($ct);
 	eztags_from_e($ct);
+	eztags_from_get_archives($ct);
 	eztags_from_id($ct);
 	eztags_from_language_attributes($ct);
+	eztags_from_links_list($ct);
+	eztags_from_list_cats($ct);
+	eztags_from_list_pages($ct);
 	eztags_from_login($ct);
+	eztags_from_meta($ct);
 	eztags_from_permalink($ct);
+	eztags_from_register($ct);
 	eztags_from_time($ct);
 	eztags_from_title($ct);
 	eztags_from_trackback_url($ct);
