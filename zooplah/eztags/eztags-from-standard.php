@@ -105,10 +105,20 @@ function eztags_from_language_attributes(&$ct)
 	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$WPLanguageAttributes$>&lt;?php', $ct);
 }
 
+function eztags_from_link_pages(&$ct)
+{
+	$ct = preg_replace('/wp_link_pages\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinkPages:$1$>&lt;?php', $ct);
+}
+
 function eztags_from_links_list(&$ct)
 {
 	$ct = preg_replace('/get_links_list\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinks:$1$>&lt;?php', $ct);
 	$ct = str_replace('<$WPLinks:$>', '<$WPLinks:name$>', $ct);
+}
+
+function eztags_from_list_bookmarks(&$ct)
+{
+	$ct = preg_replace('/wp_list_bookmarks\(\'?([^\']*)\'?\);?/', '?&gt;<$WPBookmarks:$1$>&lt;?php', $ct);
 }
 
 function eztags_from_list_cats(&$ct)
@@ -189,7 +199,9 @@ function eztags_parse_from(&$ct)
 	eztags_from_get_archives($ct);
 	eztags_from_id($ct);
 	eztags_from_language_attributes($ct);
+	eztags_from_link_pages($ct);
 	eztags_from_links_list($ct);
+	eztags_from_list_bookmarks($ct);
 	eztags_from_list_cats($ct);
 	eztags_from_list_pages($ct);
 	eztags_from_login($ct);
