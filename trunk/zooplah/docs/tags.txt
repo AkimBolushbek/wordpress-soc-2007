@@ -37,6 +37,10 @@ Currently implemented tags:
 	The date of the current comment, formatted according to
 	your settings.
 	Attributes: None
+<$CommentDate:format$>
+	The date of the current comment, formatted according to
+	format.
+	Attributes: None
 <$CommentID$>
 	The ID of the current comment.
 	Attributes: None
@@ -94,6 +98,12 @@ Currently implemented tags:
 	Displays the categories of the current blog, according
 	to the options given (if any).
 	Attributes: None
+<$WPCategoriesOld:options$>
+	Displays the categories of the current blog, according
+	to the options given (if any).
+	Attributes: None
+	Notes: This should be replaced by <$WCategories:options$>.
+		It's included because some themes still use it.
 <$WPInfo:item$>
 	Displays the info according to specified item (see below
 	for some of the popular items).
@@ -123,6 +133,10 @@ Currently implemented tags:
 <$WPInfo:pingback_url$>
 	The URL by which other blogs can notify the current blog
 	or blog entry that it's been referenced.
+	Attributes: None
+<$WPInfo:stylesheet_directory$>
+	The directory (usually called folder on Windows) of the
+	current theme's style sheet.
 	Attributes: None
 <$WPInfo:stylesheet_url$>
 	The URL of the current theme's style sheet.
@@ -174,7 +188,15 @@ Currently implemented tags:
 	Link to register as a user on the blog, if that has been
 	enabled.
 	Attributes: None
+<$WPSearch$>
+	What the user had searched for.
+	Attributes: None
 
+<CurrentCategory>
+	Displays the category of the current page.
+	Attributes: None
+	Notes: The content is the heading for the current-
+		category display.
 <EntryCategories>
 	Enumerates and displays the categories of the current
 	entry.

@@ -40,6 +40,7 @@ function eztags_from_comment_author_link(&$ct)
 function eztags_from_comment_date(&$ct)
 {
 	$ct = preg_replace('/comment_date\(\);?/', '?&gt;<$CommentDate$>&lt;?php', $ct);
+	$ct = preg_replace('/comment_date\(\'([^\']+)\'\);?/', '?&gt;<$CommentDate:$1$>&lt;?php', $ct);
 }
 
 function eztags_from_comment_id(&$ct)
@@ -62,6 +63,7 @@ function eztags_from_content(&$ct)
 	$in_ct = $ct;
 
 	$ct = preg_replace('/the_content\(__\((.*)\)\);/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
+	$ct = preg_replace('/the_content\(\);?/', '?&gt;<EntryContent></EntryContent>&lt;?php', $ct);
 
 	if ( $ct !== $in_ct )
 		$ct = str_replace("'", '', $ct);
@@ -122,14 +124,19 @@ function eztags_from_list_bookmarks(&$ct)
 	$ct = preg_replace('/wp_list_bookmarks\(\'?([^\']*)\'?\);?/', '?&gt;<$WPBookmarks:$1$>&lt;?php', $ct);
 }
 
+function eztags_from_list_categories(&$ct)
+{
+	$ct = preg_replace('/wp_list_categories\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategories:$1$>&lt;?php', $ct);
+}
+
 function eztags_from_list_cats(&$ct)
 {
-	$ct = preg_replace('/wp_list_cats\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategories:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/wp_list_cats\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategoriesOld:$1$>&lt;?php', $ct);
 }
 
 function eztags_from_list_pages(&$ct)
 {
-	$ct = preg_replace('/wp_list_pages\(\'?([^\']*)\'?\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/wp_list_pages\(\'?([^\']*)\'?\s*\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $ct);
 }
 
 function eztags_from_login(&$ct)
@@ -160,6 +167,16 @@ function eztags_from_register(&$ct)
 	$ct = str_replace($match, "?&gt;$before<\$WPRegister\$>$after&lt;?php", $ct);
 }
 
+function eztags_from_search_query(&$ct)
+{
+	$ct = preg_replace('/the_search_query\(\s*\);?/', '?&gt;<$WPSearch$>&lt;?php', $ct);
+}
+
+function eztags_from_single_cat_title(&$ct)
+{
+	$ct = preg_replace('/single_cat_title\(\'?([^\']*)\'?\);?/', '?&gt;<CurrentCategory>$1</CurrentCategory>&lt;?php', $ct);
+}
+
 function eztags_from_time(&$ct)
 {
 	$ct = preg_replace('/the_time\(\s*\);?/', '?&gt;<$EntryTime$>&lt;?php', $ct);
@@ -181,7 +198,7 @@ function eztags_from_title(&$ct)
 
 function eztags_from_trackback_url(&$ct)
 {
-	$ct = preg_replace('/trackback_url\(\);?/', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
+	$ct = preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
 }
 
 function eztags_parse_from(&$ct)
@@ -204,12 +221,15 @@ function eztags_parse_from(&$ct)
 	eztags_from_link_pages($ct);
 	eztags_from_links_list($ct);
 	eztags_from_list_bookmarks($ct);
+	eztags_from_list_categories($ct);
 	eztags_from_list_cats($ct);
 	eztags_from_list_pages($ct);
 	eztags_from_login($ct);
 	eztags_from_meta($ct);
 	eztags_from_permalink($ct);
 	eztags_from_register($ct);
+	eztags_from_search_query($ct);
+	eztags_from_single_cat_title($ct);
 	eztags_from_time($ct);
 	eztags_from_title($ct);
 	eztags_from_trackback_url($ct);
