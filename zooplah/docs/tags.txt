@@ -39,7 +39,7 @@ Currently implemented tags:
 	Attributes: None
 <$CommentDate:format$>
 	The date of the current comment, formatted according to
-	format.
+	the specified format.
 	Attributes: None
 <$CommentID$>
 	The ID of the current comment.
@@ -82,7 +82,7 @@ Currently implemented tags:
 	Attributes: None
 <$WPBookmarks:options$>
 	Displays the list of bookmarks, according to the options
-	given (if any)
+	given (if any).
 	Attributes: None
 <$WPCalendar$>
 	Displays a calendar with a one-letter day abbreviation.
