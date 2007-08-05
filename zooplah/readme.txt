@@ -55,10 +55,10 @@ places on your computer.
 == Known problems and bugs ==
 * The easier tags are case sensitive (title, TITLE, and Title are
   different entities).
-* After saving the file, rediretion to the editor doesn't work.
+* After saving the file, redirection to the editor doesn't work.
   The files are saved to the disk, but you have to reclick on
   a couple links to resume editing.
 * Not all PHP will be converted to an easier format.  Just ignore
   the parts that you don't understand.
-* Installing the plugin to a subdirectory of wp-content/plugins
-  doesn't seem to work.
+
+See eztags/eztags-caveats.html for more issues.
