@@ -21,6 +21,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);
 	$content = str_replace('<$EntryPermalink$>', '<?php the_permalink(); ?>', $content);
 	$content = str_replace('<$EntryTime$>', '<?php the_time(); ?>', $content);
+	$content = preg_replace('/<\$EntryTime:([^\$]*)\$>/', '<?php the_time(\'$1\'); ?>', $content);
 	$content = str_replace('<$EntryTrackbackURL$>', '<?php trackback_url(); ?>', $content);
 
 	$content = preg_replace('/<\$WPArchives:([^\$]*)\$>/', '<?php wp_get_archives(\'$1\'); ?>', $content);

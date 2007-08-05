@@ -61,6 +61,10 @@ Currently implemented tags:
 	The time the entry was initially posted.
 	Attributes: None
 	Notes: It's formatted according to your settings.
+<$EntryTime:format$>
+	The time the entry was initially posted.
+	Attributes: None
+	Notes: It's formatted according to the format string.
 <$EntryTitle$>
 	The title of the current entry or blog.
 	Attributes: None
