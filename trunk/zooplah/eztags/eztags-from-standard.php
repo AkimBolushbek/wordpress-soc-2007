@@ -163,6 +163,7 @@ function eztags_from_register(&$ct)
 function eztags_from_time(&$ct)
 {
 	$ct = preg_replace('/the_time\(\s*\);?/', '?&gt;<$EntryTime$>&lt;?php', $ct);
+	$ct = preg_replace('/the_time\(\'([^\']+)\'\);?/', '?&gt;<$EntryTime:$1$>&lt;?php', $ct);
 }
 
 function eztags_from_title(&$ct)
