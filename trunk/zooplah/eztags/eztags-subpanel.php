@@ -13,6 +13,8 @@ wp_reset_vars(array('action', 'redirect', 'profile', 'error', 'warning', 'a', 'f
 
 $themes = get_themes();
 
+
+
 if (empty($theme)) {
 	$theme = get_current_theme();
 } else {
@@ -34,6 +36,12 @@ $real_file = get_real_file_to_edit($file);
 
 $file_show = basename( $file );
 
+?>
+
+	<p><em>This plugin is in beta and has some known issues.  See <a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>eztags-caveats.html">Easy Tags Caveats</a> for more information.  Don't use this plugin or submit feedback until reading that document, please.</em></p>
+
+<?php
+
 switch($action) {
 
 case 'update':
@@ -52,9 +60,9 @@ case 'update':
 		$f = fopen($real_file, 'w+');
 		fwrite($f, $newcontent);
 		fclose($f);
-		$location = "themes.php?page=eztags-subpanel.php&file=$file&theme=$theme&a=te";
+		$location = 'themes.php?page=' . get_eztags_dir() . "eztags-subpanel.php&file=$file&theme=$theme&a=te";
 	} else {
-		$location = "themes.php?page=eztags-subpanel.php&file=$file&theme=$theme";
+		$location = 'themes.php?page=' . get_eztags_dir() . "eztags-subpanel.php&file=$file&theme=$theme";
 	}
 
 	$location = wp_kses_no_null($location);
@@ -91,7 +99,7 @@ default:
  <div id="message" class="updated fade"><p><?php _e('File edited successfully.') ?></p></div>
 <?php endif; ?>
  <div class="wrap">
-	<form name="theme" action="themes.php?page=eztags-subpanel.php" method="post">
+	 <form name="theme" action="themes.php?page=<?php echo get_eztags_dir(); ?>eztags-subpanel.php" method="post">
 		<?php _e('Select theme to edit:') ?>
 		<select name="theme" id="theme">
 	<?php
@@ -126,9 +134,9 @@ if ($allowed_files) :
 <?php foreach($allowed_files as $allowed_file) : ?>
 <?php if ( strstr($allowed_file, '.php') ) $is_php_file = true;
 if ( $is_php_file ) $link_color = 'blue';
-else $link_color = 'red';
+else $link_color = 'GrayText';
 ?>
-		 <li><a href="themes.php?page=eztags-subpanel.php&file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>" style="color: <?php echo $link_color; ?>"><?php echo get_file_description($allowed_file); ?></a></li>
+		 <li><a href="themes.php?page=<?php echo get_eztags_dir(); ?>eztags-subpanel.php&file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>" style="color: <?php echo $link_color; ?>"><?php echo get_file_description($allowed_file); ?></a></li>
 <?php  endforeach; ?>
 	</ul>
 <?php endif; ?>
@@ -136,7 +144,7 @@ else $link_color = 'red';
 	<?php
 	if (!$error) {
 	?>
-	<form name="template" id="template" action="themes.php?page=eztags-subpanel.php" method="post">
+		<form name="template" id="template" action="themes.php?page=<?php echo get_eztags_dir(); ?>eztags-subpanel.php" method="post">
 	<?php wp_nonce_field('edit-theme_' . $file . $theme) ?>
 		 <div><textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php if ($file_is_php) $content = std2ez($content); echo $content ?></textarea>
 		 <input type="hidden" name="action" value="update" />
