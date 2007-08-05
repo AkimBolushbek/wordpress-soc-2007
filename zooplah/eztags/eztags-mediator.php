@@ -29,6 +29,9 @@ function std2ez($content)
 function ez2std($content)
 {
 	eztags_parse_ez($content);
+	// Quitting and then instantly restarting PHP mode con cause
+	// problems
+	$content = preg_replace('/\s+\?><\?php\s+/', ' ', $content);
 
 	return $content;
 }
