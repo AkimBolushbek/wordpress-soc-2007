@@ -37,9 +37,19 @@ function eztags_from_category(&$ct)
 	$ct = preg_replace('/the_category\(\'?([^\']*)\'?\);?/', '?&gt;<EntryCategories>$1</EntryCategories>&lt;?php', $ct);
 }
 
+function eztags_from_comment_author(&$ct)
+{
+	$ct = preg_replace('/comment_author\(\s*\);?/', '?&gt;<$CommentAuthor$>&lt;?php', $ct);
+}
+
 function eztags_from_comment_author_link(&$ct)
 {
 	$ct = preg_replace('/comment_author_link\(\s*\);?/', '?&gt;<$CommentAuthorLink$>&lt;?php', $ct);
+}
+
+function eztags_from_comment_author_url(&$ct)
+{
+	$ct = preg_replace('/comment_author_url\(\s*\);?/', '?&gt;<$CommentAuthorURL$>&lt;?php', $ct);
 }
 
 function eztags_from_comment_date(&$ct)
@@ -219,7 +229,9 @@ function eztags_parse_from(&$ct)
 	eztags_from_blog_info($ct);
 	eztags_from_calendar($ct);
 	eztags_from_category($ct);
+	eztags_from_comment_author($ct);
 	eztags_from_comment_author_link($ct);
+	eztags_from_comment_author_url($ct);
 	eztags_from_comment_id($ct);
 	eztags_from_comment_date($ct);
 	eztags_from_comment_text($ct);
