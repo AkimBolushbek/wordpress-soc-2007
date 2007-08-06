@@ -29,10 +29,17 @@ the future, though all it will really do is add bloat and perhaps
 bugs to the code.
 
 Currently implemented tags:
+<$CommentAuthor$>
+	Displays the author of the current comment.
+	Attributes: None
 <$CommentAuthorLink$>
 	Link to the website of the author of the current comment,
 	if he or she has one.
 	Attributes: None
+<$CommentAuthorURL$>
+	Displays the author's web site URL, if he or she has one.
+	Attributes: None
+	Notes: Really only useful in links.
 <$CommentDate$>
 	The date of the current comment, formatted according to
 	your settings.
@@ -160,6 +167,9 @@ Currently implemented tags:
 	Attributes: None
 <$WPInfo:stylesheet_url$>
 	The URL of the current theme's style sheet.
+	Attributes: None
+<$WPInfo:template_url$>
+	The URL of the current theme's template.
 	Attributes: None
 <$WPInfo:url$>
 	The URL of the blog's main page.

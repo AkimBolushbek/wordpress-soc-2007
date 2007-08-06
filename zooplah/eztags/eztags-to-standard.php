@@ -8,7 +8,9 @@ function eztags_to_translatable(&$content)
 
 function eztags_parse_ez(&$content)
 {
+	$content = str_replace('<$CommentAuthor$>', '<?php comment_author(); ?>', $content);
 	$content = str_replace('<$CommentAuthorLink$>', '<?php comment_author_link(); ?>', $content);
+	$content = str_replace('<$CommentAuthorURL$>', '<?php comment_author_url(); ?>', $content);
 	$content = str_replace('<$CommentDate$>', '<?php comment_date(); ?>', $content);
 	$content = preg_replace('/<\$CommentDate:([^\$]+)\$>/', '<?php comment_date(\'$1\'); ?>', $content);
 	$content = str_replace('<$CommentID$>', '<?php comment_ID(); ?>', $content);
