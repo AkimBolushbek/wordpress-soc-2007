@@ -17,8 +17,9 @@ function eztags_parse_ez(&$content)
 
 	$content = str_replace('<$EntryTitle$>', '<?php the_title(); ?>', $content);
 
-	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
+	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);	$content = str_replace('<$EntryAuthorPostsLink$>', '<?php the_author_posts_link(); ?>', $content);
 	$content = str_replace('<$EntryDate$>', '<?php the_date(); ?>', $content);
+	$content = str_replace('<$EntryExcerpt$>', '<?php the_excerpt(); ?>', $content);
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);
 	$content = str_replace('<$EntryPermalink$>', '<?php the_permalink(); ?>', $content);
 	$content = str_replace('<$EntryTime$>', '<?php the_time(); ?>', $content);
@@ -33,10 +34,10 @@ function eztags_parse_ez(&$content)
 	$content = preg_replace('/<\$WPCategoriesOld:([^\$]+)\$>/', '<?php wp_list_cats(\'$1\'); ?>', $content);
 	$content = preg_replace('/<\$WPInfo:([^\$]+)\$>/', '<?php bloginfo(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPLanguageAttributes$>', '<?php language_attributes(); ?>', $content);
-	$content = str_replace('<$WPMeta$>', '<?php wp_meta(); ?>', $content);
 	$content = preg_replace('/<\$WPLinkPages:([^\$]*)\$>/', '<?php wp_link_pages(\'$1\'); ?>', $content);
 	$content = preg_replace('/<\$WPLinks:([^\$]+)\$>/', '<?php get_links_list(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
+	$content = str_replace('<$WPMeta$>', '<?php wp_meta(); ?>', $content);
 	$content = preg_replace('/<\$WPPages:([^\$]*)\$>/', '<?php wp_list_pages(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPRegister$>', '<?php wp_register(); ?>', $content);
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);

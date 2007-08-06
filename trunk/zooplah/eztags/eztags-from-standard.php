@@ -10,6 +10,11 @@ function eztags_from_author(&$ct)
 	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
+function eztags_from_author_posts(&$ct)
+{
+	$ct = preg_replace('/the_author_posts_link\(\s*\);?/', '?&gt;<$EntryAuthorPostsLink$>&lt;?php', $ct);
+}
+
 function eztags_from_blog_info(&$ct)
 {
 	$ct = preg_replace('/bloginfo\(([^\)]+)\);?/', '?&gt;<$WPInfo:$1$>&lt;?php', $ct);
@@ -63,6 +68,7 @@ function eztags_from_content(&$ct)
 	$in_ct = $ct;
 
 	$ct = preg_replace('/the_content\(__\((.*)\)\);/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
+	$ct = preg_replace('/the_content\(\'([^\']*)\'\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
 	$ct = preg_replace('/the_content\(\);?/', '?&gt;<EntryContent></EntryContent>&lt;?php', $ct);
 
 	if ( $ct !== $in_ct )
@@ -91,6 +97,11 @@ function eztags_from_e(&$ct)
 	$content = preg_replace('/&quot;/', '', $content);
 
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
+}
+
+function eztags_from_excerpt(&$ct)
+{
+	$ct = preg_replace('/the_excerpt\(\s*\);?/', '?&gt;<$EntryExcerpt$>&lt;?php', $ct);
 }
 
 function eztags_from_get_archives(&$ct)
@@ -136,7 +147,7 @@ function eztags_from_list_cats(&$ct)
 
 function eztags_from_list_pages(&$ct)
 {
-	$ct = preg_replace('/wp_list_pages\(\'?([^\']*)\'?\s*\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/wp_list_pages\(\s*\'?([^\']*)\'?\s*\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $ct);
 }
 
 function eztags_from_login(&$ct)
@@ -198,12 +209,13 @@ function eztags_from_title(&$ct)
 
 function eztags_from_trackback_url(&$ct)
 {
-	$ct = preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
+	preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
 }
 
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
+	eztags_from_author_posts($ct);
 	eztags_from_blog_info($ct);
 	eztags_from_calendar($ct);
 	eztags_from_category($ct);
@@ -215,6 +227,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_content($ct);
 	eztags_from_date($ct);
 	eztags_from_e($ct);
+	eztags_from_excerpt($ct);
 	eztags_from_get_archives($ct);
 	eztags_from_id($ct);
 	eztags_from_language_attributes($ct);

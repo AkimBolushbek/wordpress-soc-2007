@@ -55,6 +55,17 @@ Currently implemented tags:
 <$EntryAuthor$>
 	The author of the current entry or blog.
 	Attributes: None
+<$EntryAuthorPostsLink$>
+	Link to the posts that the author of the current post
+	also wrote.
+	Attributes: None
+<$EntryDate$>
+	The date of the current entry.
+	Attributes: None
+	Notes: Formatted according to your settings.
+<$EntryExcerpt$>
+	The excerpt of the current entry.
+	Attributes: None
 <$EntryID$>
 	The ID of the current entry.
 	Attributes: None
@@ -134,18 +145,21 @@ Currently implemented tags:
 	The URL by which other blogs can notify the current blog
 	or blog entry that it's been referenced.
 	Attributes: None
+<$WPInfo:rss_url$>
+	URL to the RSS 0.92 blog feed.
+	Attributes: None
+<$WPInfo:rss2_url$>
+	URL to the RSS 2 blog feed.
+	Attributes: None
+<$WPInfo:siteurl$>
+	The URL of the blog's site.
+	Attributes: None
 <$WPInfo:stylesheet_directory$>
 	The directory (usually called folder on Windows) of the
 	current theme's style sheet.
 	Attributes: None
 <$WPInfo:stylesheet_url$>
 	The URL of the current theme's style sheet.
-	Attributes: None
-<$WPInfo:rss_url$>
-	URL to the RSS 0.92 blog feed.
-	Attributes: None
-<$WPInfo:rss2_url$>
-	URL to the RSS 2 blog feed.
 	Attributes: None
 <$WPInfo:url$>
 	The URL of the blog's main page.
