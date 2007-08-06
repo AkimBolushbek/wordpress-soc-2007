@@ -38,7 +38,7 @@ $file_show = basename( $file );
 
 ?>
 
-	<p><em>This plugin is in beta and has some known issues.  See <a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>eztags-caveats.html">Easy Tags Caveats</a> for more information.  Don't use this plugin or submit feedback until reading that document, please.</em></p>
+	<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don't do anything with this plugin or submit feedback before reading that document.</em></p>
 
 <?php
 
