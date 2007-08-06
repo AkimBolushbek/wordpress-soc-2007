@@ -222,8 +222,8 @@ Currently implemented tags:
 	Notes: The content is the heading for the current-
 		category display.
 <EntryCategories>
-	Enumerates and displays the categories of the current
-	entry.
+	Enumerates the categories of the current entry and
+	displays them, separated by the designated character(s).
 	Attributes: None
 	Notes: The content is the character(s) used for separating
                the categories.
