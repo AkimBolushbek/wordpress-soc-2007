@@ -18,6 +18,7 @@ add_action('admin_menu', 'add_podcasting_pages');
 
 // Add post page information
 add_action('admin_head', 'podcasting_admin_head');
+add_action('admin_head-options_page_podcasting', 'podcasting_add_javascript');
 add_action('dbx_post_advanced', 'podcasting_edit_form');
 
 // Save post page information
@@ -89,6 +90,16 @@ if ( !function_exists('wp_nonce_field') ) {
 
 // Podcasting options page
 function podcasting_options_page() {
+	// Check for delete
+	if ( isset($_POST['term_ids']) ) {
+		$term_ids = explode(',', $_POST['term_ids']);
+		foreach ($term_ids as $term_id) {
+			if ( isset($_POST["delete_pod_format_$term_id"]) ) {
+				$_POST['Submit'] = 'Update';
+			}
+		}
+	}
+	
 	// Store options if postback	
 	if ( isset($_POST['Submit']) ) {
 		// Prevent attacks
@@ -111,18 +122,37 @@ function podcasting_options_page() {
 		update_option('pod_itunes_owneremail', $_POST['pod_itunes_owneremail']);
 		
 		// Add a new format
-		if ( isset($_POST['pod_format_name']) ) {
-			$args = ( '' != $_POST['pod_format_slug'] ) ? array('slug' => $_POST['pod_format_slug']) : '';
-			$format = wp_insert_term($_POST['pod_format_name'], 'podcast_format', $args);
-			print_r($format);
+		if ( '' != $_POST['pod_format_new_name'] ) {
+			$args = ( '' != $_POST['pod_format_new_slug'] ) ? array('slug' => $_POST['pod_format_new_slug']) : '';
+			$format = wp_insert_term($_POST['pod_format_new_name'], 'podcast_format', $args);
 			$format = get_term($format['term_id'], 'podcast_format');
-			print_r($format);
 			
 			$pod_explicits = unserialize(get_option('pod_formats'));
-			$pod_explicits[$format->slug] = $_POST['pod_format_explicit'];
-			print_r($pod_explicits);			
+			$pod_explicits[$format->slug] = $_POST['pod_format_new_explicit'];						
 			update_option('pod_formats', serialize($pod_explicits));
 		}
+		
+		// Update formats
+		if ( isset($_POST['term_ids']) ) {		
+			foreach ( $term_ids as $term_id ) {
+				$term_id = (int) $term_id;
+				$format = get_term($term_id, 'podcast_format');
+				
+				if ( isset($_POST["delete_pod_format_$term_id"]) )
+					wp_delete_term($term_id, 'podcast_format');
+				
+				// Update taxonomy
+				$args = array( 'name' => $_POST["pod_format_name_$term_id"], 'slug' => $_POST["pod_format_slug_$term_id"] );
+				wp_update_term($term_id, 'podcast_format', $args);
+
+				// Update explicit
+				$pod_explicits[$format->slug] = $_POST["pod_format_explicit_$term_id"];
+				update_option('pod_formats', serialize($pod_explicits));
+			}
+		}
+		
+		// Clear used variables
+		unset($term_ids);
 	}
 	
 	// iTunes category options
@@ -147,7 +177,7 @@ function podcasting_options_page() {
 		
 	$pod_formats = get_terms('podcast_format', 'get=all');
 	?>
-	
+
 	<form method="post" action="options-general.php?page=podcasting.php">
 	<?php podcasting_nonce_field('$podcasting_nonce', $podcasting_nonce); ?>
 	<div class="wrap">
@@ -334,7 +364,7 @@ function podcasting_options_page() {
 						</select></td>					
 						<td class="pod-update">
 							<input name="Submit" type="submit" class="" value="Update" /> 
-							<input name="delete_pod_format_<?php echo $pod_format->slug; ?>" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast_format', , 'You are about to delete a podcast format. All episodes currently assigned to this format will become assigned to no format.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
+							<input name="delete_pod_format_<?php echo $pod_format->term_id; ?>" type="submit" class="" value="Delete" onclick="return deleteSomething( 'podcast_format', <?php echo $pod_format->term_id; ?>, 'You are about to delete a podcast format. All episodes currently assigned to this format will become assigned to no format.\n\'OK\' to delete, \'Cancel\' to stop.' );" /></td>
 					</tr>
 				</table>
 				<input name="term_ids" type="hidden" value="<?php echo $term_ids; ?>" />
@@ -347,28 +377,28 @@ function podcasting_options_page() {
 			<table class="optiontable">
 				<tr valign="top">
 					<th scope="row">
-						<label for="pod_format_name">Format name:</label>
+						<label for="pod_format_new_name">Format name:</label>
 					</th>
 					<td>
-						<input type="text" size="40" name="pod_format_name" id="pod_format_name" value="" />
+						<input type="text" size="40" name="pod_format_new_name" id="pod_format_name" value="" />
 						<br />The display name of your new new format.
 					</td>
 				</tr>
 				<tr valign="top">
 					<th scope="row">
-						<label for="pod_format_slug">Format slug:</label>
+						<label for="pod_format_new_slug">Format slug:</label>
 					</th>
 					<td>
-						<input type="text" size="40" name="pod_format_slug" id="pod_format_slug" value="" />
+						<input type="text" size="40" name="pod_format_new_slug" id="pod_format_new_slug" value="" />
 						<br />If you leave this field blank, a slug will automatically be generated for you.
 					</td>
 				</tr>
 				<tr valign="top">
 					<th scope="row">
-						<label for="pod_format_explicit">Explicit:</label>
+						<label for="pod_format_new_explicit">Explicit:</label>
 					</th>
 					<td>
-						<select name="pod_format_explicit" id="pod_format_explicit">
+						<select name="pod_format_new_explicit" id="pod_format_new_explicit">
 							<option value=""></option>
 							<option value="no">No</option>
 							<option value="yes">Yes</option>
@@ -393,6 +423,31 @@ function podcasting_options_page() {
 function podcasting_urlencode($url) {
 	$url = str_replace('http://', '', $url);
 	return 'http://' . implode('/', array_map('rawurlencode', explode('/', $url)));
+}
+
+// Podcasting admin javascript
+function podcasting_add_javascript() {
+	?><script type='text/javascript' src='http://localhost:8888/wp-includes/js/prototype.js?ver=1.5.1.1'></script>
+	<script type='text/javascript' src='http://localhost:8888/wp-includes/js/wp-ajax.js?ver=20070306'></script>
+	<script type='text/javascript'>
+	/* <![CDATA[ */
+		WPAjaxL10n = {
+			defaultUrl: "http://localhost:8888/wp-admin/admin-ajax.php",
+			permText: "You don\'t have permission to do that.",
+			strangeText: "Something strange happened.  Try refreshing the page.",
+			whoaText: "Slow down, I\'m still sending your data!"
+		}
+	/* ]]> */
+	</script>
+	<script type='text/javascript' src='http://localhost:8888/wp-includes/js/list-manipulation.js?ver=20070306'></script>
+	<script type='text/javascript'>
+	/* <![CDATA[ */
+		listManL10n = {
+			jumpText: "Jump to new item",
+			delText: "Are you sure you want to delete this %thing%?"
+		}
+	/* ]]> */
+	</script><?php
 }
 
 
