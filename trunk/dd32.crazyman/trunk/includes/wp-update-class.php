@@ -460,6 +460,7 @@ class WP_Update{
 			return false;
 		/* NOTE: If this uses too much memory, it might be possible to just extract each file as needed rather than extracting entire archive into memory */
 		$archive = new PclZip($filename);
+
 		//Check to see if its a Valid archive
 		if( false == ($archiveFiles = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING)) ){
 			return array('Errors'=>array('Incompatible Archive'));
