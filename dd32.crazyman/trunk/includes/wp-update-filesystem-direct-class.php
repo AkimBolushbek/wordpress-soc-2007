@@ -1,11 +1,15 @@
 <?php
 
 class WP_Filesystem_Direct{
+	var $permission = null;
 	function WP_Filesystem_Direct($arg){
-		
+		$this->permission = umask();
 	}
 	function connect(){
 		return;
+	}
+	function setDefaultPermissions($perm){
+		$this->permission = $perm;
 	}
 	function find_base_dir($base = '.'){
 		return str_replace('\\','/',ABSPATH);
@@ -19,16 +23,17 @@ class WP_Filesystem_Direct{
 	function get_contents_array($file){
 		return @file($file);
 	}
-	function put_contents($file,$contents,$type=''){
-		$fp=@fopen($file,'w'.$mode);
+	function put_contents($file,$contents,$mode=null,$type=''){
+		$fp=@fopen($file,'w'.$type);
 		if (!$fp)
 			return false;
 		@fwrite($fp,$contents);
 		@fclose($fp);
+		$this->chmod($file,$mode);
 		return true;
 	}
 	function cwd(){
-		return getcwd();
+		return @getcwd();
 	}
 	function chgrp($file,$group,$recursive=false){
 		if( ! $this->exists($file) )
@@ -191,43 +196,43 @@ class WP_Filesystem_Direct{
 	}
 	
 	function exists($file){
-		return file_exists($file);
+		return @file_exists($file);
 	}
 	function is_file($file){
-		return is_file($file);
+		return @is_file($file);
 	}
 	function is_dir($path){
-		return is_dir($path);
+		return @is_dir($path);
 	}
 	function is_readable($file){
-			return is_readable($file);
+			return @is_readable($file);
 	}
 	function is_writable($file){
-		return is_writable($file);
+		return @is_writable($file);
 	}
 	
 	function atime($file){
-		return fileatime($file);
+		return @fileatime($file);
 	}
 	function mtime($file){
-		return filemtime($file);
+		return @filemtime($file);
 	}
 	function size($file){
-		return filesize($file);
+		return @filesize($file);
 	}
 	function touch($file,$time=0,$atime=0){
 		if($time==0)
 			$time = time();
 		if($atime==0)
 			$atime = time();
-		return touch($file,$time,$atime);
+		return @touch($file,$time,$atime);
 	}
 	
 	function mkdir($path,$chmod=false,$chown=false,$chgrp=false){
-		if( false == $chmod)
-			$chmod = umask();
+		if( ! $chmod)
+			$chmod = $this->permission;
 			
-		if( !mkdir($path,$chmod) )
+		if( !@mkdir($path,$chmod) )
 			return false;
 		if( $chown )
 			$this->chown($path,$chown);
@@ -237,15 +242,15 @@ class WP_Filesystem_Direct{
 	}
 	function rmdir($path,$recursive=false){
 		if( ! $recursive )
-			return rmdir($path);
+			return @rmdir($path);
 		//recursive:
 		$filelist = $this->dirlist($path);
 		foreach($filelist as $filename=>$det){
 			if ( '/' == substr($filename,-1,1) )
 				$this->rmdir($path.'/'.$filename,$recursive);
-			rmdir($entry);
+			@rmdir($entry);
 		}
-		return rmdir($path);
+		return @rmdir($path);
 	}
 	
 	function dirlist($path,$incdot=false,$recursive=false){
