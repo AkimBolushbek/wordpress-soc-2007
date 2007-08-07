@@ -6,6 +6,7 @@ class WP_Filesystem_FTPext{
 	var $options = array();
 	
 	var $wp_base = '';
+	var $permission = null;
 	
 	var $filetypes = array(
 							'php'=>FTP_ASCII,
@@ -69,6 +70,9 @@ class WP_Filesystem_FTPext{
 			return false;
 		}
 		return true;
+	}
+	function setDefaultPermissions($perm){
+		$this->permission = $perm;
 	}
 	function find_base_dir($base = '.',$echo = false){
 		if( $base == '.' ) $base = $this->cwd();
@@ -144,7 +148,11 @@ class WP_Filesystem_FTPext{
 	function chgrp($file,$group,$recursive=false){
 		return false;
 	}
-	function chmod($file,$mode,$recursive=false){
+	function chmod($file,$mode=false;,$recursive=false){
+		if( ! $mode )
+			$mode = $this->permission;
+		if( ! $mode )
+			return false;
 		if( ! $this->exists($file) )
 			return false;
 		if( ! $recursive || ! $this->is_dir($file) ){
