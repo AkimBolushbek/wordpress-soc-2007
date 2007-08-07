@@ -143,11 +143,14 @@ add_filter('wpupdate_checkPluginUpdate-wordpress.org','checkPluginUpdateWordpres
  */
 function checkPluginUpdateWordpressOrg($url){
 	if ( ! $url ) return false;
-	
-	if ( false !== strpos($id,'http://') ){
-		$url = $id;
-		preg_match('!plugins/(.*?)/!',$id,$_id);
-		$id = $_id[1];
+
+	if ( strpos($url,'http://') > -1 ){
+		preg_match('!plugins/(.*?)/!',$url,$id);
+		$id = $id[1];
+	} else {
+		//Assume $url IS the id
+		$id = $url;
+		$url = 'http://wordpress.org/extend/plugins/' . $id . '/';
 	}
 
 	$snoopy = new Snoopy();

@@ -23,7 +23,8 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 		//First we check to see if this is a WordPress.org plugin, We'll have some requirements to check first :)
 		if ( isset($_GET['wp-id']) && !empty($_GET['wp-id']) && !isset($_GET['proceed']) ) {
 			$id = $_GET['wp-id'];
-			$pluginInfo = $wpupdate->checkPluginUpdateWordpressOrg($id);
+			$pluginInfo = apply_filters('wpupdate_checkPluginUpdate-wordpress.org',$id); //$wpupdate->checkPluginUpdateWordpressOrg($id);
+			var_dump($pluginInfo);
 			?>
 				<p>
 					<?php _e('Are you sure you wish to install the following Plugin?'); ?>
@@ -102,7 +103,7 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 				} else {
 					wp_die(__('Unsupported Method Called'));
 				}
-				$result = $wpupdate->installTheme($file,$fileinfo);
+				$result = $wpupdate->installPlugin($file,$fileinfo);
 				if( isset($result['Error']) ){
 					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';
 				}
