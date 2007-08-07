@@ -470,6 +470,7 @@ class WP_Update{
 			return array('Errors'=>array('Empty Archive'));
 		
 		$fs = WP_Filesystem();
+		var_dump($fs);
 		if( ! $fs )
 			return array('Errors'=>array('Filesystem options not set correctly'));
 		
