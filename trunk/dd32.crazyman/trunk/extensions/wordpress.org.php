@@ -85,52 +85,50 @@ function wpupdate_wordpressorg_taglist($tags){
 add_filter('wpupdate_pluginTagSearch','wpupdate_wordpressorg_tagsearch',1);
 function wpupdate_wordpressorg_tagsearch($args){
 	$results = wp_cache_get('wpupdate_pluginSearchTag_wordpressorg_'.$args['info']['terms'].'-'.$args['info']['page'], 'wpupdate');
-	if( $results ){
-		$args['results'] = array_merge($args['results'],$results);
-		return $args;
-	}
 
-	$url = 'http://wordpress.org/extend/plugins/tags/' . $args['info']['terms'];
-	if( $args['info']['page'] > 1 ) $url .= '/page/' . $args['info']['page'];
-
-	$snoopy = new Snoopy();
-	$snoopy->fetch($url);
+	if( ! $results ){
+		$url = 'http://wordpress.org/extend/plugins/tags/' . $args['info']['terms'];
+		if( $args['info']['page'] > 1 ) $url .= '/page/' . $args['info']['page'];
 	
-	$results = array();
-
-	preg_match_all('#<h3><a href="(.*?)">(.*?)</a></h3>(.*?)<ul class="plugin-meta">#ims',$snoopy->results,$plugindetails);
-	preg_match_all('#Version</span> (.*?)</li>#i',$snoopy->results,$version);
-	preg_match_all('#Updated</span> (.*?)</li>#i',$snoopy->results,$updated);
-	preg_match_all('#Downloads</span> (.*?)</li>#i',$snoopy->results,$downloads);
-	preg_match_all('#star-rating" style="width: (.*?)px#i',$snoopy->results,$rating);
+		$snoopy = new Snoopy();
+		$snoopy->fetch($url);
+		
+		$results = array();
 	
-	if( empty($plugindetails[1]) )
-		return $args;
-
-	for( $i = 0; $i < count($plugindetails[0]); $i++){
-		preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$wordpressId);
-
-		$results[] = array(
-							'Name' 		=> trim($plugindetails[2][$i]),
-							'Desc'		=> trim($plugindetails[3][$i]),
-							'Version' 	=> trim($version[1][$i]),
-							'LastUpdate'=> trim($updated[1][$i]),
-							'Id'=> $wordpressId[1],
-							'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
-							'PluginHome'=> trim($plugindetails[1][$i]),
-							'Tags'		=> array($tag),
-							'Rating'	=> trim($rating[1][$i])
-							);
-	}
-	if ( preg_match_all("#<a class='page-numbers' href='/extend/plugins/tags/post/page/(\d+)'>(\d+)</a>#",$snoopy->results,$pages) ){
-		$pages = (int)$pages[2][ count($pages[2]) - 1 ];
-		if( $pages > $args['info']['pages'] )
-			$args['info']['pages'] = $pages;
-			//TODO: Pages isnt cached when results are cached, could lead to issues?
-	}
-	wp_cache_set('wpupdate_pluginSearchTag_wordpressorg_'.$results['info']['terms'].'-'.$results['info']['page'], $results, 'wpupdate', 21600);
+		preg_match_all('#<h3><a href="(.*?)">(.*?)</a></h3>(.*?)<ul class="plugin-meta">#ims',$snoopy->results,$plugindetails);
+		preg_match_all('#Version</span> (.*?)</li>#i',$snoopy->results,$version);
+		preg_match_all('#Updated</span> (.*?)</li>#i',$snoopy->results,$updated);
+		preg_match_all('#Downloads</span> (.*?)</li>#i',$snoopy->results,$downloads);
+		preg_match_all('#star-rating" style="width: (.*?)px#i',$snoopy->results,$rating);
+		
+		if( empty($plugindetails[1]) )
+			return $args;
 	
-	$args['results'] = array_merge($args['results'],$results);
+		for( $i = 0; $i < count($plugindetails[0]); $i++){
+			preg_match('#plugins/(.*?)/$#',$plugindetails[1][$i],$wordpressId);
+	
+			$results['results'][] = array(
+									'Name' 		=> trim($plugindetails[2][$i]),
+									'Desc'		=> trim($plugindetails[3][$i]),
+									'Version' 	=> trim($version[1][$i]),
+									'LastUpdate'=> trim($updated[1][$i]),
+									'Id'=> $wordpressId[1],
+									'Download'	=> 'http://downloads.wordpress.org/plugin/' . $wordpressId[1] . '.zip',
+									'PluginHome'=> trim($plugindetails[1][$i]),
+									'Tags'		=> array($tag),
+									'Rating'	=> trim($rating[1][$i])
+									);
+		}
+		if ( preg_match_all("!<a class='page-numbers' href='/extend/plugins/tags/spam/page/(\d+)'>\\1</a>!ims",$snoopy->results,$pages) )
+			$results['info']['pages'] = (int)$pages[1][ count($pages[1]) - 1 ];
+
+		wp_cache_set('wpupdate_pluginSearchTag_wordpressorg_'.$results['info']['terms'].'-'.$results['info']['page'], $results, 'wpupdate', 21600);
+	} //end if( ! $results);
+
+	$args['results'] = array_merge($args['results'],$results['results']);
+	if( $results['info']['pages'] > $args['info']['pages'] )
+		$args['info']['pages'] = $results['info']['pages'];
+
 	return $args;
 }
 
