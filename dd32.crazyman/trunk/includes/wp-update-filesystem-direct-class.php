@@ -23,7 +23,7 @@ class WP_Filesystem_Direct{
 	function get_contents_array($file){
 		return @file($file);
 	}
-	function put_contents($file,$contents,$mode=null,$type=''){
+	function put_contents($file,$contents,$mode=false,$type=''){
 		$fp=@fopen($file,'w'.$type);
 		if (!$fp)
 			return false;
@@ -49,7 +49,9 @@ class WP_Filesystem_Direct{
 		}
 		return true;
 	}
-	function chmod($file,$mode,$recursive=false){
+	function chmod($file,$mode=false,$recursive=false){
+		if( ! $mode )
+			$mode = $this->permission;
 		if( ! $this->exists($file) )
 			return false;
 		if( ! $recursive )
