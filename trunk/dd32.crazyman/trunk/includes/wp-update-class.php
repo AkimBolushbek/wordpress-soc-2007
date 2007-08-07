@@ -478,6 +478,9 @@ class WP_Update{
 		$base = $fs->get_base_dir() . $destination;
 		$messages[] = "Base Directory: <strong>$base</strong>";
 		
+		$permissions = $fs->getchmod($base);
+		var_dump(array('Permissions'=>$permissions));
+		
 		//Check if the destination directory exists, If not, create it.
 		$path = explode('/',$base);
 		$tmppath = '';
