@@ -103,7 +103,9 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 				} else {
 					wp_die(__('Unsupported Method Called'));
 				}
+				var_dump($file);
 				$result = $wpupdate->installPlugin($file,$fileinfo);
+				echo "<h1>", var_dump($result),"<h1>";
 				if( isset($result['Error']) ){
 					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';
 				}
