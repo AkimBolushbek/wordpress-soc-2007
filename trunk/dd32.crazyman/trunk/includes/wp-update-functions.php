@@ -6,7 +6,7 @@
 		- maybe a few other items
 */
 function wpupdate_get_plugin_data( $plugin_file ) {
-	$plugin_data = implode( '', @file( $plugin_file ));
+	$plugin_data = @implode( '', @file( $plugin_file ));
 	if(!$plugin_data)
 		return;
 	preg_match( '|Plugin Name:(.*)|i', $plugin_data, $plugin_name );
