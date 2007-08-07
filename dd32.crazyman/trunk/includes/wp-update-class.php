@@ -470,8 +470,8 @@ class WP_Update{
 			return array('Errors'=>array('Empty Archive'));
 		
 		$fs = WP_Filesystem();
-		var_dump($fs);
-		if( ! $fs )
+
+		if( ! is_object($fs) )
 			return array('Errors'=>array('Filesystem options not set correctly'));
 		
 		//First of all, Does the zip file contain a base folder?
