@@ -685,6 +685,15 @@ function podcasting_add_feed_discovery() {
 	$podcast_url = ($wp_rewrite->using_permalinks()) ? '/feed/podcast/' : '/?feed=podcast';
 	$podcast_url = get_option('home') . $podcast_url;
 	echo '	<link rel="alternate" type="application/rss+xml" title="Podcast: ' . htmlentities(stripslashes(get_option('pod_title'))) . '" href="' . $podcast_url . '" />' . "\n";
+	
+	// Formats
+	$pod_formats = get_terms('podcast_format', 'get=all');
+	foreach ($pod_formats as $pod_format) {
+		if ( 'default-format' != $pod_format->slug ) {
+			$podcast_format_url = ($wp_rewrite->using_permalinks()) ? $podcast_url . "$pod_format->slug/" : $podcast_url . "&format=$pod_format->slug";
+			echo '	<link rel="alternate" type="application/rss+xml" title="Podcast: ' . htmlentities(stripslashes(get_option('pod_title'))) . " ($pod_format->name)" . '" href="' . $podcast_format_url . '" />' . "\n";
+		}
+	}
 }
 
 // Add the iTunes xml information
