@@ -10,6 +10,11 @@ function eztags_from_author(&$ct)
 	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
+function eztags_from_author_link(&$ct)
+{
+	$ct = preg_replace('/the_author_link\(\s*\);?/', '?&gt;<$EntryAuthorLink$>&lt;?php', $ct);
+}
+
 function eztags_from_author_posts(&$ct)
 {
 	$ct = preg_replace('/the_author_posts_link\(\s*\);?/', '?&gt;<$EntryAuthorPostsLink$>&lt;?php', $ct);
@@ -225,6 +230,7 @@ function eztags_from_trackback_url(&$ct)
 function eztags_parse_from(&$ct)
 {
 	eztags_from_author($ct);
+	eztags_from_author_link($ct);
 	eztags_from_author_posts($ct);
 	eztags_from_blog_info($ct);
 	eztags_from_calendar($ct);

@@ -19,7 +19,9 @@ function eztags_parse_ez(&$content)
 
 	$content = str_replace('<$EntryTitle$>', '<?php the_title(); ?>', $content);
 
-	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);	$content = str_replace('<$EntryAuthorPostsLink$>', '<?php the_author_posts_link(); ?>', $content);
+	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
+	$content = str_replace('<$EntryAuthorLink$>', '<?php the_author_link(); ?>', $content);
+	$content = str_replace('<$EntryAuthorPostsLink$>', '<?php the_author_posts_link(); ?>', $content);
 	$content = str_replace('<$EntryDate$>', '<?php the_date(); ?>', $content);
 	$content = str_replace('<$EntryExcerpt$>', '<?php the_excerpt(); ?>', $content);
 	$content = str_replace('<$EntryID$>', '<?php the_ID(); ?>', $content);

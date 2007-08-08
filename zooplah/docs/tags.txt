@@ -62,6 +62,9 @@ Currently implemented tags:
 <$EntryAuthor$>
 	The author of the current entry or blog.
 	Attributes: None
+<$EntryAuthorLink$>
+	Link to the website the author of the current post.
+	Attributes: None
 <$EntryAuthorPostsLink$>
 	Link to the posts that the author of the current post
 	also wrote.
