@@ -10,11 +10,11 @@ See tags.txt.  I'm putting them in that file because users (not
 just hackers) might find them useful.
 
 THE FUNCTIONING
-Right now, eztagsmediator.php contains two routines: ez2std()
+Right now, eztags-smediator.php contains two routines: ez2std()
 for converting easy tags to PHP functions and std2ez() for doing
 the reverse.
 
-The actual conversion functions are in eztags_fromstandard.php
-and eztags_tostandard.php.  The from-standard functions are
-by far the most complex and, therefore, most likely extremely
+The actual conversion functions are in eztags-from-standard.php
+and eztags-to-standard.php.  The from-standard functions are
+by far the most complex and, therefore, most likely to be
 buggy.

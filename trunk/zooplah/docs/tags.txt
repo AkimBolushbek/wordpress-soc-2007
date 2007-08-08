@@ -13,231 +13,165 @@ with PHP functions.  Those without dollar signs are containers
 and may or may not actually correspond to PHP code.
 
 So the format is:
-<ContainerTag[ attributes]>content</ContainerTag>
-<$Tag[ attributes]$>
+<ContainerTag>content</ContainerTag>
+<$Tag$>
 
-Attributes work just like in HTML:
-<$EntryTitle lang="en"$>
+Some tags contain parameters.  The syntax is:
+TagName:parameter
 
-Attributes are usually (always?) optional.  Space after the tag is
-forbidden if you don't use attributes.  I know all of this stuff
-is HTML 101, but I want this to be pretty easy for anyone.
+The parameter can be empty, in which case the colon is still
+required.  In tags without parameters, the colon is forbidden
+(for the obvious reason that the colon marks the beginning of a
+parameter).
 
-Currently, tags and attributes are case-sensitive, and (double)
-quotes around attribute values are required.  That may change in
-the future, though all it will really do is add bloat and perhaps
-bugs to the code.
+Theoretically, tags with multiple parameters can exist, but there
+are none currently implemented.  The synax most likely is:
+TagName:parameter1:parameter2:parametern:...
+
+Currently, tags and parameters are case-sensitive.  That may
+change in the future, though all it will really do is add bloat
+and perhaps bugs to the code.
 
 Currently implemented tags:
 <$CommentAuthor$>
 	Displays the author of the current comment.
-	Attributes: None
 <$CommentAuthorLink$>
 	Link to the website of the author of the current comment,
 	if he or she has one.
-	Attributes: None
 <$CommentAuthorURL$>
 	Displays the author's web site URL, if he or she has one.
-	Attributes: None
 	Notes: Really only useful in links.
 <$CommentDate$>
 	The date of the current comment, formatted according to
 	your settings.
-	Attributes: None
 <$CommentDate:format$>
 	The date of the current comment, formatted according to
 	the specified format.
-	Attributes: None
+	Parameters: format - The format for the date.
 <$CommentID$>
 	The ID of the current comment.
-	Attributes: None
 <$CommentText$>
 	Text of the current comment.
-	Attributes: None
 <$CommentTime$>
 	The time of the current comment, formatted according to
 	your settings.
-	Attributes: None
 
 <$EntryAuthor$>
 	The author of the current entry or blog.
-	Attributes: None
 <$EntryAuthorLink$>
 	Link to the website the author of the current post.
-	Attributes: None
 <$EntryAuthorPostsLink$>
 	Link to the posts that the author of the current post
 	also wrote.
-	Attributes: None
 <$EntryDate$>
 	The date of the current entry.
-	Attributes: None
 	Notes: Formatted according to your settings.
 <$EntryExcerpt$>
 	The excerpt of the current entry.
-	Attributes: None
 <$EntryID$>
 	The ID of the current entry.
-	Attributes: None
 <$EntryPermalink$>
 	The URL of the current entry.
-	Attributes: None
 <$EntryTime$>
 	The time the entry was initially posted.
-	Attributes: None
 	Notes: It's formatted according to your settings.
 <$EntryTime:format$>
 	The time the entry was initially posted.
-	Attributes: None
+	Parameters: format - The format for the time.
 	Notes: It's formatted according to the format string.
 <$EntryTitle$>
 	The title of the current entry or blog.
-	Attributes: None
 <$EntryTrackbackURL$>
 	The trackback URL for the current entry or blog.
-	Attributes: None
 
 <$WPArchives:options$>
 	Displays the list of archives, according to the options
 	given (if any).
-	Attributes: None
+	Parameters: options - The options to use.
 <$WPBookmarks:options$>
 	Displays the list of bookmarks, according to the options
 	given (if any).
-	Attributes: None
+	Parameters: options - The options to use.
 <$WPCalendar$>
 	Displays a calendar with a one-letter day abbreviation.
-	Attributes: None
 <$WPCalendar3$>
 	Displays a calendar with a day abbreviation according to
 	your locale settings (typically three characters; hence
 	the name).
-	Attributes: None
 	Notes: Length of the abbreviation may vary according to
 		different locale settings.
 <$WPCategories:options$>
 	Displays the categories of the current blog, according
 	to the options given (if any).
-	Attributes: None
+	Parameters: options - The options to use.
 <$WPCategoriesOld:options$>
 	Displays the categories of the current blog, according
 	to the options given (if any).
-	Attributes: None
+	Parameters: options - The options to use.
 	Notes: This should be replaced by <$WCategories:options$>.
 		It's included because some themes still use it.
 <$WPInfo:item$>
-	Displays the info according to specified item (see below
-	for some of the popular items).
-	Attributes: None
-<$WPInfo:atom_url$>
-	URL to the Atom 1.0 blog feed.
-	Attributes: None
-	Notes: Atom 0.3 in WordPress versions prior to 2.2.
-<$WPInfo:comments_rss2_url$>
-	URL to the RSS 2 comments feed.
-	Attributes: None
-<$WPInfo:charset$>
-	The character set used by the blog.
-	Attributes: None
-<$WPInfo:description$>
-	The description of the blog.
-	Attributes: None
-<$WPInfo:home$>
-	The home URL, as specified in the blog options.
-	Attributes: None
-<$WPInfo:html_type$>
-	The content type that HTML should be sent as.
-	Attributes: None
-<$WPInfo:name$>
-	The name of the blog.
-	Attributes: None
-<$WPInfo:pingback_url$>
-	The URL by which other blogs can notify the current blog
-	or blog entry that it's been referenced.
-	Attributes: None
-<$WPInfo:rss_url$>
-	URL to the RSS 0.92 blog feed.
-	Attributes: None
-<$WPInfo:rss2_url$>
-	URL to the RSS 2 blog feed.
-	Attributes: None
-<$WPInfo:siteurl$>
-	The URL of the blog's site.
-	Attributes: None
-<$WPInfo:stylesheet_directory$>
-	The directory (usually called folder on Windows) of the
-	current theme's style sheet.
-	Attributes: None
-<$WPInfo:stylesheet_url$>
-	The URL of the current theme's style sheet.
-	Attributes: None
-<$WPInfo:template_url$>
-	The URL of the current theme's template.
-	Attributes: None
-<$WPInfo:url$>
-	The URL of the blog's main page.
-	Attributes: None
-<$WPInfo:version$>
-	The version of WordPress currently being used.
-	Attributes: None
+	Displays the info about the blog's <item>.
+	Parameters: item.  Here are some popular items:
+		atom_url
+		comments_rss2_url
+		charset (character set)
+		description
+		home
+		html_type (HTML MIME type)
+		name
+		pingback_url
+		rss_url
+		rss2_url
+		siteurl
+		stylesheet_directory
+		stylesheet_url
+		template_url
+		url
 <$WPLanguageAttributes$>
 	The HTML attributes for the proper display of the content,
 	based on the server computer's locale.
-	Attributes: None
 <$WPLinkPages:options$>
 	Display numbered links for multi-page blog posts according
 	to the specified options (if any).
-	Attributes: None
-<$WPLinks:_id$>
-	Displays your blogroll links from newest to oldest.
-	Attributes: None
-<$WPLinks:_name$>
-	Displays your blogroll links in reverse alphabetical order.
-	Attributes: None
-<$WPLinks:id$>
-	Displays your blogroll links from oldest to newest.
-	Attributes: None
-<$WPLinks:name$>
-	Displays your blogroll links in alphabetical order.
-	Attributes: None
+	Parameters: options - The options to use.
+<$WPLinks:order$>
+	Displays your blogroll in the specified <order>.
+	Parameters: order - How to order the links:
+		_id - Reverse chronological
+		_name - Reverse alphabetical
+		id - Chronological
+		name - Alphabetical
 <$WPLoginOut$>
 	Provide a link to the log-in or log-out page, depending
 	on your log-in status.
-	Attributes: None
 <$WPMeta>
 	Additional meta information.
-	Attributes: None
 <$WPPages:options$>
 	Lists all WordPress pages, according to your options (if
 	any).
-	Attributes: None
+	Parameters: options - The options to use.
 <$WPRegister$>
 	Link to register as a user on the blog, if that has been
 	enabled.
-	Attributes: None
 <$WPSearch$>
 	What the user had searched for.
-	Attributes: None
 
 <CurrentCategory>
 	Displays the category of the current page.
-	Attributes: None
 	Notes: The content is the heading for the current-
 		category display.
 <EntryCategories>
 	Enumerates the categories of the current entry and
 	displays them, separated by the designated character(s).
-	Attributes: None
 	Notes: The content is the character(s) used for separating
                the categories.
 <EntryContent>
 	Displays the content of the current entry.
-	Attributes: None
 	Notes: The content of this attribute is a localizable string
 		that will be displayed when excerpts are used.
 <TranslatableString>
 	A string to be translated.
-	Attributes: None
 	Notes:
 		The content of this tag is a string contained in
 		the localization table (e.g. eo.po).
@@ -245,14 +179,11 @@ Currently implemented tags:
 		extremely buggy right now.
 
 NOTES
-1. Currently, tag and attribute names are case sensitive.
-   That may change in the future, but be cautious for now.
-2. Not all PHP is converted.
-3. PHP sections start with <?php and ends with ?>.  Easier
+1. PHP sections start with <?php and ends with ?>.  Easier
    template tags must be placed outside of PHP sections.  It's
    best to only use easier template tags in areas where others are
    present.
-4. Clarification: There must be no spaces in the less-than
+2. Clarification: There must be no spaces in the less-than
    sign, dollar sign and tag name.  Similarly, there must be no
    space before the final dollar sign or between the final dollar
    sign and the final greater-than sign.  If there's no dollar
