@@ -1,21 +1,20 @@
 === Easier Template Tags ===
 Requires at least: 2.1
-Tested up to: 2.2.1
+Tested up to: 2.2.2
 
-Coverts between PHP template tags and HTML-like easier template
-tags.
+Converts between PHP template tags and HTML-like easier template
+tags for easier theme editing.
 
 == Installation ==
-Just like any plugin. Drop into your wp-content/plugins directory
-or a subdirectory thereof.
+Drop the contents of the eztags directory into your
+wp-content/plugins directory or a subdirectory thereof.
 
 GETTING A NEWER VERSION
-Sorry, "versions" aren't available yet.  You'll have to check it
-out from
-http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/
-for the time being.  Of course, this plugin is in-development and
-I wouldn't recommend trying it out yet.  It's not even open to
-testers yet.
+You can get the absolute latest code from
+http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/.
+Snapshots are available from
+http://code.google.com/p/wordpress-soc-2007/downloads/list.
+Keep in mind that it's in testing right now.
 
 == Use ==
 See docs/tags.txt.  It's actually quite easy.
@@ -55,9 +54,6 @@ places on your computer.
 == Known problems and bugs ==
 * The easier tags are case sensitive (title, TITLE, and Title are
   different entities).
-* After saving the file, redirection to the editor doesn't work.
-  The files are saved to the disk, but you have to reclick on
-  a couple links to resume editing.
 * Not all PHP will be converted to an easier format.  Just ignore
   the parts that you don't understand.
 
