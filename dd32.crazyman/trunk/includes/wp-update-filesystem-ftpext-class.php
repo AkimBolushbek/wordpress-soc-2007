@@ -148,7 +148,7 @@ class WP_Filesystem_FTPext{
 	function chgrp($file,$group,$recursive=false){
 		return false;
 	}
-	function chmod($file,$mode=false;,$recursive=false){
+	function chmod($file,$mode=false,$recursive=false){
 		if( ! $mode )
 			$mode = $this->permission;
 		if( ! $mode )

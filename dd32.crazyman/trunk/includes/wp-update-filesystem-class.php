@@ -3,8 +3,10 @@ function WP_Filesystem_check($preference=false,$arg=false){
 	return WP_Filesystem($preference,$arg,'check');
 }
 function WP_Filesystem($preference=false,$arg=false,$action='connect'){
-	if( !$preference )
+	if( ! $preference )
 		$preference = get_option('wpfs_method');
+	if( ! $arg )
+		$arg = array();
 	$method = _WP_Filesystem_bestOption($preference);
 	if( ! $method ) return;
 	if( strpos($method,'ftp') > -1 )
