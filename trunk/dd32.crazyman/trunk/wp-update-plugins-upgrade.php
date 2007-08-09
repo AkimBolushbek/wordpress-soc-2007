@@ -1,5 +1,5 @@
 <?php
-	if( !defined('ABSPATH') || ! $wpupdate )
+	if( !defined('ABSPATH') || ! $wp_update )
 		die('Cannot be called directly.');
 	require_once('includes/wp-update-filesystem-class.php');
 	$installedInfo = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $_GET['upgrade']);
@@ -52,7 +52,7 @@ var_dump($fs_compat);
 			$fileinfo['name'] = $fileinfo['basename'];
 			$filename = wpupdate_url_to_file($file);
 			
-			$messages = $wpupdate->installItem($filename, $fileinfo, 'wp-content/wpupdate/');
+			$messages = $wp_update->installItem($filename, $fileinfo, 'wp-content/wpupdate/');
 			unlink($filename); //Once installed, Delete the zip
 
 			echo '<div class="installLog">';

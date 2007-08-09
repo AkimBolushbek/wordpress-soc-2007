@@ -4,8 +4,9 @@ if( !get_option('update_install_enable') ){
 	return;
 }
 require_once('includes/wp-update-class.php');
-global $wpupdate;
-$wpupdate = new WP_Update;
+global $wp_update;
+if( ! $wp_update || ! is_object($wp_update) )
+	$wp_update = new WP_Update;
 ?>
 <style>
 	.section{
@@ -43,7 +44,7 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 				} else {
 					wp_die(__('Unsupported Method Called'));
 				}
-				$result = $wpupdate->installTheme($file,$fileinfo);
+				$result = $wp_update->installTheme($file,$fileinfo);
 				if( isset($result['Error']) ){
 					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';
 				}
@@ -77,7 +78,7 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 
 <?php 
 function step2(){ 
-	global $wpupdate;
+	global $wp_update;
 	if( isset($_GET['url']) ){
 		//Download file
 		$filename = attribute_escape($_GET['url']);
@@ -92,9 +93,9 @@ function step2(){
 			<strong>Filename:</strong> <?php echo $filename; ?><br />
 			<?php
 			if( $_FILES['themefile']['tmp_name'] )
-				$wpupdate->installTheme($_FILES['themefile']['tmp_name'],$_FILES['themefile'] );
+				$wp_update->installTheme($_FILES['themefile']['tmp_name'],$_FILES['themefile'] );
 			elseif( isset($_GET['url']) )
-				$wpupdate->installThemeFromURL(urldecode($_GET['url']));
+				$wp_update->installThemeFromURL(urldecode($_GET['url']));
 			?>
 		</p>
 		<p>

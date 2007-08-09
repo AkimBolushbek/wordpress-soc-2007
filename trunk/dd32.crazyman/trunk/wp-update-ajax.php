@@ -4,11 +4,11 @@ require_once('../../../wp-admin/admin.php');
 include_once('includes/wp-update-class.php');
 include_once('includes/wp-update-functions.php');
 
-$wpupdate = new WP_Update;
+$wp_update = new WP_Update;
 
 switch($_GET['action']){
 	case 'checkPluginUpdate':
-		echo $wpupdate->getPluginUpdateText($_GET['file'],true,true,true);
+		echo $wp_update->getPluginUpdateText($_GET['file'],true,true,true);
 		break;
 	case 'themeSearch':
 		$searchOptions = array();
@@ -22,7 +22,7 @@ switch($_GET['action']){
 		if( empty($page) || !is_numeric($page) )
 			$page = 1;
 		
-		$searchResults = $wpupdate->search('themes',$searchOptions,$page);
+		$searchResults = $wp_update->search('themes',$searchOptions,$page);
 
 		if( !isset($searchResults['results']) || empty($searchResults['results']) )
 			die('no more results');
@@ -32,9 +32,9 @@ switch($_GET['action']){
 	case 'pluginSearch':
 		$page = (int)$_POST['page'];
 		if( isset($_POST['tag']) ){
-			$results = $wpupdate->getPluginsByTag($_POST['tag'],$page);
+			$results = $wp_update->getPluginsByTag($_POST['tag'],$page);
 		} elseif ( isset($_POST['term']) ) {
-			$results = $wpupdate->search('plugins',$_POST['term'],$page);
+			$results = $wp_update->search('plugins',$_POST['term'],$page);
 		}
 		if( !isset($results['results']) || empty($results['results']) )
 			echo __('no more results');
