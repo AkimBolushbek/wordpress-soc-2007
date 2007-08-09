@@ -110,6 +110,29 @@ Currently implemented tags:
 	Parameters: options - The options to use.
 	Notes: This should be replaced by <$WCategories:options$>.
 		It's included because some themes still use it.
+<$WPElse$>
+	The code below this is rendered if a previous <$WPIf*$>
+	condition was false.
+	Notes: The code is rendered until an <$WPEndIf$> tag is
+		encountered.
+<$WPEndIf$>
+	End of the section started by an <$WPIf*$> tag.
+<$WPEndLoop$>
+	Ends the current loop.  The content after it won't be
+	parsed until the loop is finished.
+<$WPEntriesLoop$>
+	Goes through each entry and parses the code below until
+	there are no more entries to go through.
+	Notes:
+	This section ends when an <$WPEndLoop$> tag is
+		encountered.
+<$WPIfEntries$>
+	If there are entries in the current blog, the code below
+	it will be parsed.
+	Notes: This section ends when a <$WPElse$> or <$WPEndIf$>
+		tag is encountered.
+	A <$WPElse$> tag should be used in the rare
+		occasion that no entries are in the blog.
 <$WPInfo:item$>
 	Displays the info about the blog's <item>.
 	Parameters: item.  Here are some popular items:
@@ -142,6 +165,10 @@ Currently implemented tags:
 		_name - Reverse alphabetical
 		id - Chronological
 		name - Alphabetical
+<$WPLoadHeader$>
+	Loads the header template file (header.php).
+<$WPLoadSidebar$>
+	Loads the sidebar template file (sidebar.php).
 <$WPLoginOut$>
 	Provide a link to the log-in or log-out page, depending
 	on your log-in status.
