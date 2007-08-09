@@ -5,12 +5,11 @@ function WP_Filesystem_check($preference=false,$arg=false){
 function WP_Filesystem($preference=false,$arg=false,$action='connect'){
 	if( ! $preference )
 		$preference = get_option('wpfs_method');
-	if( ! $arg )
-		$arg = array();
+
 	$method = _WP_Filesystem_bestOption($preference);
 	if( ! $method ) return;
 	if( strpos($method,'ftp') > -1 )
-		$arg = array_merge(get_option('wpfs_ftp'), $arg);
+		$arg = array_merge((array)get_option('wpfs_ftp'), (array)$arg);
 
 	require_once('wp-update-filesystem-'.$method.'-class.php');
 	$method = "WP_Filesystem_$method";
