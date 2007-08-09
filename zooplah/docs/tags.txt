@@ -25,7 +25,7 @@ required.  In tags without parameters, the colon is forbidden
 parameter).
 
 Theoretically, tags with multiple parameters can exist, but there
-are none currently implemented.  The synax most likely is:
+are none currently implemented.  The syntax most likely is:
 TagName:parameter1:parameter2:parametern:...
 
 Currently, tags and parameters are case-sensitive.  That may

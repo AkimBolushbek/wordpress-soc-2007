@@ -6,9 +6,7 @@
 
 require_once 'eztags-mediator.php';
 
-load_plugin_textdomain('eztags', 'wp-content/plugins');
-
-$title = __('Easier Theme Editor', 'eztags');
+$title = _z('Easier Theme Editor');
 $parent_file = 'themes.php';
 
 wp_reset_vars(array('action', 'redirect', 'profile', 'error', 'warning', 'a', 'file', 'theme'));
@@ -42,7 +40,7 @@ $file_show = basename( $file );
 
 <?php
 
-printf(__('<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="%s/wp-content/plugins/eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don\'t save anything with this plugin or submit feedback before reading that document.</em></p>', 'eztags'), get_bloginfo('url'), get_eztags_dir());
+printf(_z('<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="%s/wp-content/plugins/eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don\'t save anything with this plugin or submit feedback before reading that document.</em></p>'), get_bloginfo('url'), get_eztags_dir());
 
 ?>
 
