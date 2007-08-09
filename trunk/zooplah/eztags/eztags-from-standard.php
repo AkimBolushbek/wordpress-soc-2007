@@ -114,6 +114,26 @@ function eztags_from_e(&$ct)
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
 }
 
+function eztags_from_else(&$ct)
+{
+	$ct = preg_replace('/else\s*:?/', '?&gt;<$WPElse$>&lt;?php', $ct);
+}
+
+function eztags_from_end_if(&$ct)
+{
+	$ct = preg_replace('/endif;?/', '?&gt;<$WPEndIf$>&lt;?php', $ct);
+}
+
+function eztags_from_end_loop(&$ct)
+{
+	$ct = preg_replace('/endwhile;?/', '?&gt;<$WPEndLoop$>&lt;?php', $ct);
+}
+
+function eztags_from_entries_loop(&$ct)
+{
+	$ct = preg_replace('/while\s*\(\s*have_posts\(\)\s*\)\s*:\s*the_post\(\);?/m', '?&gt;<$WPEntriesLoop$>&lt;?php', $ct);
+}
+
 function eztags_from_excerpt(&$ct)
 {
 	$ct = preg_replace('/the_excerpt\(\s*\);?/', '?&gt;<$EntryExcerpt$>&lt;?php', $ct);
@@ -124,9 +144,19 @@ function eztags_from_get_archives(&$ct)
 	$ct = preg_replace('/wp_get_archives\(\'?([^\']*)\'?\);?/', '?&gt;<$WPArchives:$1$>&lt;?php', $ct);
 }
 
+function eztags_from_header(&$ct)
+{
+	$ct = preg_replace('/get_header\(\s*\);?/', '?&gt;<$WPLoadHeader$>&lt;?php', $ct);
+}
+
 function eztags_from_id(&$ct)
 {
 	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryID$>&lt;?php', $ct);
+}
+
+function eztags_from_if_entries(&$ct)
+{
+	$ct = preg_replace('/if\s*\(\s*have_posts\(\)\s*\)\s*:/', '?&gt;<$WPIfEntries$>&lt;?php', $ct);
 }
 
 function eztags_from_language_attributes(&$ct)
@@ -198,6 +228,11 @@ function eztags_from_search_query(&$ct)
 	$ct = preg_replace('/the_search_query\(\s*\);?/', '?&gt;<$WPSearch$>&lt;?php', $ct);
 }
 
+function eztags_from_sidebar(&$ct)
+{
+	$ct = preg_replace('/get_sidebar\(\s*\);?/', '?&gt;<$WPLoadSidebar$>&lt;?php', $ct);
+}
+
 function eztags_from_single_cat_title(&$ct)
 {
 	$ct = preg_replace('/single_cat_title\(\'?([^\']*)\'?\);?/', '?&gt;<CurrentCategory>$1</CurrentCategory>&lt;?php', $ct);
@@ -245,9 +280,15 @@ function eztags_parse_from(&$ct)
 	eztags_from_content($ct);
 	eztags_from_date($ct);
 	eztags_from_e($ct);
+	eztags_from_else($ct);
+	eztags_from_end_if($ct);
+	eztags_from_end_loop($ct);
+	eztags_from_entries_loop($ct);
 	eztags_from_excerpt($ct);
 	eztags_from_get_archives($ct);
+	eztags_from_header($ct);
 	eztags_from_id($ct);
+	eztags_from_if_entries($ct);
 	eztags_from_language_attributes($ct);
 	eztags_from_link_pages($ct);
 	eztags_from_links_list($ct);
@@ -260,6 +301,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_permalink($ct);
 	eztags_from_register($ct);
 	eztags_from_search_query($ct);
+	eztags_from_sidebar($ct);
 	eztags_from_single_cat_title($ct);
 	eztags_from_time($ct);
 	eztags_from_title($ct);
