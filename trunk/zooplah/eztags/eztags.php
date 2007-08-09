@@ -29,7 +29,6 @@ require_once 'eztags-functions.php';
 
 if ( is_admin() )
 {
-	load_plugin_textdomain('eztags', 'wp-content/plugins');	
 
 	require_once ABSPATH . WPINC . '/pluggable.php';
 

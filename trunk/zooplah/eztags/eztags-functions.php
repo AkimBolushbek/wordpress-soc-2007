@@ -16,4 +16,19 @@ function get_eztags_dir()
 	return $eztags_dir;
 }
 
+$eztags_domain = 'eztags';
+load_plugin_textdomain($eztags_domain, 'wp-content/plugins/' . get_eztags_dir() . 'languages');
+
+function _ez($str)
+{
+	global $eztags_domain;
+	_e($str, $eztags_domain);
+}
+
+function _z($str)
+{
+	global $eztags_domain;
+	return __($str, $eztags_domain);
+}
+
 ?>

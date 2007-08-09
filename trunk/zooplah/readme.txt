@@ -30,15 +30,11 @@ glad if someone likes my plugin, finds it useful and wants to
 improve it.
 
 IF A THEME DOESN'T WORK
-That's a very real possibility.  Please don't report bugs or do
-anything to your theme until after Summer of Code 2007.  Before
-then, the plugin will be considered unfinished and subject to
-major modifications, improvements, etc.  However, after that
-time, two courses of action are possible.
-
-One is to submit a bug.  However, if this thing only affects one
-theme, it probably will be easier to change the theme to a more
-coherent format.  That will help on both our sides.
+That's a very real possibility.  Two courses of action are
+possible.  One is to submit a bug.  However, if this thing only
+affects one theme, it probably will be easier to do the second:
+change the theme to a more coherent format.  That will help on
+both our sides.
 
 * LICENSING
 This plugin is licensed under the GPL.  It had to be.  I
