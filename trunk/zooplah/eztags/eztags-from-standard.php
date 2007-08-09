@@ -119,6 +119,19 @@ function eztags_from_e(&$ct)
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
 }
 
+function eztags_from_edit_post_link(&$ct)
+{
+	preg_match('/edit_post_link\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $attr) = $matches;
+
+	$attrs = preg_split('/\,\s*/', $attr);
+	$attrs = preg_replace('/\'/', '', $attrs);
+	$attrs = preg_replace('/&quot;/', '', $attrs);
+	list($link, $before, $after) = $attrs;
+
+	$ct = str_replace($match, "?&gt;$before<EditEntry>$link</EditEntry>$after&lt;?php", $ct);
+}
+
 function eztags_from_else(&$ct)
 {
 	$ct = preg_replace('/else\s*:\s*?&gt;/', '?&gt;<$WPElse$>&lt;?php', $ct);
@@ -302,6 +315,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_content($ct);
 	eztags_from_date($ct);
 	eztags_from_e($ct);
+	eztags_from_edit_post_link($ct);
 	eztags_from_else($ct);
 	eztags_from_end_if($ct);
 	eztags_from_end_loop($ct);

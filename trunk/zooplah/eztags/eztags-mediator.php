@@ -33,6 +33,9 @@ function ez2std($content)
 	// problems
 	$content = preg_replace('/\s+\?><\?php\s*/', ' ', $content);
 
+	// Localized empty string is not the same as empty
+	$content = str_replace("__('')", '', $content);
+
 	return $content;
 }
 
