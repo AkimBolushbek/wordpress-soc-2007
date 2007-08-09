@@ -78,6 +78,11 @@ function eztags_from_comment_time(&$ct)
 	$ct = preg_replace('/comment_time\(\);?/', '?&gt;<$CommentTime$>&lt;?php', $ct);
 }
 
+function eztags_from_comments(&$ct)
+{
+	$ct = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $ct);
+}
+
 function eztags_from_content(&$ct)
 {
 	$in_ct = $ct;
@@ -116,7 +121,7 @@ function eztags_from_e(&$ct)
 
 function eztags_from_else(&$ct)
 {
-	$ct = preg_replace('/else\s*:?/', '?&gt;<$WPElse$>&lt;?php', $ct);
+	$ct = preg_replace('/else\s*:\s*?&gt;/', '?&gt;<$WPElse$>&lt;?php', $ct);
 }
 
 function eztags_from_end_if(&$ct)
@@ -137,6 +142,11 @@ function eztags_from_entries_loop(&$ct)
 function eztags_from_excerpt(&$ct)
 {
 	$ct = preg_replace('/the_excerpt\(\s*\);?/', '?&gt;<$EntryExcerpt$>&lt;?php', $ct);
+}
+
+function eztags_from_footer(&$ct)
+{
+	$ct = preg_replace('/get_footer\(\s*\);?/', '?&gt;<$WPLoadFooter$>&lt;?php', $ct);
 }
 
 function eztags_from_get_archives(&$ct)
@@ -210,6 +220,17 @@ function eztags_from_permalink(&$ct)
 	$ct = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $ct);
 }
 
+function eztags_from_query(&$ct)
+{
+	preg_match('/query_posts\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $query) = $matches;
+
+	$query = str_replace("'", '', $query);
+	$query = str_replace('&quot;', '', $query);
+
+	$ct = str_replace($match, "?&gt;<\$WPQuery:$query\$>&lt;?php", $ct);
+}
+
 function eztags_from_register(&$ct)
 {
 	preg_match('/wp_register\(([^\)]*)\);?/', $ct, $matches);
@@ -277,6 +298,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_comment_date($ct);
 	eztags_from_comment_text($ct);
 	eztags_from_comment_time($ct);
+	eztags_from_comments($ct);
 	eztags_from_content($ct);
 	eztags_from_date($ct);
 	eztags_from_e($ct);
@@ -285,6 +307,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_end_loop($ct);
 	eztags_from_entries_loop($ct);
 	eztags_from_excerpt($ct);
+	eztags_from_footer($ct);
 	eztags_from_get_archives($ct);
 	eztags_from_header($ct);
 	eztags_from_id($ct);
@@ -299,6 +322,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_login($ct);
 	eztags_from_meta($ct);
 	eztags_from_permalink($ct);
+	eztags_from_query($ct);
 	eztags_from_register($ct);
 	eztags_from_search_query($ct);
 	eztags_from_sidebar($ct);
