@@ -2,7 +2,7 @@
 /*
 Plugin Name: Easier Template Tags
 Plugin URI: http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/
-Description: Provides an editor that allows you to edit themes with very little editing of PHP code
+Description: Provides an editor that allows you to easily edit themes, barely seeing the underlying PHP code.
 Version: <a href="http://en.wikipedia.org/wiki/Elliot_Carver">Carver</a>
 Author: Keith Bowes
 Author URI: http://zooplah.farvista.net/
@@ -29,13 +29,14 @@ require_once 'eztags-functions.php';
 
 if ( is_admin() )
 {
+	load_plugin_textdomain('eztags', 'wp-content/plugins');	
 
 	require_once ABSPATH . WPINC . '/pluggable.php';
 
 	require_once ABSPATH . '/wp-admin/admin-functions.php';
 	require_once ABSPATH . '/wp-admin/menu.php';
 
-	add_theme_page('Easier Template Tags', __('Easier Theme Editor'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
+	add_theme_page(__('Easier Template Tags', 'eztags'), __('Easier Theme Editor', 'eztags'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
 }
 
 ?>

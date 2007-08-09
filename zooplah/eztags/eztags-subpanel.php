@@ -6,7 +6,9 @@
 
 require_once 'eztags-mediator.php';
 
-$title = __("Easier Theme Editor");
+load_plugin_textdomain('eztags', 'wp-content/plugins');
+
+$title = __('Easier Theme Editor', 'eztags');
 $parent_file = 'themes.php';
 
 wp_reset_vars(array('action', 'redirect', 'profile', 'error', 'warning', 'a', 'file', 'theme'));
@@ -38,7 +40,11 @@ $file_show = basename( $file );
 
 ?>
 
-	<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don't do anything with this plugin or submit feedback before reading that document.</em></p>
+<?php
+
+printf(__('<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="%s/wp-content/plugins/eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don\'t save anything with this plugin or submit feedback before reading that document.</em></p>', 'eztags'), get_bloginfo('url'), get_eztags_dir());
+
+?>
 
 <?php
 
@@ -146,7 +152,8 @@ else $link_color = 'GrayText';
 	?>
 		<form name="template" id="template" action="themes.php?page=<?php echo get_eztags_dir(); ?>eztags-subpanel.php" method="post">
 	<?php wp_nonce_field('edit-theme_' . $file . $theme) ?>
-		 <div><textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php if ($file_is_php) $content = std2ez($content); echo $content ?></textarea>
+		 <div>
+<textarea cols="70" rows="25" name="newcontent" id="newcontent" tabindex="1"><?php if ($file_is_php) $content = std2ez($content); echo $content; ?></textarea>
 		 <input type="hidden" name="action" value="update" />
 		 <input type="hidden" name="file" value="<?php echo $file ?>" />
 		 <input type="hidden" name="theme" value="<?php echo $theme ?>" />
