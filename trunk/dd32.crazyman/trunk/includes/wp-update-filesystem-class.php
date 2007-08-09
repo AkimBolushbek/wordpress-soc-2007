@@ -18,7 +18,7 @@ function WP_Filesystem($preference=false,$arg=false){
 
 	require_once('wp-update-filesystem-'.$method.'-class.php');
 	$method = "WP_Filesystem_$method";
-	die($method);
+
 	$wp_filesystem = new $method($arg);
 
 	$numerrors = count($wp_filesystem->errors);
