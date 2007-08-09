@@ -45,11 +45,15 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPLanguageAttributes$>', '<?php language_attributes(); ?>', $content);
 	$content = preg_replace('/<\$WPLinkPages:([^\$]*)\$>/', '<?php wp_link_pages(\'$1\'); ?>', $content);
 	$content = preg_replace('/<\$WPLinks:([^\$]+)\$>/', '<?php get_links_list(\'$1\'); ?>', $content);
+	$content = str_replace('<$WPLoadComments$>', '<?php comments_template(); ?>', $content);
+	$content = str_replace('<$WPLoadFooter$>', '<?php get_footer(); ?>', $content);
 	$content = str_replace('<$WPLoadHeader$>', '<?php get_header(); ?>', $content);
 	$content = str_replace('<$WPLoadSidebar$>', '<?php get_sidebar(); ?>', $content);
 	$content = str_replace('<$WPLoginOut$>', '<?php wp_loginout(); ?>', $content);
 	$content = str_replace('<$WPMeta$>', '<?php wp_meta(); ?>', $content);
 	$content = preg_replace('/<\$WPPages:([^\$]*)\$>/', '<?php wp_list_pages(\'$1\'); ?>', $content);
+	$content = preg_replace('/<\$WPQuery:([^\$]*)\$>/', '<?php 
+	query_posts(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPRegister$>', '<?php wp_register(); ?>', $content);
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
 

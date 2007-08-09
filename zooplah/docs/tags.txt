@@ -112,11 +112,12 @@ Currently implemented tags:
 		It's included because some themes still use it.
 <$WPElse$>
 	The code below this is rendered if a previous <$WPIf*$>
-	condition was false.
+	or other condition was false.
 	Notes: The code is rendered until an <$WPEndIf$> tag is
 		encountered.
 <$WPEndIf$>
-	End of the section started by an <$WPIf*$> tag.
+	End of the section started by an <$WPIf*$> tag or other
+	condition.
 <$WPEndLoop$>
 	Ends the current loop.  The content after it won't be
 	parsed until the loop is finished.
@@ -144,11 +145,13 @@ Currently implemented tags:
 		html_type (HTML MIME type)
 		name
 		pingback_url
+		rdf_url
 		rss_url
 		rss2_url
 		siteurl
 		stylesheet_directory
 		stylesheet_url
+		template_directory
 		template_url
 		url
 <$WPLanguageAttributes$>
@@ -165,6 +168,10 @@ Currently implemented tags:
 		_name - Reverse alphabetical
 		id - Chronological
 		name - Alphabetical
+<$WPLoadComments$>
+	Loads the comments template file (comments.php).
+<$WPLoadFooter$>
+	Loads the footer template file (footer.php).
 <$WPLoadHeader$>
 	Loads the header template file (header.php).
 <$WPLoadSidebar$>
@@ -181,6 +188,13 @@ Currently implemented tags:
 <$WPRegister$>
 	Link to register as a user on the blog, if that has been
 	enabled.
+<$WPQuery:query$>
+	Queries the database about information about the entries.
+	Parameters: query - What to query in the database.
+		Examples:
+		cat - Category ID
+		p - page number
+		showposts - The number of posts to show
 <$WPSearch$>
 	What the user had searched for.
 
