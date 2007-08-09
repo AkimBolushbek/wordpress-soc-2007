@@ -431,13 +431,13 @@ class WP_Update{
 					$updatedPlugins[] = $plugin_info['PluginInfo']['Name'] . ' ' . $plugin_info['PluginInfo']['Version'] . "\n";
 				}
 				if( $pluginsCount > 0){
-					$message = sprintf(__('You have %d update(s) available.'),count($updatedPlugins));
+					$message = sprintf(__('You have %d update(s) available for install.'),count($updatedPlugins));
 					$message .= "\n\n";
 					$message .= implode("\n",$updatedPlugins);
 					$message .= "\n\n";
-					$message .= __('Wordpress Admin page:') . ' ' . get_bloginfo('wpurl') . '/wp-admin/plugins.php';
+					$message .= __('Wordpress Admin page') . ': ' . get_bloginfo('wpurl') . '/wp-admin/plugins.php';
 					
-					$subject = get_bloginfo('name') . ': New Updates available for install';
+					$subject = get_bloginfo('name') . ': ' . __('New Updates available for install');
 					wp_mail( $email, $subject, $message);
 				}//End if plugins
 			}//end if enabled
@@ -452,6 +452,13 @@ class WP_Update{
 		return $this->installItem($filename, $fileinfo, 'wp-content/themes/');
 	}
 	function installItem($filename,$fileinfo=array(),$destination=''){
+		global $wp_filesystem;
+		if( ! $wp_filesystem || ! is_object($wp_filesystem) )
+			WP_Filesystem();
+		if( ! is_object($wp_filesystem) )
+			return array('Errors'=>array('Filesystem options not set correctly'));
+		$fs =& $wp_filesystem; //Just for simplicity
+
 		require_once('wp-update-filesystem-class.php');
 		require_once('pclzip.lib.php');	
 		$messages = array();
@@ -469,11 +476,6 @@ class WP_Update{
 		}
 		if ( 0 == count($archiveFiles) )
 			return array('Errors'=>array('Empty Archive'));
-		
-		$fs = WP_Filesystem();
-
-		if( ! is_object($fs) )
-			return array('Errors'=>array('Filesystem options not set correctly'));
 		
 		//First of all, Does the zip file contain a base folder?
 		$base = $fs->get_base_dir() . $destination;

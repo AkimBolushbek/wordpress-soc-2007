@@ -104,9 +104,9 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 				} else {
 					wp_die(__('Unsupported Method Called'));
 				}
-				var_dump($file);
+
 				$result = $wp_update->installPlugin($file,$fileinfo);
-				echo "<h1>", var_dump($result),"<h1>";
+
 				if( isset($result['Error']) ){
 					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';
 				}
@@ -114,7 +114,6 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 				foreach((array)$result as $message){
 					echo $message . '<br />';
 				}
-				var_dump($result);
 			?>
 		</p>
 	<?php } ?>
@@ -123,8 +122,8 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 		<p>
 			<form enctype="multipart/form-data" name="installlocalfile" method="POST">
 				<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ((int)ini_get('post_max_size'))*1024*1024; ?>" />
-				Select File: <input type="file" name="pluginfile" />&nbsp;<input type="submit" name="submit" value="Upload &raquo;" /><br />
-				<strong>Max filesize:</strong><?php echo ini_get('post_max_size'); ?>
+				<?php _e('Select File'); ?>: <input type="file" name="pluginfile" />&nbsp;<input type="submit" name="submit" value="Upload &raquo;" /><br />
+				<strong><?php _e('Max filesize'); ?>:</strong><?php echo ini_get('post_max_size'); ?>
 			</form>
 		</p>
 		<h3><?php _e('From URL'); ?></h3>
@@ -144,7 +143,7 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 			</form>
 		</p>
 		<h3><?php _e('Via a Search'); ?></h3>
-			<p>To install themes directly without uploading them yourself, Please use the <a href="themes.php?page=wp-update/wp-update-plugin-search.php">Plugin Search</a> tab, and select "Install" on the item.</p>
+			<p><?php _e('To install themes directly without uploading them yourself, Please use the'); ?> <a href="themes.php?page=wp-update/wp-update-plugin-search.php"><?php _e('Plugin Search'); ?></a> <?php _e('tab, and select "Install" on the item.'); ?></p>
 		</p>
 	<?php } ?>
 </div>
