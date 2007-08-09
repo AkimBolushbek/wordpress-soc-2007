@@ -202,6 +202,10 @@ Currently implemented tags:
 	Displays the category of the current page.
 	Notes: The content is the heading for the current-
 		category display.
+<EditEntry>
+	Displays a link to edit the current entry, if you have
+	that permission.
+	Notes: The content is the text to display for the link.
 <EntryCategories>
 	Enumerates the categories of the current entry and
 	displays them, separated by the designated character(s).

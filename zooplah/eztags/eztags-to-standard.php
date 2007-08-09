@@ -58,6 +58,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
 
 	$content = preg_replace('/<CurrentCategory>([^>]*)<\/CurrentCategory>/', '<?php single_cat_title(\'$1\'); ?>', $content);
+	$content = preg_replace('/<EditEntry>([^>]*)<\/EditEntry>/', '<?php edit_post_link(__(\'$1\')); ?>', $content);
 	$content = preg_replace('/<EntryCategories>([^>]*)<\/EntryCategories>/', '<?php the_category(\'$1\'); ?>', $content);
 	$content = preg_replace('/<EntryContent>([^>]*)<\/EntryContent>/', '<?php the_content(__(\'$1\')); ?>', $content);
 
