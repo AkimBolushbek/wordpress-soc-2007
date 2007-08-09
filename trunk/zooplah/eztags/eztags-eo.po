@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WordPress 1.5 Localization-eo\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2005-03-01 15:00+0900\n"
+"Last-Translator: Bertilo Wennergren <bertilow@gmail.com>\n"
+"Language-Team: Bertilo Wennergren <bertilow@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Easier Template Tags"
+msgstr "Pli facilaj ŝablono-etikedoj"
+
+msgid "Easier Theme Editor"
+msgstr "Stilredaktilo facila"
+
+msgid "<p><em>This plugin is in <a href=\"http://en.wikipedia.org/wiki/Software_release_cycle#Beta\" title=\"What beta means\">beta</a> and has some known issues.  See <a href=\"%s/wp-content/plugins/eztags-caveats.html\">Easy Tags Caveats</a> for more information.  Please don't save anything with this plugin or submit feedback before reading that document.</em></p>"
+msgstr "<p><em>Ĉi tiu kromprogramo estas antaŭeldona kaj havas kelkajn konatajn fiaferojn. Vidi <a href=\"%s/wp-content/plugins/eztags-caveats.html\" xml:lang=\"en\" hreflang=\"en\">Easy Tags Caveats</a> por pli da informoj. Bonvolu ne konservi ion ajn per ĉi tiu kromprogramo aŭ sedi viajn opiniojn antaŭ legado de tiu dokumento.</em></p>"
