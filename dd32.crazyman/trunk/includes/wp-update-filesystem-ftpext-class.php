@@ -34,7 +34,7 @@ class WP_Filesystem_FTPext{
 			$this->options['port'] = $opt['port'];
 
 		if( ! isset($opt['hostname']) || empty($opt['hostname']) )
-			$this->errors['require']['hostname'] = __('Hostname');//$opt['hostname'] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : 'localhost';
+			$this->errors['require']['hostname'] = __('Hostname');
 		else
 			$this->options['hostname'] = $opt['hostname'];
 
@@ -64,7 +64,7 @@ class WP_Filesystem_FTPext{
 			$this->errors['server'] = __('Failed to connect to FTP Server') . ' ' . $this->options['hostname'] . ':' . $this->options['port'];
 			return false;
 		}
-		if( ! ftp_login($this->link,$opt['username'], $opt['password']) ){
+		if( ! ftp_login($this->link,$this->options['username'], $this->options['password']) ){
 			$this->errors['auth'] = __('Username/Password incorrect') . ' ' . 
 				$this->options['username'] . ':********@' .$this->options['hostname'] . ':' . $this->options['port'];
 			return false;
@@ -280,6 +280,8 @@ class WP_Filesystem_FTPext{
 		return ($file[ $folderName ]['perms'][0] == '-');
 	}
 	function is_dir($path){
+		if( '/' == $path )
+			return true; //Face it, / is going to be a directory, Unfortuantly the following code wont realise that
 		if( substr($path,-1,1) == '/') $path = substr($path,0, strlen($path)-1);
 		$file = $this->dirlist($path . '/..');
 		$folderName = substr($path,strrpos($path,'/')+1);
