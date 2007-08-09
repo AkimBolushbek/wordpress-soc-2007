@@ -277,7 +277,7 @@ class WP_Filesystem_FTPext{
 	}
 	function is_file($file){
 		$folder = $this->dirlist($file);
-		return ($file[ $file ]['perms'][0] == '-');
+		return ($folder[ $file ]['perms'][0] == '-');
 	}
 	function is_dir($path){
 		if( '/' == $path )
