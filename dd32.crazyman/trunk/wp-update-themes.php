@@ -1,8 +1,9 @@
 <?php
 require_once('admin.php');
 require_once('includes/wp-update-class.php');
-global $wpupdate;
-$wpupdate = new WP_Update;
+global $wp_update;
+if( ! $wp_update || ! is_object($wp_update) )
+	$wp_update = new WP_Update;
 
 if ( isset($_GET['action']) ) {
 	check_admin_referer('switch-theme_' . $_GET['template']);
@@ -21,7 +22,7 @@ if ( isset($_GET['action']) ) {
 	}
 }
 
-$title = __('Manage Themes++');
+$title = __('Manage Themes');
 $parent_file = 'themes.php';
 require_once('admin-header.php');
 ?>
@@ -141,7 +142,7 @@ if ( count($broken_themes) ) {
 </style>
 <div id="featured">
 <?php
-	$themes = $wpupdate->getThemesFeatured();
+	$themes = $wp_update->getThemesFeatured();
 	foreach($themes['results'] as $theme){
 	/*[id] => almost-spring
     [thumbnail] => http://wordpress.org/extend/themes/t/almost-spring.png

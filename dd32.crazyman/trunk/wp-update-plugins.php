@@ -2,8 +2,9 @@
 require_once('admin.php');
 require_once('includes/wp-update-class.php');
 require_once('includes/wp-update-functions.php');
-global $wpupdate;
-$wpupdate = new WP_Update;
+global $wp_update;
+if( ! $wp_update || ! is_object($wp_update) )
+	$wp_update = new WP_Update;
 
 if ( isset($_GET['action']) ) {
 	if ('hidenotifications' == $_GET['action']){
@@ -121,7 +122,7 @@ function checkUpdate(file){
 <?php
 }
 
-$title = __('Manage Plugins++');
+$title = __('Manage Plugins');
 $parent_file = 'plugins.php';
 
 require_once('admin-header.php');
@@ -257,7 +258,7 @@ if (empty($plugins)) {
 			$updateText = __('Not Checked');
 		} else {
 			//Check if the plugin is disabled:
-			$updateStat = $wpupdate->checkPluginUpdate($plugin_file,false,false);
+			$updateStat = $wp_update->checkPluginUpdate($plugin_file,false,false);
 			if( !get_option('update_check_inactive') && 
 				!in_array($plugin_file, $current_plugins) &&
 				!( 
@@ -269,7 +270,7 @@ if (empty($plugins)) {
 				//Plugin is disabled, and set to not check inactive plugins
 				$updateText = __('Not Checked');
 			} else {
-				$updateText = $wpupdate->getPluginUpdateText($plugin_file);
+				$updateText = $wp_update->getPluginUpdateText($plugin_file);
 				if( false === $updateText){
 					$updateText = __('Please Wait');
 					$updateText .= "<script type='text/javascript'>checkUpdate('$plugin_file');</script>";

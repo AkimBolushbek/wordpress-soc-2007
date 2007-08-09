@@ -5,8 +5,9 @@ if( !get_option('update_install_enable') || !defined('ABSPATH') ){
 }
 
 require_once('includes/wp-update-class.php');
-global $wpupdate;
-$wpupdate = new WP_Update;
+global $wp_update;
+if( ! $wp_update || ! is_object($wp_update) )
+	$wp_update = new WP_Update;
 if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 	//Lets rely on a sepate file for upgrade proceedure
 	include 'wp-update-plugins-upgrade.php';
@@ -23,14 +24,14 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 		//First we check to see if this is a WordPress.org plugin, We'll have some requirements to check first :)
 		if ( isset($_GET['wp-id']) && !empty($_GET['wp-id']) && !isset($_GET['proceed']) ) {
 			$id = $_GET['wp-id'];
-			$pluginInfo = apply_filters('wpupdate_checkPluginUpdate-wordpress.org',$id); //$wpupdate->checkPluginUpdateWordpressOrg($id);
+			$pluginInfo = apply_filters('wpupdate_checkPluginUpdate-wordpress.org',$id); //$wp_update->checkPluginUpdateWordpressOrg($id);
 			var_dump($pluginInfo);
 			?>
 				<p>
 					<?php _e('Are you sure you wish to install the following Plugin?'); ?>
 				</p>
 					<?php
-						$pluginCompatible = $wpupdate->checkPluginCompatible($pluginInfo);
+						$pluginCompatible = $wp_update->checkPluginCompatible($pluginInfo);
 						if( $pluginCompatible['Compatible'] ){
 							echo '<div class="updated"><p>'. __('Plugin is compatible') . '</p></div>';
 						} else {
@@ -104,7 +105,7 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 					wp_die(__('Unsupported Method Called'));
 				}
 				var_dump($file);
-				$result = $wpupdate->installPlugin($file,$fileinfo);
+				$result = $wp_update->installPlugin($file,$fileinfo);
 				echo "<h1>", var_dump($result),"<h1>";
 				if( isset($result['Error']) ){
 					echo '<div class="error">' . __('Errors Occured') . ':<br />' . implode('<br />', $result['Error']) . '</div>';

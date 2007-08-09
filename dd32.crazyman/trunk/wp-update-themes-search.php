@@ -7,8 +7,8 @@ if( !get_option('update_theme_search_enable') ){
 require_once('includes/wp-update-class.php');
 require_once('includes/wp-update-functions.php');
 
-global $wpupdate;
-$wpupdate = new WP_Update;
+global $wp_update;
+$wp_update = new WP_Update;
 ?>
 <div class="wrap">
 <h2>Search Themes</h2>
@@ -112,7 +112,7 @@ if( isset($_POST['submit']) ){
 	
 	$taglist = implode(', ' . $_POST['andor'] . ' ',$_POST['searchOptions']);
 	
-	$searchResults = $wpupdate->search('themes',$_POST,1); 
+	$searchResults = $wp_update->search('themes',$_POST,1); 
 ?>
 <h2><?php _e('Search Results') ?></h2>
 <p><?php _e('Search results for Themes tagged with ') ?><strong><span id='taglist'><?php echo $taglist; ?></span></strong></p>

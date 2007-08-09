@@ -6,8 +6,9 @@ if( !get_option('update_plugin_search_enable') ){
 require_once('includes/wp-update-class.php');
 require_once('includes/wp-update-functions.php');
 
-global $wpupdate,$pagenow;
-$wpupdate = new WP_Update;
+global $wp_update,$pagenow;
+if( ! $wp_update || ! is_object($wp_update) )
+	$wp_update = new WP_Update;
 
 if( isset($_POST['term']) || isset($_GET['tag']) ){
 	if( isset($_POST['term']))
@@ -63,11 +64,11 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 		</form>
 <?php
 	if( !empty($searchTerm) ){
-		$results = $wpupdate->search('plugins',array($searchTerm));
+		$results = $wp_update->search('plugins',array($searchTerm));
 		$resultText = 'Plugin Search: ' . $searchTerm;
 	} elseif (!empty($tagSearch)) {
 		$resultText = 'Plugins Tagged: ' . $tagSearch;
-		$results = $wpupdate->getPluginsByTag($tagSearch);
+		$results = $wp_update->getPluginsByTag($tagSearch);
 	}
 
 	if( !empty($searchTerm) || !empty($tagSearch) ){
@@ -103,7 +104,7 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 	<div class="taglist">
 		<p>
 <?php
-	$tags = $wpupdate->getPluginSearchTags();
+	$tags = $wp_update->getPluginSearchTags();
 
 	$url = $pagenow . '?page=' . $_GET['page'] . '&tag=%s';
 
