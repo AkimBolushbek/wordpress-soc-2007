@@ -335,6 +335,11 @@ class WP_Filesystem_FTPext{
 		foreach($list as $line){
 			$struc = array();
 			$current = preg_split("/[\s]+/",$line,9);
+			$struc['name']    	= str_replace('//','',$current[8]);
+			
+			if( '.' == $struc['name'][0] && !$incdot)
+				continue;
+			
 			$struc['perms']    	= $current[0];
 			$struc['permsn']	= $this->getnumchmodfromh($current[0]);
 			$struc['number']	= $current[1];
@@ -343,28 +348,24 @@ class WP_Filesystem_FTPext{
 			$struc['size']    	= $current[4];
 			$struc['lastmod']   = $current[5].' '.$current[6];
 			$struc['time']    	= $current[7];
-			$struc['name']    	= str_replace('//','',$current[8]);
-			$struc['type']		= ('d' == substr($struc['perms'], 0, 1) || 'l' == substr($struc['perms'], 0, 1) ) ? 'folder' : 'file';
+			
+			$struc['type']		= ('d' == $struc['perms'][0] || 'l' == $struc['perms'][0] ) ? 'folder' : 'file';
 			if('folder' == $struc['type'] ){
-				if( '.' == $struc['name'] || '..' == $struc['name']){
-					//Dots
-					if($incdot) {
-						$struc['files'] = array();
-						$ret[$struc['name']] = $struc;
+				$struc['files'] = array();
+				
+				if( $incdot ){
+					//We're including the doted starts
+					if( '.' != $struc['name'] && '..' != $struc['name'] ){ //Ok, It isnt a special folder
+						if ($recursive)
+							$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
 					}
-				} else {
-					//No dots
-					if ($recursive){
+				} else { //No dots
+					if ($recursive)
 						$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
-					} else {
-						$struc['files'] = array();
-					}
-					$ret[$struc['name']] = $struc;
 				}
-			} else {
-				//File
-				$ret[$struc['name']] = $struc;
 			}
+			//File
+			$ret[$struc['name']] = $struc;
 		}
 		return $ret;
 	}
