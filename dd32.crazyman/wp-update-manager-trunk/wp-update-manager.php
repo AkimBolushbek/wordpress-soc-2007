@@ -6,7 +6,7 @@ Description: A Plugin to manage your created Plugins and Themes.
 Version: 0.1
 Author: Dion Hulse
 Author URI: http://dd32.id.au/
-Update URI: http://dd32.no-ip.com:8080/wordpress/pluginupdate/wp-update-manager/
+Update URI: http://dd32.id.au/pluginupdate/wp-update-manager/
 */
 
 add_action('template_redirect','wpupdatemanager_template');
