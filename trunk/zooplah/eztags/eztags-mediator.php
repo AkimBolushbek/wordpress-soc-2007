@@ -31,7 +31,7 @@ function ez2std($content)
 	eztags_parse_ez($content);
 	// Quitting and then instantly restarting PHP mode con cause
 	// problems
-	$content = preg_replace('/\s+\?><\?php\s*/', ' ', $content);
+	$content = preg_replace('/(\s*)\?><\?php\s*/', '$1', $content);
 
 	// Localized empty string is not the same as empty
 	$content = str_replace("__('')", '', $content);
