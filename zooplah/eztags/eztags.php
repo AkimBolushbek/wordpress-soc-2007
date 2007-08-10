@@ -35,7 +35,7 @@ if ( is_admin() )
 	require_once ABSPATH . '/wp-admin/admin-functions.php';
 	require_once ABSPATH . '/wp-admin/menu.php';
 
-	add_theme_page(__('Easier Template Tags', 'eztags'), __('Easier Theme Editor', 'eztags'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
+	add_theme_page(_z('Easier Template Tags'), _z('Easier Theme Editor'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
 }
 
 ?>
