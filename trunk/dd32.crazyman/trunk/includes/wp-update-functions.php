@@ -211,4 +211,75 @@ function wpupdate_generate_tagcloud($tags=false,$args=''){
 
 	return apply_filters( 'wpupdate_generate_tag_cloud', $return, $tags, $args );
 }
+
+function folder_diff($folder1, $folder2){
+	global $wp_filesystem;
+	if( ! $wp_filesystem || ! is_object($wp_filesystem) )
+		return false;
+	//Ok.
+	/*if( ! ($wp_filesystem->is_dir($folder1)  && $wp_filesystem->is_dir($folder2) || 
+		   $wp_filesystem->is_file($folder1) && $wp_filesystem->is_file($folder2) ) )
+		return false; //oops, given options are not both dirs, or both files.*/
+	
+	$Files = array();
+		
+	$folder1Listing = $wp_filesystem->dirlist($folder1,false,false);
+	var_dump($folder1Listing);
+	$folder2Listing = $wp_filesystem->dirlist($folder2,false,false);
+	var_dump($folder2Listing);
+
+	if( empty($folder1Listing) || empty($folder2Listing) )
+		return false;
+	
+	foreach((array)$folder1Listing as $fileName => $fileItem){
+		if( 'file' == $fileItem['type'] ){
+			if( !isset($folder2Listing[ $fileName ]) ){
+				//File is new
+				$fileItem['status'] = 'new';
+				$Files[ $fileName ] = $fileItem;
+			} elseif( $fileItem['size'] !== $folder2Listing[ $fileName ]['size'] ){
+				//File has changed
+				$fileItem['status'] = 'changed';
+				$fileItem['oldsize'] = $folder2Listing[ $fileName ]['size'];
+				$Files[ $fileName ] = $fileItem;
+			}
+		} elseif( 'folder' == $fileItem['type'] ){
+			if( ! isset($folder2Listing[ $fileName ]) ){
+				$fileItem['status'] = 'deleted';
+				$Files[ $fileName ] = $fileItem;
+				continue;
+			}
+			$items = diff($folder1 . '/' . $fileName, $folder2 . '/' . $fileName);
+			if( !$items || empty($items) ){
+				$fileItem['status'] = 'deleted';
+				$Files[ $fileName ] = $fileItem;
+			} else {
+				foreach( $items as $folderFile => $folderEntry){
+					$Files[ $fileName . '/' . $folderFile ] = $folderEntry;
+				}
+			}
+		}
+	}
+	foreach($folder2Listing as $fileName => $fileItem){
+		if( isset( $Files[ $fileName ] ) )
+			continue; //If the file is allready accounted for, skip
+		if( 'file' == $fileItem['type'] ){
+			if( !isset($folder1Listing[ $fileName ]) ){
+				//File is deleted
+				$fileItem['status'] = 'deleted';
+				$Files[ $fileName ] = $fileItem;
+			} else {
+				//File is the same
+				$fileItem['status'] = 'same';
+				$Files[ $fileName ] = $fileItem;
+			}
+		} elseif( 'folder' == $fileItem['type'] ){
+			//If the folder wasnt delt with before (Which would've placed it in the $Files array, then it must be deleted
+			$fileItem['status'] = 'deleted';
+			$Files[ $fileName ] = $fileItem;
+		}
+	}
+	return $Files;
+}//end function
+
 ?>
