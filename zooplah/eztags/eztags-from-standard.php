@@ -59,13 +59,13 @@ function eztags_from_comment_author_url(&$ct)
 
 function eztags_from_comment_date(&$ct)
 {
-	$ct = preg_replace('/comment_date\(\);?/', '?&gt;<$CommentDate$>&lt;?php', $ct);
-	$ct = preg_replace('/comment_date\(\'([^\']+)\'\);?/', '?&gt;<$CommentDate:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])comment_date\(\);?/', '$1?&gt;<$CommentDate$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])comment_date\(\'([^\']+)\'\);?/', '$1?&gt;<$CommentDate:$2$>&lt;?php', $ct);
 }
 
 function eztags_from_comment_id(&$ct)
 {
-	$ct = preg_replace('/comment_ID\(\s*\);?/', '?&gt;<$CommentID$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])comment_ID\(\s*\);?/', '$1?&gt;<$CommentID$>&lt;?php', $ct);
 }
 
 function eztags_from_comment_text(&$ct)
@@ -75,7 +75,7 @@ function eztags_from_comment_text(&$ct)
 
 function eztags_from_comment_time(&$ct)
 {
-	$ct = preg_replace('/comment_time\(\);?/', '?&gt;<$CommentTime$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])comment_time\(\);?/', '$1?&gt;<$CommentTime$>&lt;?php', $ct);
 }
 
 function eztags_from_comments(&$ct)
@@ -119,9 +119,22 @@ function eztags_from_e(&$ct)
 	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
 }
 
+function eztags_from_edit_comment_link(&$ct)
+{
+	preg_match('/edit_comment_link\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $attr) = $matches;
+
+	$attrs = preg_split('/\,\s*/', $attr);
+	$attrs = preg_replace('/\'/', '', $attrs);
+	$attrs = preg_replace('/&quot;/', '', $attrs);
+	list($link, $before, $after) = $attrs;
+
+	$ct = str_replace($match, "?&gt;$before<EditComment>$link</EditComment>$after&lt;?php", $ct);
+}
+
 function eztags_from_edit_post_link(&$ct)
 {
-	preg_match('/edit_post_link\(([^\);]*)\);/', $ct, $matches);
+	preg_match('/edit_post_link\(([^\)]*)\);?/', $ct, $matches);
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -320,6 +333,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_content($ct);
 	eztags_from_date($ct);
 	eztags_from_e($ct);
+	eztags_from_edit_comment_link($ct);
 	eztags_from_edit_post_link($ct);
 	eztags_from_else($ct);
 	eztags_from_end_if($ct);
