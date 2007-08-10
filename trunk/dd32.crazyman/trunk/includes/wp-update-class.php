@@ -19,8 +19,10 @@ class WP_Update{
 		if( ! is_dir(ABSPATH . 'wp-content/plugins/wp-update/extensions') )
 			return;
 		$dir = @dir(ABSPATH . 'wp-content/plugins/wp-update/extensions');
-		while (false !== ($file = $dir->read()))
-			@ include ( $dir->path . '/' . $file );
+		while (false !== ($file = $dir->read())){
+			if( strpos($file,'.php') > -1)
+				@ include ( $dir->path . '/' . $file );
+		}
 	}
 	/**
 	 * Searches for a Plugin/Theme based upon tags/terms
