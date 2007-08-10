@@ -88,6 +88,9 @@ Currently implemented tags:
 	Displays the list of archives, according to the options
 	given (if any).
 	Parameters: options - The options to use.
+<$WPAutodiscover$>
+	Provides a link that agents can use to automatically
+	discover the trackback link to the blog or entry.
 <$WPBookmarks:options$>
 	Displays the list of bookmarks, according to the options
 	given (if any).

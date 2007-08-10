@@ -309,9 +309,14 @@ function eztags_from_title(&$ct)
 	$ct = str_replace($match, "$bef?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
 }
 
+function eztags_from_trackback_rdf(&$ct)
+{
+	$ct = preg_replace('/trackback_rdf\(\);?/', '?&gt;<$WPAutodiscover$>&lt;?php', $ct);
+}
+
 function eztags_from_trackback_url(&$ct)
 {
-	preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
+	$ct = preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
 }
 
 function eztags_parse_from(&$ct)
@@ -362,6 +367,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_single_cat_title($ct);
 	eztags_from_time($ct);
 	eztags_from_title($ct);
+	eztags_from_trackback_rdf($ct);
 	eztags_from_trackback_url($ct);
 
 	eztags_from_post($ct);
