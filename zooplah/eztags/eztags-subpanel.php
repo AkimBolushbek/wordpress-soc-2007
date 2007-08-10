@@ -40,7 +40,7 @@ $file_show = basename( $file );
 
 <?php
 
-printf(_z('<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="%s/wp-content/plugins/eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don\'t save anything with this plugin or submit feedback before reading that document.</em></p>'), get_bloginfo('url'), get_eztags_dir());
+printf(_z('<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="%s/wp-content/plugins/%seztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don\'t save anything with this plugin or submit feedback before reading that document.</em></p>'), get_bloginfo('url'), get_eztags_dir());
 
 ?>
 
