@@ -152,7 +152,7 @@ function eztags_from_else(&$ct)
 
 function eztags_from_end_if(&$ct)
 {
-	$ct = preg_replace('/endif;?/', '?&gt;<$WPEndIf$>&lt;?php', $ct);
+	$ct = preg_replace('/endif[;\s]/', '?&gt;<$WPEndIf$>&lt;?php', $ct);
 }
 
 function eztags_from_end_loop(&$ct)
