@@ -207,6 +207,10 @@ Currently implemented tags:
 	Notes: The content is the heading for the current-
 		category display.
 <EditEntry>
+	Displays a link to edit the current comment, if you have
+	that permission.
+	Notes: The content is the text to display for the link.
+<EditEntry>
 	Displays a link to edit the current entry, if you have
 	that permission.
 	Notes: The content is the text to display for the link.
