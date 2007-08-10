@@ -256,20 +256,26 @@ class WP_Filesystem_Direct{
 	}
 	
 	function dirlist($path,$incdot=false,$recursive=false){
-	/* $f array ( 
-	*			'file' => array ($f,$f),
-	*			'owner' => 'test',
-	*			'group' => 'group',
-	*			'permissions' => array( 'human' =>,'mode' => 0000 ),
-	*			'filezise' => Bytes,
-	*			'modified' => Date
-	*/
+		if( $this->is_file($path) ){
+			$limitFile = basename($path);
+			$path = dirname($path);
+		} else {
+			$limitFile = false;
+		}
+		if( ! $this->is_dir($path) )
+			return false;
+
 		$ret = array();
 		$dir = dir($path);
 		while (false !== ($entry = $dir->read())) {
-			if( ! $incdot && ($entry == '.' || $entry == '..') )
-				continue;
 			$struc = array();
+			$struc['name'] 		= $entry;
+			
+			if( '.' == $struc['name'][0] && !$incdot)
+				continue;
+			if( $limitFile && $struc['name'] != $limitFile)
+				continue;
+			
 			$struc['perms'] 	= $this->gethchmod($path.'/'.$entry);
 			$struc['permsn']	= $this->getnumchmodfromh($struc['perms']);
 			$struc['number'] 	= false;
@@ -279,28 +285,23 @@ class WP_Filesystem_Direct{
 			$struc['lastmodunix']= $this->mtime($path.'/'.$entry);
 			$struc['lastmod']   = date('M j',$struc['lastmodunix']);
 			$struc['time']    	= date('h:i:s',$struc['lastmodunix']);
-			$struc['name'] 		= $entry;
 			$struc['type']		= $this->is_dir($path.'/'.$entry) ? 'folder' : 'file';
 			if('folder' == $struc['type'] ){
-				if( '.' == $struc['name'] || '..' == $struc['name']){
-					//Dots
-					if($incdot) {
-						$struc['files'] = array();
-						$ret[$struc['name']] = $struc;
+				$struc['files'] = array();
+				
+				if( $incdot ){
+					//We're including the doted starts
+					if( '.' != $struc['name'] && '..' != $struc['name'] ){ //Ok, It isnt a special folder
+						if ($recursive)
+							$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
 					}
-				} else {
-					//No dots
-					if ($recursive){
+				} else { //No dots
+					if ($recursive)
 						$struc['files'] = $this->dirlist($path.'/'.$struc['name'],$incdot,$recursive);
-					} else {
-						$struc['files'] = array();
-					}
-					$ret[$struc['name']] = $struc;
 				}
-			} else {
-				//File
-				$ret[$struc['name']] = $struc;
 			}
+			//File
+			$ret[$struc['name']] = $struc;
 		}
 		return $ret;
 	}

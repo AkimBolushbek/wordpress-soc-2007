@@ -328,6 +328,15 @@ class WP_Filesystem_FTPext{
 			
 	}
 	function dirlist($path='.',$incdot=false,$recursive=false){
+		if( $this->is_file($path) ){
+			$limitFile = basename($path);
+			$path = dirname($path);
+		} else {
+			$limitFile = false;
+		}
+		if( ! $this->is_dir($path) )
+			return false;
+
 		$list = ftp_rawlist($this->link,'-a '.$path,false); //We'll do the recursive part ourseves...
 		if($list == false)
 			return false;
@@ -336,10 +345,12 @@ class WP_Filesystem_FTPext{
 			$struc = array();
 			$current = preg_split("/[\s]+/",$line,9);
 			$struc['name']    	= str_replace('//','',$current[8]);
-			
+
 			if( '.' == $struc['name'][0] && !$incdot)
 				continue;
-			
+			if( $limitFile && $struc['name'] != $limitFile)
+				continue;
+
 			$struc['perms']    	= $current[0];
 			$struc['permsn']	= $this->getnumchmodfromh($current[0]);
 			$struc['number']	= $current[1];
@@ -348,11 +359,11 @@ class WP_Filesystem_FTPext{
 			$struc['size']    	= $current[4];
 			$struc['lastmod']   = $current[5].' '.$current[6];
 			$struc['time']    	= $current[7];
-			
+
 			$struc['type']		= ('d' == $struc['perms'][0] || 'l' == $struc['perms'][0] ) ? 'folder' : 'file';
 			if('folder' == $struc['type'] ){
 				$struc['files'] = array();
-				
+
 				if( $incdot ){
 					//We're including the doted starts
 					if( '.' != $struc['name'] && '..' != $struc['name'] ){ //Ok, It isnt a special folder
