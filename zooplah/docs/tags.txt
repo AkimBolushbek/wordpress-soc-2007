@@ -181,6 +181,10 @@ Currently implemented tags:
 	on your log-in status.
 <$WPMeta>
 	Additional meta information.
+<$WPNextEntry$>
+	Advance to the next blog entry.  The <$Entry*$> tatgs will
+	then get information about the next entry instead of the
+	current one.
 <$WPPages:options$>
 	Lists all WordPress pages, according to your options (if
 	any).
@@ -222,6 +226,8 @@ Currently implemented tags:
 		the localization table (e.g. eo.po).
 		Converting the PHP function to this tag is
 		extremely buggy right now.
+		Domains aren't even working.
+		Nor are multiple instances on the same line.
 
 NOTES
 1. PHP sections start with <?php and ends with ?>.  Easier

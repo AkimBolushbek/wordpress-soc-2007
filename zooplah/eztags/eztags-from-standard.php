@@ -7,7 +7,7 @@
 
 function eztags_from_author(&$ct)
 {
-	$ct = preg_replace('/the_author\(\s*\);?/', '?&gt;<$EntryAuthor$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])the_author\(\s*\);?/', '$1?&gt;<$EntryAuthor$>&lt;?php', $ct);
 }
 
 function eztags_from_author_link(&$ct)
@@ -22,7 +22,7 @@ function eztags_from_author_posts(&$ct)
 
 function eztags_from_blog_info(&$ct)
 {
-	$ct = preg_replace('/bloginfo\(([^\)]+)\);?/', '?&gt;<$WPInfo:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])bloginfo\(([^\)]+)\);?/', '$1?&gt;<$WPInfo:$2$>&lt;?php', $ct);
 	$ct = preg_replace('/<\$WPInfo:\'([^\']+)\'\$>/', '<$WPInfo:$1$>', $ct);
 }
 
@@ -121,7 +121,7 @@ function eztags_from_e(&$ct)
 
 function eztags_from_edit_post_link(&$ct)
 {
-	preg_match('/edit_post_link\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/edit_post_link\(([^\);]*)\);/', $ct, $matches);
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -233,6 +233,11 @@ function eztags_from_permalink(&$ct)
 	$ct = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $ct);
 }
 
+function eztags_from_post(&$ct)
+{
+	$ct = preg_replace('/the_post\(\s*\);?/', '?&gt;<$WPNextEntry$>&lt;?php', $ct);
+}
+
 function eztags_from_query(&$ct)
 {
 	preg_match('/query_posts\(([^\)]*)\);?/', $ct, $matches);
@@ -274,21 +279,21 @@ function eztags_from_single_cat_title(&$ct)
 
 function eztags_from_time(&$ct)
 {
-	$ct = preg_replace('/the_time\(\s*\);?/', '?&gt;<$EntryTime$>&lt;?php', $ct);
-	$ct = preg_replace('/the_time\(\'([^\']+)\'\);?/', '?&gt;<$EntryTime:$1$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])the_time\(\s*\);?/', '$1?&gt;<$EntryTime$>&lt;?php', $ct);
+	$ct = preg_replace('/([^_])the_time\(\'([^\']+)\'\);?/', '$1?&gt;<$EntryTime:$2$>&lt;?php', $ct);
 }
 
 function eztags_from_title(&$ct)
 {
-	preg_match('/the_title\(([^\)]*)\);?/', $ct, $matches);
-	list($match, $attr) = $matches;
+	preg_match('/([^_])the_title\(([^\)]*)\);?/', $ct, $matches);
+	list($match, $bef, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
 	$attrs = preg_replace('/\'/', '', $attrs);
 	$attrs = preg_replace('/&quot;/', '', $attrs);
 	list($before, $after) = $attrs;
 
-	$ct = str_replace($match, "?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
+	$ct = str_replace($match, "$bef?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
 }
 
 function eztags_from_trackback_url(&$ct)
@@ -344,6 +349,8 @@ function eztags_parse_from(&$ct)
 	eztags_from_time($ct);
 	eztags_from_title($ct);
 	eztags_from_trackback_url($ct);
+
+	eztags_from_post($ct);
 }
 
 function eztags_parse_std(&$content)
