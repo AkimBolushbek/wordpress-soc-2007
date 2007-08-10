@@ -31,6 +31,7 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$EntryTrackbackURL$>', '<?php trackback_url(); ?>', $content);
 
 	$content = preg_replace('/<\$WPArchives:([^\$]*)\$>/', '<?php wp_get_archives(\'$1\'); ?>', $content);
+	$content = str_replace('<$WPAutodiscover$>', '<?php trackback_rdf(); ?>', $content);
 	$content = preg_replace('/<\$WPBookmarks:([^\$]*)\$>/', '<?php wp_list_bookmarks(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPCalendar$>', '<?php get_calendar(true); ?>', $content);
 	$content = str_replace('<$WPCalendar3$>', '<?php get_calendar(false); ?>', $content);
