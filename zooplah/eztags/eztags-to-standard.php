@@ -1,9 +1,17 @@
 <?php
 
-function eztags_to_translatable(&$content)
+function eztags_to_translatable(&$content, $tag = '_e')
 {
-	$content = str_replace('<TranslatableString>', '<?php _e(\'', $content);
-	$content = str_replace('</TranslatableString>', '\'); ?>', $content);
+	if ($tag == '_e')
+		$suffix = 'Text';
+	else if ($tag == '__')
+		$suffix = 'String';
+
+	// Without a domain
+	$content = preg_replace("/<Translatable$suffix>([^<]*)<\/Translatable$suffix>/", "<?php $tag('$1'); ?>", $content);
+
+	// With a domain
+	$content = preg_replace("/<Translatable$suffix:([^>]+)>([^<]*)<\/Translatable$suffix>/", "<?php $tag('$2', '$1'); ?>", $content);
 }
 
 function eztags_parse_ez(&$content)

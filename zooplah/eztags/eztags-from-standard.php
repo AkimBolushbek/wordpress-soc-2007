@@ -109,14 +109,34 @@ function eztags_from_date(&$ct)
 		$ct = str_replace($match, "?&gt;$before<\$EntryDate\$>$after&lt;?php", $ct);
 }
 
-function eztags_from_e(&$ct)
+function eztags_from_e(&$ct, $tag = '_e')
 {
-	preg_match('/_e\(([^\);]+)\);/', $ct, $matches);
-	list($match, $content) = $matches;
-	$content = preg_replace('/\'/', '', $content);
-	$content = preg_replace('/&quot;/', '', $content);
+	$in_str = '';
 
-	$ct = str_replace($match, "?&gt;<TranslatableString>$content</TranslatableString>&lt;?php", $ct);
+	if ($tag == '_e')
+		$suffix = 'Text';
+	else if ($tag == '__')
+		$suffix = 'String';
+
+	while ($in_str != $ct)
+	{
+		$in_str = $ct;
+
+		preg_match('/_e\(([^\);]+)\);/', $ct, $matches);
+		list($match, $tr) = $matches;
+
+		list($content, $domain) = preg_split('/\s*\,\s*/', $tr);
+
+		$content = preg_replace('/\'/', '', $content);
+		$content = preg_replace('/&quot;/', '', $content);
+
+		$domain = preg_replace('/\'/', '', $domain);
+		$domain = preg_replace('/&quot;/', '', $domain);
+
+		$ct = str_replace($match, "?&gt;<Translatable$suffix:$domain>$content</Translatable$suffix>&lt;?php", $ct);
+	}
+
+	$ct = str_replace("<Translatable$suffix:>", "<Translatable$suffix>", $ct);
 }
 
 function eztags_from_edit_comment_link(&$ct)
