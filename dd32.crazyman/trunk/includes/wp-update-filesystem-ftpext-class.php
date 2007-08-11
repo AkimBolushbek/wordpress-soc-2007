@@ -74,7 +74,7 @@ class WP_Filesystem_FTPext{
 	function setDefaultPermissions($perm){
 		$this->permission = $perm;
 	}
-	function find_base_dir($base = '.',$echo = true){
+	function find_base_dir($base = '.',$echo = false){
 		if( empty( $base ) || '.' == $base ) $base = $this->cwd();
 		if( empty( $base ) ) $base = '/';
 		if( '/' != substr($base, -1) ) $base .= '/';
