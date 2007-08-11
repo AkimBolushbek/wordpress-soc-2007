@@ -230,15 +230,20 @@ Currently implemented tags:
 	Displays the content of the current entry.
 	Notes: The content of this attribute is a localizable string
 		that will be displayed when excerpts are used.
-<TranslatableString>
-	A string to be translated.
+<TranslatableText>
+	Text to be translated.
 	Notes:
 		The content of this tag is a string contained in
-		the localization table (e.g. eo.po).
+		the localization table <lang-code>.po.
 		Converting the PHP function to this tag is
 		extremely buggy right now.
-		Domains aren't even working.
-		Nor are multiple instances on the same line.
+<TranslatableText:domain>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <domain>-<lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
 
 NOTES
 1. PHP sections start with <?php and ends with ?>.  Easier
