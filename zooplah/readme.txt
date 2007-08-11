@@ -43,9 +43,16 @@ Keep in mind that it's in testing right now.
 
 == Frequently Asked Questions ==
 
-= Question 1 =
+= What's so great about Easier Template Tags? =
 
-Be the first to ask a question and it might get put here.
+Easier Template Tags is made with patent pending foksi technology
+that makes it 48% better than eating a Big Mac while standing on
+your head.
+
+= Why are FAQs always littered with such useless questions? =
+
+You know, I haven't figured that one out myself yet.  But as they
+say, if you can't beat 'em, join 'em.
 
 == Screenshots ==
 
