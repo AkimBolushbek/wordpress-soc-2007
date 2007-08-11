@@ -74,30 +74,33 @@ class WP_Filesystem_FTPext{
 	function setDefaultPermissions($perm){
 		$this->permission = $perm;
 	}
-	function find_base_dir($base = '.',$echo = false){
-		if( $base == '.' ) $base = $this->cwd();
+	function find_base_dir($base = '.',$echo = true){
+		if( empty( $base ) || '.' == $base ) $base = $this->cwd();
 		if( empty( $base ) ) $base = '/';
+		if( '/' != substr($base, -1) ) $base .= '/';
+		
 		if($echo) echo __('Changing to ') . $base  .'<br>';
 		if( false === ftp_chdir($this->link, $base) )
 			return false;
-		if( $this->exists($base . '/wp-settings.php') ){
-			if($echo) echo __('Found ') . $base . '/wp-settings.php<br>';
+
+		if( $this->exists($base . 'wp-settings.php') ){
+			if($echo) echo __('Found ') . $base . 'wp-settings.php<br>';
 			$this->wp_base = $base;
 			return $this->wp_base;
 		}
-		
-		if( strpos(ABSPATH, $base) > 0){
+
+		if( strpos(ABSPATH, $base) > 0)
 			$arrPath = split('/',substr(ABSPATH,strpos(ABSPATH, $base)));
-		} else {
+		else
 			$arrPath = split('/',ABSPATH);
-		}
+
 		for($i = 0; $i <= count($arrPath); $i++)
 			if( $arrPath[ $i ] == '' ) unset( $arrPath[ $i ] );
-		//var_dump($arrPath);
+
 		foreach($arrPath as $key=>$folder){
 			if( $this->is_dir($base . $folder) ){
 				if($echo) echo __('Found ') . $folder . ' ' . __('Changing to') . ' ' . $base . $folder . '/<br>';
-				return $this->find_base_dir($base . $folder . '/',$echo);
+				return $this->find_base_dir($base .  $folder . '/',$echo);
 			}
 		}
 
@@ -271,21 +274,22 @@ class WP_Filesystem_FTPext{
 		}
 	}
 	function exists($file){
-		//TODO: Do not feel this is the best way.
-		return (bool)$this->dirlist($file);
-			
+		$list = ftp_rawlist($this->link,'-a '.$file,false);
+		if( ! $list )
+			return false;
+		return count($list) == 1 ? true : false;
 	}
 	function is_file($file){
-		$folder = $this->dirlist($file);
-		return ($folder[ $file ]['perms'][0] == '-');
+		$list = ftp_rawlist($this->link,'-a '.$file,false);
+		if( ! $list )
+			return false;
+		return ($list[0] == '-');
 	}
 	function is_dir($path){
-		if( '/' == $path )
-			return true; //Face it, / is going to be a directory, Unfortuantly the following code wont realise that
-		if( substr($path,-1,1) == '/') $path = substr($path,0, strlen($path)-1);
-		$file = $this->dirlist($path . '/..');
-		$folderName = substr($path,strrpos($path,'/')+1);
-		return ($file[ $folderName ]['perms'][0] == 'd');
+		$list = ftp_rawlist($this->link,'-a '.$path,false);
+		if( ! $list )
+			return false;
+		return true;
 	}
 	function is_readable($file){
 		//Get dir list, Check if the file is writable by the current user??
@@ -330,16 +334,19 @@ class WP_Filesystem_FTPext{
 	function dirlist($path='.',$incdot=false,$recursive=false){
 		if( $this->is_file($path) ){
 			$limitFile = basename($path);
-			$path = dirname($path);
+			$path = dirname($path) . '/';
 		} else {
 			$limitFile = false;
 		}
-		if( ! $this->is_dir($path) )
-			return false;
-
+		//if( ! $this->is_dir($path) )
+		//	return false;
 		$list = ftp_rawlist($this->link,'-a '.$path,false); //We'll do the recursive part ourseves...
-		if($list == false)
+		//var_dump($list);
+		if( ! $list )
 			return false;
+		if( empty($list) )
+			return array();
+
 		$ret = array();
 		foreach($list as $line){
 			$struc = array();
