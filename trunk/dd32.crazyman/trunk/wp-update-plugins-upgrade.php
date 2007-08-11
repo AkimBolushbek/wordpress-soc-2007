@@ -1,7 +1,7 @@
 <?php
 if( !defined('ABSPATH') || ! $wp_update )
 	die('Cannot be called directly.');
-require_once('includes/wp-update-filesystem-class.php');
+require_once('includes/wp-update-filesystem.php');
 $installedInfo = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $_GET['upgrade']);
 $action = array();
 foreach($_GET as $key=>$val)

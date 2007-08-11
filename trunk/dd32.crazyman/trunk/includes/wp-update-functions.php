@@ -217,19 +217,14 @@ function folder_diff($folder1, $folder2){
 	if( ! $wp_filesystem || ! is_object($wp_filesystem) )
 		return false;
 	//Ok.
-	/*if( ! ($wp_filesystem->is_dir($folder1)  && $wp_filesystem->is_dir($folder2) || 
-		   $wp_filesystem->is_file($folder1) && $wp_filesystem->is_file($folder2) ) )
-		return false; //oops, given options are not both dirs, or both files.*/
 	
 	$Files = array();
 		
 	$folder1Listing = $wp_filesystem->dirlist($folder1,false,false);
-	var_dump($folder1Listing);
 	$folder2Listing = $wp_filesystem->dirlist($folder2,false,false);
-	var_dump($folder2Listing);
 
-	if( empty($folder1Listing) || empty($folder2Listing) )
-		return false;
+	//if( empty($folder1Listing) || empty($folder2Listing) )
+	//	return false;
 	
 	foreach((array)$folder1Listing as $fileName => $fileItem){
 		if( 'file' == $fileItem['type'] ){
@@ -249,7 +244,7 @@ function folder_diff($folder1, $folder2){
 				$Files[ $fileName ] = $fileItem;
 				continue;
 			}
-			$items = diff($folder1 . '/' . $fileName, $folder2 . '/' . $fileName);
+			$items = folder_diff($folder1 . '/' . $fileName, $folder2 . '/' . $fileName);
 			if( !$items || empty($items) ){
 				$fileItem['status'] = 'deleted';
 				$Files[ $fileName ] = $fileItem;
