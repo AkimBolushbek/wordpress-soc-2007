@@ -249,6 +249,7 @@ function folder_diff($folder1, $folder2){
 				$fileItem['status'] = 'deleted';
 				$Files[ $fileName ] = $fileItem;
 			} else {
+				$Files[ $fileName ]['status'] = 'changed'; //unset as deleted.
 				foreach( $items as $folderFile => $folderEntry){
 					$Files[ $fileName . '/' . $folderFile ] = $folderEntry;
 				}
