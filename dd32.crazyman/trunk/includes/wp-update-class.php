@@ -461,7 +461,7 @@ class WP_Update{
 			return array('Errors'=>array('Filesystem options not set correctly'));
 		$fs =& $wp_filesystem; //Just for simplicity
 
-		require_once('wp-update-filesystem-class.php');
+		require_once('wp-update-filesystem.php');
 		require_once('pclzip.lib.php');	
 		$messages = array();
 		

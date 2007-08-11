@@ -43,7 +43,7 @@ switch($_GET['action']){
 				echo wpupdate_pluginSearchHTML($plugin);
 		break;
 	case 'filesystem_get_ftp_path':
-		include_once('includes/wp-update-filesystem-class.php');
+		include_once('includes/wp-update-filesystem.php');
 		$fs = WP_Filesystem($_POST['method'],$_POST);
 		echo 'Path: ' . $fs->find_base_dir('.',true) . '<br/>';
 		break;
