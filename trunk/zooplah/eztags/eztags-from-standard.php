@@ -275,6 +275,11 @@ function eztags_from_register(&$ct)
 	$ct = str_replace($match, "?&gt;$before<\$WPRegister\$>$after&lt;?php", $ct);
 }
 
+function eztags_from_rewind_posts(&$ct)
+{
+	$ct = preg_replace('/rewind_posts\(\);?/', '?&gt;<$WPRewind$>&lt;?php', $ct);
+}
+
 function eztags_from_search_query(&$ct)
 {
 	$ct = preg_replace('/the_search_query\(\s*\);?/', '?&gt;<$WPSearch$>&lt;?php', $ct);
@@ -362,6 +367,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_permalink($ct);
 	eztags_from_query($ct);
 	eztags_from_register($ct);
+	eztags_from_rewind_posts($ct);
 	eztags_from_search_query($ct);
 	eztags_from_sidebar($ct);
 	eztags_from_single_cat_title($ct);

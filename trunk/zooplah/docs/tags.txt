@@ -195,6 +195,10 @@ Currently implemented tags:
 <$WPRegister$>
 	Link to register as a user on the blog, if that has been
 	enabled.
+<$WPRewind$>
+	Rewinds the entries to the beginning.
+	Note: You must call <$WPNextEntry$> after this to get
+		information about the first entry.
 <$WPQuery:query$>
 	Queries the database about information about the entries.
 	Parameters: query - What to query in the database.

@@ -57,6 +57,7 @@ function eztags_parse_ez(&$content)
 	$content = preg_replace('/<\$WPQuery:([^\$]*)\$>/', '<?php 
 	query_posts(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPRegister$>', '<?php wp_register(); ?>', $content);
+	$content = str_replace('<$WPRewind$>', '<?php rewind_posts(); ?>', $content);
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
 
 	$content = preg_replace('/<CurrentCategory>([^>]*)<\/CurrentCategory>/', '<?php single_cat_title(\'$1\'); ?>', $content);
