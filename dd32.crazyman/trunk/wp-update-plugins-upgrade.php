@@ -91,11 +91,11 @@ var_dump($wp_filesystem->errors);
 					$installedFile .= $dirname;
 				else
 					$installedFile .= $_GET['upgrade'];
-var_dump( "diff(" . (ABSPATH . 'wp-content/wpupdate/' . $newdata['Folder'] ).", $installedFile);");
+
 				$diff = folder_diff(ABSPATH . 'wp-content/wpupdate/' . $newdata['Folder'], $installedFile);
-				var_dump($diff);
+
 				if( ! $diff ){
-					echo "Error: Cannot compare";
+					_e('Error: Couldnt compare changes.');
 				} else {
 					foreach( $diff as $fileName => $fileInfo){
 						switch($fileInfo['status']) {
