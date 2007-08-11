@@ -87,7 +87,7 @@ var_dump($wp_filesystem->errors);
 			<?php
 				$installedFile = ABSPATH . PLUGINDIR . '/';
 				$dirname = dirname($_GET['upgrade']);
-				if( empty( $dirname ) )
+				if( ! empty( $dirname ) )
 					$installedFile .= $dirname;
 				else
 					$installedFile .= $_GET['upgrade'];
