@@ -34,11 +34,12 @@ theme editor.
    Editor, select the file you want to edit, and edit it.
 1. Push Save to update your template file.
 
-GETTING A NEWER VERSION
+= Getting a Newer Version =
+
 You can get the absolute latest code from
-http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/.
+<http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/>.
 Snapshots are available from
-http://code.google.com/p/wordpress-soc-2007/downloads/list.
+<http://code.google.com/p/wordpress-soc-2007/downloads/list>.
 Keep in mind that it's in testing right now.
 
 == Frequently Asked Questions ==
@@ -64,23 +65,26 @@ See docs/tags.txt.
 
 == Development ==
 
-IMPROVING THE PLUGIN
-See docs/specs.txt for how the plugin works.  If you want to make it
-better, then by all means*...  Note:  For everyone's sake, please
-wait until after Summer of Code 2007 (let's say, until September).
-The plugin won't be done before then and I'm sure my mentor won't
-like it not being completely my work.  But after that, I'll be
-glad if someone likes my plugin, finds it useful and wants to
-improve it.
+= Improving the plugin =
 
-IF A THEME DOESN'T WORK
+See docs/specs.txt for how the plugin works.  If you want to
+make it better, then by all means*...  Note:  For everyone's
+sake, please wait until after Summer of Code 2007 (let's say,
+until September). The plugin won't be done before then and I'm
+sure my mentor won't like it not being completely my work.  But
+after that, I'll be glad if someone likes my plugin, finds it
+useful and wants to improve it.
+
+= If it doesn't work with a theme =
+
 That's a very real possibility.  Two courses of action are
 possible.  One is to submit a bug.  However, if this thing only
 affects one theme, it probably will be easier to do the second:
 change the theme to a more coherent format.  That will help on
 both our sides.
 
-* LICENSING
+= * Licensing =
+
 This plugin is licensed under the GPL.  It had to be.  I
 personally like the BSD-style licenses better.  They give you
 more freedom, I think, and require only that you indicate the
