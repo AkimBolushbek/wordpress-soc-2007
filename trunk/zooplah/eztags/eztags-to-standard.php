@@ -2,14 +2,14 @@
 
 function eztags_to_translatable(&$content, $tag)
 {
-	if ($tag == '_e')
+	if ( $tag == '_e' )
 	{
 		$after = ' ?>';
 		$before='<?php ';
 		$colon = ';';
 		$suffix = 'Text';
 	}
-	else if ($tag == '__')
+	else if ( $tag == '__' )
 	{
 		$colon = '';
 		$suffix = 'String';
@@ -20,6 +20,19 @@ function eztags_to_translatable(&$content, $tag)
 
 	// With a domain
 	$content = preg_replace("/<Translatable$suffix:([^>]+)>([^<]*)<\/Translatable$suffix>/", "$before$tag('$2', '$1')$colon$after", $content);
+}
+
+function eztags_to_from_element(&$content, $in_re, $tag)
+{
+	preg_match($in_re, $content, $matches);
+	list($match, $text) = $matches;
+
+	if ( '__' != substr($text, 0, 2) )
+	{
+		$text_delim = "'";
+	}
+
+	$content = str_replace($match, "<?php $tag($text_delim$text$text_delim); ?>", $content);
 }
 
 function eztags_parse_ez(&$content)
@@ -77,11 +90,11 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPRewind$>', '<?php rewind_posts(); ?>', $content);
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
 
-	$content = preg_replace('/<CurrentCategory>([^>]*)<\/CurrentCategory>/', '<?php single_cat_title(\'$1\'); ?>', $content);
-	$content = preg_replace('/<EditComment>([^>]*)<\/EditComment>/', '<?php edit_comment_link(\'$1\'); ?>', $content);
-	$content = preg_replace('/<EditEntry>([^<]*)<\/EditEntry>/', '<?php edit_post_link(\'$1\'); ?>', $content);
-	$content = preg_replace('/<EntryCategories>([^>]*)<\/EntryCategories>/', '<?php the_category(\'$1\'); ?>', $content);
-	$content = preg_replace('/<EntryContent>([^>]*)<\/EntryContent>/', '<?php the_content(\'$1\'); ?>', $content);
+	eztags_to_from_element($content, '/<CurrentCategory>([^>]*)<\/CurrentCategory>/', 'single_cat_title');
+	eztags_to_from_element($content, '/<EditComment>([^>]*)<\/EditComment>/', 'edit_comment_link');
+	eztags_to_from_element($content, '/<EditEntry>([^<]*)<\/EditEntry>/', 'edit_post_link');
+	eztags_to_from_element($content, '/<EntryCategories>([^>]*)<\/EntryCategories>/', 'the_category');
+	eztags_to_from_element($content, '/<EntryContent>([^>]*)<\/EntryContent>/', 'the_content');
 
 	eztags_to_translatable($content, '_e');
 }
