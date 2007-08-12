@@ -1,21 +1,30 @@
 <?php
 
-function eztags_to_translatable(&$content, $tag = '_e')
+function eztags_to_translatable(&$content, $tag)
 {
 	if ($tag == '_e')
+	{
+		$after = ' ?>';
+		$before='<?php ';
+		$colon = ';';
 		$suffix = 'Text';
+	}
 	else if ($tag == '__')
+	{
+		$colon = '';
 		$suffix = 'String';
+	}
 
 	// Without a domain
-	$content = preg_replace("/<Translatable$suffix>([^<]*)<\/Translatable$suffix>/", "<?php $tag('$1'); ?>", $content);
+	$content = preg_replace("/<Translatable$suffix>([^<]*)<\/Translatable$suffix>/", "$before$tag('$1')$colon$after", $content);
 
 	// With a domain
-	$content = preg_replace("/<Translatable$suffix:([^>]+)>([^<]*)<\/Translatable$suffix>/", "<?php $tag('$2', '$1'); ?>", $content);
+	$content = preg_replace("/<Translatable$suffix:([^>]+)>([^<]*)<\/Translatable$suffix>/", "$before$tag('$2', '$1')$colon$after", $content);
 }
 
 function eztags_parse_ez(&$content)
 {
+	eztags_to_translatable($content, '__');
 	$content = str_replace('<$CommentAuthor$>', '<?php comment_author(); ?>', $content);
 	$content = str_replace('<$CommentAuthorLink$>', '<?php comment_author_link(); ?>', $content);
 	$content = str_replace('<$CommentAuthorURL$>', '<?php comment_author_url(); ?>', $content);
@@ -69,12 +78,12 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
 
 	$content = preg_replace('/<CurrentCategory>([^>]*)<\/CurrentCategory>/', '<?php single_cat_title(\'$1\'); ?>', $content);
-	$content = preg_replace('/<EditComment>([^>]*)<\/EditComment>/', '<?php edit_comment_link(__(\'$1\')); ?>', $content);
-	$content = preg_replace('/<EditEntry>([^>]*)<\/EditEntry>/', '<?php edit_post_link(__(\'$1\')); ?>', $content);
+	$content = preg_replace('/<EditComment>([^>]*)<\/EditComment>/', '<?php edit_comment_link(\'$1\'); ?>', $content);
+	$content = preg_replace('/<EditEntry>([^<]*)<\/EditEntry>/', '<?php edit_post_link(\'$1\'); ?>', $content);
 	$content = preg_replace('/<EntryCategories>([^>]*)<\/EntryCategories>/', '<?php the_category(\'$1\'); ?>', $content);
-	$content = preg_replace('/<EntryContent>([^>]*)<\/EntryContent>/', '<?php the_content(__(\'$1\')); ?>', $content);
+	$content = preg_replace('/<EntryContent>([^>]*)<\/EntryContent>/', '<?php the_content(\'$1\'); ?>', $content);
 
-	eztags_to_translatable($content);
+	eztags_to_translatable($content, '_e');
 }
 
 ?>

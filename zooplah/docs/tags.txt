@@ -230,6 +230,26 @@ Currently implemented tags:
 	Displays the content of the current entry.
 	Notes: The content of this attribute is a localizable string
 		that will be displayed when excerpts are used.
+<TranslatableString>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
+		This is a string to give to a tag's parameters or
+		content.  To output to the screen, use
+		<TranslatableText>.
+<TranslatableString:domain>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <domain>-<lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
+		This is a string to give to a tag's parameters or
+		content.  To output to the screen, use
+		<TranslatableText:domain>.
 <TranslatableText>
 	Text to be translated.
 	Notes:
