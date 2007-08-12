@@ -140,7 +140,7 @@ if ($allowed_files) :
 if ( $is_php_file ) $link_color = 'blue';
 else $link_color = 'GrayText';
 ?>
-		 <li><a href="themes.php?page=<?php echo get_eztags_dir(); ?>eztags-subpanel.php&file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>" style="color: <?php echo $link_color; ?>"><?php echo get_file_description($allowed_file); ?></a></li>
+		 <li><a href="themes.php?page=<?php echo get_eztags_dir(); ?>eztags-subpanel.php&file=<?php echo "$allowed_file"; ?>&amp;theme=<?php echo urlencode($theme) ?>" style="color: <?php echo $link_color; ?>; <?php if ( !$is_php_file ) echo 'border-bottom: 0; cursor: auto;'; ?>;"><?php echo get_file_description($allowed_file); ?></a></li>
 <?php  endforeach; ?>
 	</ul>
 <?php endif; ?>
