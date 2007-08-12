@@ -125,11 +125,11 @@ Currently implemented tags:
 	Ends the current loop.  The content after it won't be
 	parsed until the loop is finished.
 <$WPEntriesLoop$>
-	Goes through each entry and parses the code below until
-	there are no more entries to go through.
-	Notes:
-	This section ends when an <$WPEndLoop$> tag is
-		encountered.
+	Runs <$WPNextEntry$> and all following text, markup, and
+	code, until <$WPEndLoop$> is encountered.  It repeats
+	until there are no more entries to display.
+	Note: It displays the number of entries indicated in the
+		options.
 <$WPIfEntries$>
 	If there are entries in the current blog, the code below
 	it will be parsed.
@@ -185,9 +185,12 @@ Currently implemented tags:
 <$WPMeta>
 	Additional meta information.
 <$WPNextEntry$>
-	Advance to the next blog entry.  The <$Entry*$> tatgs will
+	Advance to the next blog entry.  The <$Entry*$> tags will
 	then get information about the next entry instead of the
 	current one.
+	Note: The <$WPEntriesLoop$> tag just creates a loop with
+		this tag until there are no more entries to
+		display.
 <$WPPages:options$>
 	Lists all WordPress pages, according to your options (if
 	any).

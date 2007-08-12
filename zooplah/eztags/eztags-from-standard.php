@@ -173,7 +173,7 @@ function eztags_from_edit_post_link(&$ct)
 
 function eztags_from_else(&$ct)
 {
-	$ct = preg_replace('/else\s*:\s*?&gt;/', '?&gt;<$WPElse$>&lt;?php', $ct);
+	$ct = preg_replace('/else\s*:/', '?&gt;<$WPElse$>&lt;?php', $ct);
 }
 
 function eztags_from_end_if(&$ct)
