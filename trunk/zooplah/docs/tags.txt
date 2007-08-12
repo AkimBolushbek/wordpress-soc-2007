@@ -84,17 +84,47 @@ Currently implemented tags:
 <$EntryTrackbackURL$>
 	The trackback URL for the current entry or blog.
 
-<$WPArchives:options$>
-	Displays the list of archives, according to the options
-	given (if any).
-	Parameters: options - The options to use.
+<$WPArchives:arguments$>
+	Displays the list of archives, according to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		type=yearly|monthly|daily|weekly|postbypost
+		limit=<integer>
+		format=html|option|link|custom
+		before=<text>
+		after=<text>
+		show_post_count=0|1
 <$WPAutodiscover$>
 	Provides a link that agents can use to automatically
 	discover the trackback link to the blog or entry.
-<$WPBookmarks:options$>
-	Displays the list of bookmarks, according to the options
-	given (if any).
-	Parameters: options - The options to use.
+<$WPBookmarks:arguments$>
+	Displays the list of bookmarks, according to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		categorize=0|1
+		categories=<category-ids>
+		category_name=<category>
+		category_orderby=name|id
+		category_order=ASC|DESC
+		title_li=<text>
+		title_before=<text>
+		title_after=<text>
+		show_private=0|1
+		include=<bookmark-ids>
+		exclude=<bookmark-ids>
+		orderby=id|url|name|target|description|rating|
+			owner|updated|rel|notes|rss|length|rand
+		order=ASC|DESC
+		limit=<integer>
+		before=<text>
+		after=<text>
+		category_before=<text>
+		category_after=<text>
+		show_images=0|1
+		show_description=0|1
+		show_rating=0|1
+		show_updated=0|1
+		hide_invisible=0|1
 <$WPCalendar$>
 	Displays a calendar with a one-letter day abbreviation.
 <$WPCalendar3$>
@@ -103,15 +133,33 @@ Currently implemented tags:
 	the name).
 	Notes: Length of the abbreviation may vary according to
 		different locale settings.
-<$WPCategories:options$>
+<$WPCategories:arguments$>
 	Displays the categories of the current blog, according
-	to the options given (if any).
-	Parameters: options - The options to use.
-<$WPCategoriesOld:options$>
+	to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		show_option_all=<text>
+		orderby=name|ID|count
+		order=ASC|DESC
+		show_last_updated=0|1
+		style=list|none
+		show_count=0|1
+		hide_empty=0|1
+		use_desc_for_title=0|1
+		child_of=<category>
+		feed=<feed-title>
+		feed_image=<url>
+		exclude=<category-ids>
+		include=<category-ids>
+		hierarchical=0|1
+		title_li=<text>
+		number=<integer>
+<$WPCategoriesOld:arguments$>
 	Displays the categories of the current blog, according
-	to the options given (if any).
-	Parameters: options - The options to use.
-	Notes: This should be replaced by <$WCategories:options$>.
+	to <arguments>.
+	Parameters:  arguments - zero or more arguments, separated
+		by an ampersand.
+	Notes: You should use <$WCategories:arguments$> instead.
 		It's included because some themes still use it.
 <$WPElse$>
 	The code below this is rendered if a previous <$WPIf*$>
@@ -160,10 +208,18 @@ Currently implemented tags:
 <$WPLanguageAttributes$>
 	The HTML attributes for the proper display of the content,
 	based on the server computer's locale.
-<$WPLinkPages:options$>
+<$WPLinkPages:arguments$>
 	Display numbered links for multi-page blog posts according
-	to the specified options (if any).
-	Parameters: options - The options to use.
+	<arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		before=<text>
+		after=<text>
+		next_or_number=next|number
+		nextpagelink=<text>
+		previouspagelink=<text>
+		pagelink=<text>
+		morefile=<file>
 <$WPLinks:order$>
 	Displays your blogroll in the specified <order>.
 	Parameters: order - How to order the links:
@@ -191,10 +247,23 @@ Currently implemented tags:
 	Note: The <$WPEntriesLoop$> tag just creates a loop with
 		this tag until there are no more entries to
 		display.
-<$WPPages:options$>
-	Lists all WordPress pages, according to your options (if
-	any).
-	Parameters: options - The options to use.
+<$WPPages:arguments$>
+	Lists all WordPress pages, according to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		sort_column=post_column|menu_order|post_date|
+			post_modified|ID|post_author|post_name
+		sort_order=asc|desc
+		exclude=<page-ids>
+		include=<page-ids>
+		depth=<integer>
+		child_of=<page-id>
+		show_date=<empty>|modified|<string>
+		date_format=<date-format>
+		title_li=<text>
+		hierarchical=0|1
+		meta_key=<text>
+		meta_value=<text>
 <$WPRegister$>
 	Link to register as a user on the blog, if that has been
 	enabled.
