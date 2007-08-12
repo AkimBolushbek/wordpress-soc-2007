@@ -6,20 +6,20 @@ function eztags_to_translatable(&$content, $tag)
 	{
 		$after = ' ?>';
 		$before='<?php ';
-		$colon = ';';
+		$sc = ';';
 		$suffix = 'Text';
 	}
 	else if ( $tag == '__' )
 	{
-		$colon = '';
+		$sc = '';
 		$suffix = 'String';
 	}
 
 	// Without a domain
-	$content = preg_replace("/<Translatable$suffix>([^<]*)<\/Translatable$suffix>/", "$before$tag('$1')$colon$after", $content);
+	$content = preg_replace("/<Translatable$suffix>([^<]*)<\/Translatable$suffix>/", "$before$tag('$1')$sc$after", $content);
 
 	// With a domain
-	$content = preg_replace("/<Translatable$suffix:([^>]+)>([^<]*)<\/Translatable$suffix>/", "$before$tag('$2', '$1')$colon$after", $content);
+	$content = preg_replace("/<Translatable$suffix:([^>]+)>([^<]*)<\/Translatable$suffix>/", "$before$tag('$2', '$1')$sc$after", $content);
 }
 
 function eztags_to_from_element(&$content, $in_re, $tag)

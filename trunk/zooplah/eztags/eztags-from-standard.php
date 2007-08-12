@@ -133,7 +133,7 @@ function eztags_from_e(&$ct, $tag)
 		$domain = preg_replace('/\'/', '', $domain);
 		$domain = preg_replace('/&quot;/', '', $domain);
 
-		if ($tag == '_e')
+		if ( $tag == '_e' )
 		{
 			$after = '&lt;?php';
 			$before = '?&gt;';
