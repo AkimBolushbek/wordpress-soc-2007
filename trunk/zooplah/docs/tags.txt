@@ -242,7 +242,7 @@ Currently implemented tags:
 	Additional meta information.
 <$WPNextEntry$>
 	Advance to the next blog entry.  The <$Entry*$> tags will
-	then get information about the next entry instead of the
+	then give information about the next entry instead of the
 	current one.
 	Note: The <$WPEntriesLoop$> tag just creates a loop with
 		this tag until there are no more entries to
