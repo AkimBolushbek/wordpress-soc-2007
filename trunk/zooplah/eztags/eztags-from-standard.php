@@ -87,7 +87,7 @@ function eztags_from_content(&$ct)
 {
 	$in_ct = $ct;
 
-	$ct = preg_replace('/the_content\(__\((.*)\)\);/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
+	$ct = preg_replace('/the_content\(([^\)]+)\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
 	$ct = preg_replace('/the_content\(\'([^\']*)\'\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
 	$ct = preg_replace('/the_content\(\);?/', '?&gt;<EntryContent></EntryContent>&lt;?php', $ct);
 
@@ -109,7 +109,7 @@ function eztags_from_date(&$ct)
 		$ct = str_replace($match, "?&gt;$before<\$EntryDate\$>$after&lt;?php", $ct);
 }
 
-function eztags_from_e(&$ct, $tag = '_e')
+function eztags_from_e(&$ct, $tag)
 {
 	$in_str = '';
 
@@ -122,7 +122,7 @@ function eztags_from_e(&$ct, $tag = '_e')
 	{
 		$in_str = $ct;
 
-		preg_match('/_e\(([^\);]+)\);/', $ct, $matches);
+		preg_match("/$tag\(([^\)]+)\);?/", $ct, $matches);
 		list($match, $tr) = $matches;
 
 		list($content, $domain) = preg_split('/\s*\,\s*/', $tr);
@@ -133,7 +133,13 @@ function eztags_from_e(&$ct, $tag = '_e')
 		$domain = preg_replace('/\'/', '', $domain);
 		$domain = preg_replace('/&quot;/', '', $domain);
 
-		$ct = str_replace($match, "?&gt;<Translatable$suffix:$domain>$content</Translatable$suffix>&lt;?php", $ct);
+		if ($tag == '_e')
+		{
+			$after = '&lt;?php';
+			$before = '?&gt;';
+		}
+
+		$ct = str_replace($match, "$before<Translatable$suffix:$domain>$content</Translatable$suffix>$after", $ct);
 	}
 
 	$ct = str_replace("<Translatable$suffix:>", "<Translatable$suffix>", $ct);
@@ -346,6 +352,8 @@ function eztags_from_trackback_url(&$ct)
 
 function eztags_parse_from(&$ct)
 {
+	eztags_from_e($ct, '__');
+
 	eztags_from_author($ct);
 	eztags_from_author_link($ct);
 	eztags_from_author_posts($ct);
@@ -362,7 +370,7 @@ function eztags_parse_from(&$ct)
 	eztags_from_comments($ct);
 	eztags_from_content($ct);
 	eztags_from_date($ct);
-	eztags_from_e($ct);
+	eztags_from_e($ct, '_e');
 	eztags_from_edit_comment_link($ct);
 	eztags_from_edit_post_link($ct);
 	eztags_from_else($ct);
