@@ -27,15 +27,12 @@ Author URI: http://zooplah.farvista.net/
 
 require_once 'eztags-functions.php';
 
-if ( is_admin() )
+
+function add_admin_pages()
 {
-
-	require_once ABSPATH . WPINC . '/pluggable.php';
-
-	require_once ABSPATH . '/wp-admin/admin-functions.php';
-	require_once ABSPATH . '/wp-admin/menu.php';
-
 	add_theme_page(_z('Easier Template Tags'), _z('Easier Theme Editor'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
 }
+
+add_action('admin_menu', 'add_admin_pages');
 
 ?>
