@@ -1,0 +1,27 @@
+As far as I'm concerned, I'm finished.  I'm ready to make a public
+release, get downloads, occasionally implement new features and
+fixes, etc.  But here's my list of things I want to do before that
+time.
+
+1. Implement what my mentor wants me to do.
+2. Release a test build to the public to get feedback.
+3. Evaluate feedback from testers and implement and fix things I
+   deem worthy.
+4. Reorganize the files and directories to be more intuitive to
+   those who might download it.
+5. Create a screenshot and describe it.
+6. Create a script to convert tags.txt into interlinked
+   documentation.
+7. Create a Makefile.  It should run that script, generate an HTML
+   README file (from readme.txt) using Markdown, merge all the PO
+   files with the master POT file and convert the PO files into
+   MO files, and create a zip file.
+
+...
+
+28. Accept donations through PayPal.
+
+...
+
+42. Come up with a decent name for the plugin and change all
+    references from the old name to the new name.
