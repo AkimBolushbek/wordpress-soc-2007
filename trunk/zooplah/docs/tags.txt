@@ -167,8 +167,7 @@ Currently implemented tags:
 	Notes: The code is rendered until an <$WPEndIf$> tag is
 		encountered.
 <$WPEndEntries$>
-	Ends the <$WPIfEntries$> section (regardless of whether
-	it's used with <$WPIfNoEntries$> or not).
+	Ends the <$WPIfEntries$>/<$WPIfNoEntries$> section.
 <$WPEndIf$>
 	End of the section started by an <$WPIf*$> tag or other
 	condition.
