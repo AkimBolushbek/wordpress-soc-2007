@@ -192,14 +192,12 @@ Currently implemented tags:
 		comments_rss2_url
 		charset (character set)
 		description
-		home
 		html_type (HTML MIME type)
 		name
 		pingback_url
 		rdf_url
 		rss_url
 		rss2_url
-		siteurl
 		stylesheet_directory
 		stylesheet_url
 		template_directory
