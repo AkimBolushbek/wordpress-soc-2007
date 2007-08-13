@@ -2,102 +2,102 @@
 
 /* Converts standard tags to easy tags.
  * Contains functions for the conversion; format:
- * function eztags_from_tag_name(&$ct)
+ * function eztags_from_tag_name(&$content)
  */
 
-function eztags_from_author(&$ct)
+function eztags_from_author(&$content)
 {
-	$ct = preg_replace('/([^_])the_author\(\s*\);?/', '$1?&gt;<$EntryAuthor$>&lt;?php', $ct);
+	$content = preg_replace('/([^_])the_author\(\s*\);?/', '$1?&gt;<$EntryAuthor$>&lt;?php', $content);
 }
 
-function eztags_from_author_link(&$ct)
+function eztags_from_author_link(&$content)
 {
-	$ct = preg_replace('/the_author_link\(\s*\);?/', '?&gt;<$EntryAuthorLink$>&lt;?php', $ct);
+	$content = preg_replace('/the_author_link\(\s*\);?/', '?&gt;<$EntryAuthorLink$>&lt;?php', $content);
 }
 
-function eztags_from_author_posts(&$ct)
+function eztags_from_author_posts(&$content)
 {
-	$ct = preg_replace('/the_author_posts_link\(\s*\);?/', '?&gt;<$EntryAuthorPostsLink$>&lt;?php', $ct);
+	$content = preg_replace('/the_author_posts_link\(\s*\);?/', '?&gt;<$EntryAuthorPostsLink$>&lt;?php', $content);
 }
 
-function eztags_from_blog_info(&$ct)
+function eztags_from_blog_info(&$content)
 {
-	$ct = preg_replace('/([^_])bloginfo\(([^\)]+)\);?/', '$1?&gt;<$WPInfo:$2$>&lt;?php', $ct);
-	$ct = preg_replace('/<\$WPInfo:\'([^\']+)\'\$>/', '<$WPInfo:$1$>', $ct);
+	$content = preg_replace('/([^_])bloginfo\(([^\)]+)\);?/', '$1?&gt;<$WPInfo:$2$>&lt;?php', $content);
+	$content = preg_replace('/<\$WPInfo:\'([^\']+)\'\$>/', '<$WPInfo:$1$>', $content);
 }
 
-function eztags_from_calendar(&$ct)
+function eztags_from_calendar(&$content)
 {
-	preg_match('/get_calendar\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/get_calendar\(([^\)]*)\);?/', $content, $matches);
 	list($match, $arg) = $matches;
 
 	if ($arg == 'false')
-		$ct = str_replace($match, '?&gt;<$WPCalendar3$>&lt;?php', $ct);
+		$content = str_replace($match, '?&gt;<$WPCalendar3$>&lt;?php', $content);
 	else
-		$ct = str_replace($match, '?&gt;<$WPCalendar$>&lt;?php', $ct);
+		$content = str_replace($match, '?&gt;<$WPCalendar$>&lt;?php', $content);
 }
 
-function eztags_from_category(&$ct)
+function eztags_from_category(&$content)
 {
-	$ct = preg_replace('/the_category\(\'?([^\']*)\'?\);?/', '?&gt;<EntryCategories>$1</EntryCategories>&lt;?php', $ct);
+	$content = preg_replace('/the_category\(\'?([^\']*)\'?\);?/', '?&gt;<EntryCategories>$1</EntryCategories>&lt;?php', $content);
 }
 
-function eztags_from_comment_author(&$ct)
+function eztags_from_comment_author(&$content)
 {
-	$ct = preg_replace('/comment_author\(\s*\);?/', '?&gt;<$CommentAuthor$>&lt;?php', $ct);
+	$content = preg_replace('/comment_author\(\s*\);?/', '?&gt;<$CommentAuthor$>&lt;?php', $content);
 }
 
-function eztags_from_comment_author_link(&$ct)
+function eztags_from_comment_author_link(&$content)
 {
-	$ct = preg_replace('/comment_author_link\(\s*\);?/', '?&gt;<$CommentAuthorLink$>&lt;?php', $ct);
+	$content = preg_replace('/comment_author_link\(\s*\);?/', '?&gt;<$CommentAuthorLink$>&lt;?php', $content);
 }
 
-function eztags_from_comment_author_url(&$ct)
+function eztags_from_comment_author_url(&$content)
 {
-	$ct = preg_replace('/comment_author_url\(\s*\);?/', '?&gt;<$CommentAuthorURL$>&lt;?php', $ct);
+	$content = preg_replace('/comment_author_url\(\s*\);?/', '?&gt;<$CommentAuthorURL$>&lt;?php', $content);
 }
 
-function eztags_from_comment_date(&$ct)
+function eztags_from_comment_date(&$content)
 {
-	$ct = preg_replace('/([^_])comment_date\(\);?/', '$1?&gt;<$CommentDate$>&lt;?php', $ct);
-	$ct = preg_replace('/([^_])comment_date\(\'([^\']+)\'\);?/', '$1?&gt;<$CommentDate:$2$>&lt;?php', $ct);
+	$content = preg_replace('/([^_])comment_date\(\);?/', '$1?&gt;<$CommentDate$>&lt;?php', $content);
+	$content = preg_replace('/([^_])comment_date\(\'([^\']+)\'\);?/', '$1?&gt;<$CommentDate:$2$>&lt;?php', $content);
 }
 
-function eztags_from_comment_id(&$ct)
+function eztags_from_comment_id(&$content)
 {
-	$ct = preg_replace('/([^_])comment_ID\(\s*\);?/', '$1?&gt;<$CommentID$>&lt;?php', $ct);
+	$content = preg_replace('/([^_])comment_ID\(\s*\);?/', '$1?&gt;<$CommentID$>&lt;?php', $content);
 }
 
-function eztags_from_comment_text(&$ct)
+function eztags_from_comment_text(&$content)
 {
-	$ct = preg_replace('/comment_text\(\s*\);?/', '?&gt;<$CommentText$>&lt;?php', $ct);
+	$content = preg_replace('/comment_text\(\s*\);?/', '?&gt;<$CommentText$>&lt;?php', $content);
 }
 
-function eztags_from_comment_time(&$ct)
+function eztags_from_comment_time(&$content)
 {
-	$ct = preg_replace('/([^_])comment_time\(\);?/', '$1?&gt;<$CommentTime$>&lt;?php', $ct);
+	$content = preg_replace('/([^_])comment_time\(\);?/', '$1?&gt;<$CommentTime$>&lt;?php', $content);
 }
 
-function eztags_from_comments(&$ct)
+function eztags_from_comments(&$content)
 {
-	$ct = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $ct);
+	$content = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $content);
 }
 
-function eztags_from_content(&$ct)
+function eztags_from_content(&$content)
 {
-	$in_ct = $ct;
+	$in_ct = $content;
 
-	$ct = preg_replace('/the_content\(([^\)]+)\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
-	$ct = preg_replace('/the_content\(\'([^\']*)\'\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $ct);
-	$ct = preg_replace('/the_content\(\);?/', '?&gt;<EntryContent></EntryContent>&lt;?php', $ct);
+	$content = preg_replace('/the_content\(([^\)]+)\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $content);
+	$content = preg_replace('/the_content\(\'([^\']*)\'\);?/', '?&gt;<EntryContent>$1</EntryContent>&lt;?php', $content);
+	$content = preg_replace('/the_content\(\);?/', '?&gt;<EntryContent></EntryContent>&lt;?php', $content);
 
-	if ( $ct !== $in_ct )
-		$ct = str_replace("'", '', $ct);
+	if ( $content !== $in_ct )
+		$content = str_replace("'", '', $content);
 }
 
-function eztags_from_date(&$ct)
+function eztags_from_date(&$content)
 {
-	preg_match('/the_date\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/the_date\(([^\)]*)\);?/', $content, $matches);
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -106,10 +106,10 @@ function eztags_from_date(&$ct)
 	list($format, $before, $after) = $attrs;
 
 	if ( !$format )
-		$ct = str_replace($match, "?&gt;$before<\$EntryDate\$>$after&lt;?php", $ct);
+		$content = str_replace($match, "?&gt;$before<\$EntryDate\$>$after&lt;?php", $content);
 }
 
-function eztags_from_e(&$ct, $tag)
+function eztags_from_e(&$content, $tag)
 {
 	$in_str = '';
 
@@ -118,17 +118,17 @@ function eztags_from_e(&$ct, $tag)
 	else if ($tag == '__')
 		$suffix = 'String';
 
-	while ($in_str != $ct)
+	while ($in_str != $content)
 	{
-		$in_str = $ct;
+		$in_str = $content;
 
-		preg_match("/$tag\(([^\)]+)\);?/", $ct, $matches);
+		preg_match("/$tag\(([^\)]+)\);?/", $content, $matches);
 		list($match, $tr) = $matches;
 
-		list($content, $domain) = preg_split('/\s*\,\s*/', $tr);
+		list($text, $domain) = preg_split('/\s*\,\s*/', $tr);
 
-		$content = preg_replace('/\'/', '', $content);
-		$content = preg_replace('/&quot;/', '', $content);
+		$text = preg_replace('/\'/', '', $text);
+		$text = preg_replace('/&quot;/', '', $text);
 
 		$domain = preg_replace('/\'/', '', $domain);
 		$domain = preg_replace('/&quot;/', '', $domain);
@@ -139,15 +139,15 @@ function eztags_from_e(&$ct, $tag)
 			$before = '?&gt;';
 		}
 
-		$ct = str_replace($match, "$before<Translatable$suffix:$domain>$content</Translatable$suffix>$after", $ct);
+		$content = str_replace($match, "$before<Translatable$suffix:$domain>$text</Translatable$suffix>$after", $content);
 	}
 
-	$ct = str_replace("<Translatable$suffix:>", "<Translatable$suffix>", $ct);
+	$content = str_replace("<Translatable$suffix:>", "<Translatable$suffix>", $content);
 }
 
-function eztags_from_edit_comment_link(&$ct)
+function eztags_from_edit_comment_link(&$content)
 {
-	preg_match('/edit_comment_link\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/edit_comment_link\(([^\)]*)\);?/', $content, $matches);
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -155,12 +155,12 @@ function eztags_from_edit_comment_link(&$ct)
 	$attrs = preg_replace('/&quot;/', '', $attrs);
 	list($link, $before, $after) = $attrs;
 
-	$ct = str_replace($match, "?&gt;$before<EditComment>$link</EditComment>$after&lt;?php", $ct);
+	$content = str_replace($match, "?&gt;$before<EditComment>$link</EditComment>$after&lt;?php", $content);
 }
 
-function eztags_from_edit_post_link(&$ct)
+function eztags_from_edit_post_link(&$content)
 {
-	preg_match('/edit_post_link\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/edit_post_link\(([^\)]*)\);?/', $content, $matches);
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -168,129 +168,129 @@ function eztags_from_edit_post_link(&$ct)
 	$attrs = preg_replace('/&quot;/', '', $attrs);
 	list($link, $before, $after) = $attrs;
 
-	$ct = str_replace($match, "?&gt;$before<EditEntry>$link</EditEntry>$after&lt;?php", $ct);
+	$content = str_replace($match, "?&gt;$before<EditEntry>$link</EditEntry>$after&lt;?php", $content);
 }
 
-function eztags_from_else(&$ct)
+function eztags_from_else(&$content)
 {
-	$ct = preg_replace('/else\s*:/', '?&gt;<$WPElse$>&lt;?php', $ct);
+	$content = preg_replace('/else\s*:/', '?&gt;<$WPElse$>&lt;?php', $content);
 }
 
-function eztags_from_end_if(&$ct)
+function eztags_from_end_if(&$content)
 {
-	$ct = preg_replace('/endif[;\s]/', '?&gt;<$WPEndIf$>&lt;?php', $ct);
+	$content = preg_replace('/endif[;\s]/', '?&gt;<$WPEndIf$>&lt;?php', $content);
 }
 
-function eztags_from_end_loop(&$ct)
+function eztags_from_end_loop(&$content)
 {
-	$ct = preg_replace('/endwhile;?/', '?&gt;<$WPEndLoop$>&lt;?php', $ct);
+	$content = preg_replace('/endwhile;?/', '?&gt;<$WPEndLoop$>&lt;?php', $content);
 }
 
-function eztags_from_entries_loop(&$ct)
+function eztags_from_entries_loop(&$content)
 {
-	$ct = preg_replace('/while\s*\(\s*have_posts\(\)\s*\)\s*:\s*the_post\(\);?/m', '?&gt;<$WPEntriesLoop$>&lt;?php', $ct);
+	$content = preg_replace('/while\s*\(\s*have_posts\(\)\s*\)\s*:\s*the_post\(\);?/m', '?&gt;<$WPEntriesLoop$>&lt;?php', $content);
 }
 
-function eztags_from_excerpt(&$ct)
+function eztags_from_excerpt(&$content)
 {
-	$ct = preg_replace('/the_excerpt\(\s*\);?/', '?&gt;<$EntryExcerpt$>&lt;?php', $ct);
+	$content = preg_replace('/the_excerpt\(\s*\);?/', '?&gt;<$EntryExcerpt$>&lt;?php', $content);
 }
 
-function eztags_from_footer(&$ct)
+function eztags_from_footer(&$content)
 {
-	$ct = preg_replace('/get_footer\(\s*\);?/', '?&gt;<$WPLoadFooter$>&lt;?php', $ct);
+	$content = preg_replace('/get_footer\(\s*\);?/', '?&gt;<$WPLoadFooter$>&lt;?php', $content);
 }
 
-function eztags_from_get_archives(&$ct)
+function eztags_from_get_archives(&$content)
 {
-	$ct = preg_replace('/wp_get_archives\(\'?([^\']*)\'?\);?/', '?&gt;<$WPArchives:$1$>&lt;?php', $ct);
+	$content = preg_replace('/wp_get_archives\(\'?([^\']*)\'?\);?/', '?&gt;<$WPArchives:$1$>&lt;?php', $content);
 }
 
-function eztags_from_header(&$ct)
+function eztags_from_header(&$content)
 {
-	$ct = preg_replace('/get_header\(\s*\);?/', '?&gt;<$WPLoadHeader$>&lt;?php', $ct);
+	$content = preg_replace('/get_header\(\s*\);?/', '?&gt;<$WPLoadHeader$>&lt;?php', $content);
 }
 
-function eztags_from_id(&$ct)
+function eztags_from_id(&$content)
 {
-	$ct = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryID$>&lt;?php', $ct);
+	$content = preg_replace('/the_ID\(\s*\);?/', '?&gt;<$EntryID$>&lt;?php', $content);
 }
 
-function eztags_from_if_entries(&$ct)
+function eztags_from_if_entries(&$content)
 {
-	$ct = preg_replace('/if\s*\(\s*have_posts\(\)\s*\)\s*:/', '?&gt;<$WPIfEntries$>&lt;?php', $ct);
+	$content = preg_replace('/if\s*\(\s*have_posts\(\)\s*\)\s*:/', '?&gt;<$WPIfEntries$>&lt;?php', $content);
 }
 
-function eztags_from_language_attributes(&$ct)
+function eztags_from_language_attributes(&$content)
 {
-	$ct = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$WPLanguageAttributes$>&lt;?php', $ct);
+	$content = preg_replace('/language_attributes\(\s*\);?/', '?&gt;<$WPLanguageAttributes$>&lt;?php', $content);
 }
 
-function eztags_from_link_pages(&$ct)
+function eztags_from_link_pages(&$content)
 {
-	$ct = preg_replace('/wp_link_pages\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinkPages:$1$>&lt;?php', $ct);
+	$content = preg_replace('/wp_link_pages\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinkPages:$1$>&lt;?php', $content);
 }
 
-function eztags_from_links_list(&$ct)
+function eztags_from_links_list(&$content)
 {
-	$ct = preg_replace('/get_links_list\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinks:$1$>&lt;?php', $ct);
-	$ct = str_replace('<$WPLinks:$>', '<$WPLinks:name$>', $ct);
+	$content = preg_replace('/get_links_list\(\'?([^\']*)\'?\);?/', '?&gt;<$WPLinks:$1$>&lt;?php', $content);
+	$content = str_replace('<$WPLinks:$>', '<$WPLinks:name$>', $content);
 }
 
-function eztags_from_list_bookmarks(&$ct)
+function eztags_from_list_bookmarks(&$content)
 {
-	$ct = preg_replace('/wp_list_bookmarks\(\'?([^\']*)\'?\);?/', '?&gt;<$WPBookmarks:$1$>&lt;?php', $ct);
+	$content = preg_replace('/wp_list_bookmarks\(\'?([^\']*)\'?\);?/', '?&gt;<$WPBookmarks:$1$>&lt;?php', $content);
 }
 
-function eztags_from_list_categories(&$ct)
+function eztags_from_list_categories(&$content)
 {
-	$ct = preg_replace('/wp_list_categories\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategories:$1$>&lt;?php', $ct);
+	$content = preg_replace('/wp_list_categories\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategories:$1$>&lt;?php', $content);
 }
 
-function eztags_from_list_cats(&$ct)
+function eztags_from_list_cats(&$content)
 {
-	$ct = preg_replace('/wp_list_cats\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategoriesOld:$1$>&lt;?php', $ct);
+	$content = preg_replace('/wp_list_cats\(\'?([^\']*)\'?\);?/', '?&gt;<$WPCategoriesOld:$1$>&lt;?php', $content);
 }
 
-function eztags_from_list_pages(&$ct)
+function eztags_from_list_pages(&$content)
 {
-	$ct = preg_replace('/wp_list_pages\(\s*\'?([^\']*)\'?\s*\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $ct);
+	$content = preg_replace('/wp_list_pages\(\s*\'?([^\']*)\'?\s*\);?/', '?&gt;<$WPPages:$1$>&lt;?php', $content);
 }
 
-function eztags_from_login(&$ct)
+function eztags_from_login(&$content)
 {
-	$ct = preg_replace('/wp_loginout\(\s*\);?/', '?&gt;<$WPLoginOut$>&lt;?php', $ct);
+	$content = preg_replace('/wp_loginout\(\s*\);?/', '?&gt;<$WPLoginOut$>&lt;?php', $content);
 }
 
-function eztags_from_meta(&$ct)
+function eztags_from_meta(&$content)
 {
-	$ct = preg_replace('/wp_meta\(\s*\);?/', '?&gt;<$WPMeta$>&lt;?php', $ct);
+	$content = preg_replace('/wp_meta\(\s*\);?/', '?&gt;<$WPMeta$>&lt;?php', $content);
 }
 
-function eztags_from_permalink(&$ct)
+function eztags_from_permalink(&$content)
 {
-	$ct = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $ct);
+	$content = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $content);
 }
 
-function eztags_from_post(&$ct)
+function eztags_from_post(&$content)
 {
-	$ct = preg_replace('/the_post\(\s*\);?/', '?&gt;<$WPNextEntry$>&lt;?php', $ct);
+	$content = preg_replace('/the_post\(\s*\);?/', '?&gt;<$WPNextEntry$>&lt;?php', $content);
 }
 
-function eztags_from_query(&$ct)
+function eztags_from_query(&$content)
 {
-	preg_match('/query_posts\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/query_posts\(([^\)]*)\);?/', $content, $matches);
 	list($match, $query) = $matches;
 
 	$query = str_replace("'", '', $query);
 	$query = str_replace('&quot;', '', $query);
 
-	$ct = str_replace($match, "?&gt;<\$WPQuery:$query\$>&lt;?php", $ct);
+	$content = str_replace($match, "?&gt;<\$WPQuery:$query\$>&lt;?php", $content);
 }
 
-function eztags_from_register(&$ct)
+function eztags_from_register(&$content)
 {
-	preg_match('/wp_register\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/wp_register\(([^\)]*)\);?/', $content, $matches);
 	list($match, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -298,38 +298,38 @@ function eztags_from_register(&$ct)
 	$attrs = preg_replace('/&quot;/', '', $attrs);
 	list($before, $after) = $attrs;
 
-	$ct = str_replace($match, "?&gt;$before<\$WPRegister\$>$after&lt;?php", $ct);
+	$content = str_replace($match, "?&gt;$before<\$WPRegister\$>$after&lt;?php", $content);
 }
 
-function eztags_from_rewind_posts(&$ct)
+function eztags_from_rewind_posts(&$content)
 {
-	$ct = preg_replace('/rewind_posts\(\);?/', '?&gt;<$WPRewind$>&lt;?php', $ct);
+	$content = preg_replace('/rewind_posts\(\);?/', '?&gt;<$WPRewind$>&lt;?php', $content);
 }
 
-function eztags_from_search_query(&$ct)
+function eztags_from_search_query(&$content)
 {
-	$ct = preg_replace('/the_search_query\(\s*\);?/', '?&gt;<$WPSearch$>&lt;?php', $ct);
+	$content = preg_replace('/the_search_query\(\s*\);?/', '?&gt;<$WPSearch$>&lt;?php', $content);
 }
 
-function eztags_from_sidebar(&$ct)
+function eztags_from_sidebar(&$content)
 {
-	$ct = preg_replace('/get_sidebar\(\s*\);?/', '?&gt;<$WPLoadSidebar$>&lt;?php', $ct);
+	$content = preg_replace('/get_sidebar\(\s*\);?/', '?&gt;<$WPLoadSidebar$>&lt;?php', $content);
 }
 
-function eztags_from_single_cat_title(&$ct)
+function eztags_from_single_cat_title(&$content)
 {
-	$ct = preg_replace('/single_cat_title\(\'?([^\']*)\'?\);?/', '?&gt;<CurrentCategory>$1</CurrentCategory>&lt;?php', $ct);
+	$content = preg_replace('/single_cat_title\(\'?([^\']*)\'?\);?/', '?&gt;<CurrentCategory>$1</CurrentCategory>&lt;?php', $content);
 }
 
-function eztags_from_time(&$ct)
+function eztags_from_time(&$content)
 {
-	$ct = preg_replace('/([^_])the_time\(\s*\);?/', '$1?&gt;<$EntryTime$>&lt;?php', $ct);
-	$ct = preg_replace('/([^_])the_time\(\'([^\']+)\'\);?/', '$1?&gt;<$EntryTime:$2$>&lt;?php', $ct);
+	$content = preg_replace('/([^_])the_time\(\s*\);?/', '$1?&gt;<$EntryTime$>&lt;?php', $content);
+	$content = preg_replace('/([^_])the_time\(\'([^\']+)\'\);?/', '$1?&gt;<$EntryTime:$2$>&lt;?php', $content);
 }
 
-function eztags_from_title(&$ct)
+function eztags_from_title(&$content)
 {
-	preg_match('/([^_])the_title\(([^\)]*)\);?/', $ct, $matches);
+	preg_match('/([^_])the_title\(([^\)]*)\);?/', $content, $matches);
 	list($match, $bef, $attr) = $matches;
 
 	$attrs = preg_split('/\,\s*/', $attr);
@@ -337,74 +337,74 @@ function eztags_from_title(&$ct)
 	$attrs = preg_replace('/&quot;/', '', $attrs);
 	list($before, $after) = $attrs;
 
-	$ct = str_replace($match, "$bef?&gt;$before<\$EntryTitle\$>$after&lt;?php", $ct);
+	$content = str_replace($match, "$bef?&gt;$before<\$EntryTitle\$>$after&lt;?php", $content);
 }
 
-function eztags_from_trackback_rdf(&$ct)
+function eztags_from_trackback_rdf(&$content)
 {
-	$ct = preg_replace('/trackback_rdf\(\);?/', '?&gt;<$WPAutodiscover$>&lt;?php', $ct);
+	$content = preg_replace('/trackback_rdf\(\);?/', '?&gt;<$WPAutodiscover$>&lt;?php', $content);
 }
 
-function eztags_from_trackback_url(&$ct)
+function eztags_from_trackback_url(&$content)
 {
-	$ct = preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $ct);
+	$content = preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $content);
 }
 
-function eztags_parse_from(&$ct)
+function eztags_parse_from(&$content)
 {
-	eztags_from_e($ct, '__');
+	eztags_from_e($content, '__');
 
-	eztags_from_author($ct);
-	eztags_from_author_link($ct);
-	eztags_from_author_posts($ct);
-	eztags_from_blog_info($ct);
-	eztags_from_calendar($ct);
-	eztags_from_category($ct);
-	eztags_from_comment_author($ct);
-	eztags_from_comment_author_link($ct);
-	eztags_from_comment_author_url($ct);
-	eztags_from_comment_id($ct);
-	eztags_from_comment_date($ct);
-	eztags_from_comment_text($ct);
-	eztags_from_comment_time($ct);
-	eztags_from_comments($ct);
-	eztags_from_content($ct);
-	eztags_from_date($ct);
-	eztags_from_e($ct, '_e');
-	eztags_from_edit_comment_link($ct);
-	eztags_from_edit_post_link($ct);
-	eztags_from_else($ct);
-	eztags_from_end_if($ct);
-	eztags_from_end_loop($ct);
-	eztags_from_entries_loop($ct);
-	eztags_from_excerpt($ct);
-	eztags_from_footer($ct);
-	eztags_from_get_archives($ct);
-	eztags_from_header($ct);
-	eztags_from_id($ct);
-	eztags_from_if_entries($ct);
-	eztags_from_language_attributes($ct);
-	eztags_from_link_pages($ct);
-	eztags_from_links_list($ct);
-	eztags_from_list_bookmarks($ct);
-	eztags_from_list_categories($ct);
-	eztags_from_list_cats($ct);
-	eztags_from_list_pages($ct);
-	eztags_from_login($ct);
-	eztags_from_meta($ct);
-	eztags_from_permalink($ct);
-	eztags_from_query($ct);
-	eztags_from_register($ct);
-	eztags_from_rewind_posts($ct);
-	eztags_from_search_query($ct);
-	eztags_from_sidebar($ct);
-	eztags_from_single_cat_title($ct);
-	eztags_from_time($ct);
-	eztags_from_title($ct);
-	eztags_from_trackback_rdf($ct);
-	eztags_from_trackback_url($ct);
+	eztags_from_author($content);
+	eztags_from_author_link($content);
+	eztags_from_author_posts($content);
+	eztags_from_blog_info($content);
+	eztags_from_calendar($content);
+	eztags_from_category($content);
+	eztags_from_comment_author($content);
+	eztags_from_comment_author_link($content);
+	eztags_from_comment_author_url($content);
+	eztags_from_comment_id($content);
+	eztags_from_comment_date($content);
+	eztags_from_comment_text($content);
+	eztags_from_comment_time($content);
+	eztags_from_comments($content);
+	eztags_from_content($content);
+	eztags_from_date($content);
+	eztags_from_e($content, '_e');
+	eztags_from_edit_comment_link($content);
+	eztags_from_edit_post_link($content);
+	eztags_from_else($content);
+	eztags_from_end_if($content);
+	eztags_from_end_loop($content);
+	eztags_from_entries_loop($content);
+	eztags_from_excerpt($content);
+	eztags_from_footer($content);
+	eztags_from_get_archives($content);
+	eztags_from_header($content);
+	eztags_from_id($content);
+	eztags_from_if_entries($content);
+	eztags_from_language_attributes($content);
+	eztags_from_link_pages($content);
+	eztags_from_links_list($content);
+	eztags_from_list_bookmarks($content);
+	eztags_from_list_categories($content);
+	eztags_from_list_cats($content);
+	eztags_from_list_pages($content);
+	eztags_from_login($content);
+	eztags_from_meta($content);
+	eztags_from_permalink($content);
+	eztags_from_query($content);
+	eztags_from_register($content);
+	eztags_from_rewind_posts($content);
+	eztags_from_search_query($content);
+	eztags_from_sidebar($content);
+	eztags_from_single_cat_title($content);
+	eztags_from_time($content);
+	eztags_from_title($content);
+	eztags_from_trackback_rdf($content);
+	eztags_from_trackback_url($content);
 
-	eztags_from_post($ct);
+	eztags_from_post($content);
 }
 
 function eztags_parse_std(&$content)
