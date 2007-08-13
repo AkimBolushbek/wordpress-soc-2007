@@ -6,7 +6,8 @@ time.
 1. Implement what my mentor wants me to do:
 	a) Tags for empty loops.
 	b) Merge <$WPIfEntries$> and <$WPEntriesLoop$> into a
-	   single tag.
+	   single tag (maybe, depending on my mentor's feedback
+	   on my existing implementation).
 	c) Support for tags with more than one parameter.
 	d) Finish supporting the tags that are mandatory for any
 	   theme.
