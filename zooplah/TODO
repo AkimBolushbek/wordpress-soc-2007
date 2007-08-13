@@ -3,7 +3,15 @@ release, get downloads, occasionally implement new features and
 fixes, etc.  But here's my list of things I want to do before that
 time.
 
-1. Implement what my mentor wants me to do.
+1. Implement what my mentor wants me to do:
+	a) Tags for empty loops.
+	b) Merge <$WPIfEntries$> and <$WPEntriesLoop$> into a
+	   single tag.
+	c) Support for tags with more than one parameter.
+	d) Finish supporting the tags that are mandatory for any
+	   theme.
+	e) Allow plugin authors to bind their own tags to custom
+	   functions.
 2. Release a test build to the public to get feedback.
 3. Evaluate feedback from testers and implement and fix things I
    deem worthy.
