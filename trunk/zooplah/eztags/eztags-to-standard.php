@@ -68,10 +68,12 @@ function eztags_parse_ez(&$content)
 	$content = preg_replace('/<\$WPCategories:([^\$]+)\$>/', '<?php wp_list_categories(\'$1\'); ?>', $content);
 	$content = preg_replace('/<\$WPCategoriesOld:([^\$]+)\$>/', '<?php wp_list_cats(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPElse$>', '<?php else : ?>', $content);
+	$content = str_replace('<$WPEndEntries$>', '<?php endif; ?>', $content);
 	$content = str_replace('<$WPEndIf$>', '<?php endif; ?>', $content);
 	$content = str_replace('<$WPEndLoop$>', '<?php endwhile; ?>', $content);
 	$content = str_replace('<$WPEntriesLoop$>', '<?php while (have_posts()) : the_post(); ?>', $content);
 	$content = str_replace('<$WPIfEntries$>', '<?php if ( have_posts() ) : ?>', $content);
+	$content = str_replace('<$WPIfNoEntries$>', '<?php else : ?>', $content);
 	$content = preg_replace('/<\$WPInfo:([^\$]+)\$>/', '<?php bloginfo(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPLanguageAttributes$>', '<?php language_attributes(); ?>', $content);
 	$content = preg_replace('/<\$WPLinkPages:([^\$]*)\$>/', '<?php wp_link_pages(\'$1\'); ?>', $content);

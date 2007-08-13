@@ -166,6 +166,9 @@ Currently implemented tags:
 	or other condition was false.
 	Notes: The code is rendered until an <$WPEndIf$> tag is
 		encountered.
+<$WPEndEntries$>
+	Ends the <$WPIfEntries$> section (regardless of whether
+	it's used with <$WPIfNoEntries$> or not).
 <$WPEndIf$>
 	End of the section started by an <$WPIf*$> tag or other
 	condition.
@@ -181,10 +184,12 @@ Currently implemented tags:
 <$WPIfEntries$>
 	If there are entries in the current blog, the code below
 	it will be parsed.
-	Notes: This section ends when a <$WPElse$> or <$WPEndIf$>
-		tag is encountered.
-	A <$WPElse$> tag should be used in the rare
-		occasion that no entries are in the blog.
+	Notes: A <$WPIfNoEntries$> tag should be used in
+		conjunction with <$WPIfEntries$> for the rare
+		occasions in which no entries are in the blog.
+<$WPIfNoEntries$>
+	If there are no entries in the current blog, the code
+	below it will be parsed.
 <$WPInfo:item$>
 	Displays the info about the blog's <item>.
 	Parameters: item.  Here are some popular items:
