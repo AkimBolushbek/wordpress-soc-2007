@@ -78,7 +78,7 @@ Currently implemented tags:
 <$EntryTime:format$>
 	The time the entry was initially posted.
 	Parameters: format - The format for the time.
-	Notes: It's formatted according to the format string.
+	Notes: It's formatted according <format>.
 <$EntryTitle$>
 	The title of the current entry or blog.
 <$EntryTrackbackURL$>
