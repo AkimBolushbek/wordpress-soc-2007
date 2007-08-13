@@ -136,7 +136,12 @@ if ($allowed_files) :
 ?>
 	<ul>
 <?php foreach($allowed_files as $allowed_file) : ?>
-<?php if ( strstr($allowed_file, '.php') ) $is_php_file = true;
+<?php if ( strstr($allowed_file, '.php') ) $is_php_file = TRUE;
+/* functions.php has the scary PHP stuff.
+ * You obviously shouldn't be editing it within this plugin
+*/
+if ( strstr($allowed_file, 'functions.php') ) $is_php_file = FALSE;
+
 if ( $is_php_file ) $link_color = 'blue';
 else $link_color = 'GrayText';
 ?>
