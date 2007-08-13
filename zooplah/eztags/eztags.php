@@ -27,12 +27,11 @@ Author URI: http://zooplah.farvista.net/
 
 require_once 'eztags-functions.php';
 
-
-function add_admin_pages()
+function add_eztags_admin_pages()
 {
 	add_theme_page(_z('Easier Template Tags'), _z('Easier Theme Editor'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
 }
 
-add_action('admin_menu', 'add_admin_pages');
+add_action('admin_menu', 'add_eztags_admin_pages');
 
 ?>

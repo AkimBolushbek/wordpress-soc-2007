@@ -1,5 +1,7 @@
 <?php
 
+$_eztags_in_ifentries = FALSE;
+
 /* Converts standard tags to easy tags.
  * Contains functions for the conversion; format:
  * function eztags_from_tag_name(&$content)
@@ -125,13 +127,19 @@ function eztags_from_e(&$content, $tag)
 		preg_match("/$tag\(([^\)]+)\);?/", $content, $matches);
 		list($match, $tr) = $matches;
 
-		list($text, $domain) = preg_split('/\s*\,\s*/', $tr);
+		list($text, $domain) = preg_split('/\,\s*/', $tr);
 
 		$text = preg_replace('/\'/', '', $text);
 		$text = preg_replace('/&quot;/', '', $text);
 
 		$domain = preg_replace('/\'/', '', $domain);
 		$domain = preg_replace('/&quot;/', '', $domain);
+
+		if ( preg_match('/\s+/', $domain) )
+		{
+			$text .= ", $domain";
+			$domain = '';
+		}
 
 		if ( $tag == '_e' )
 		{
@@ -173,12 +181,28 @@ function eztags_from_edit_post_link(&$content)
 
 function eztags_from_else(&$content)
 {
-	$content = preg_replace('/else\s*:/', '?&gt;<$WPElse$>&lt;?php', $content);
+	global $_eztags_in_ifentries;
+	if ( !$_eztags_in_ifentries )
+		$tag_name = 'WPElse';
+	else
+		$tag_name = 'WPIfNoEntries';
+
+	$content = preg_replace('/else\s*:/', "?&gt;<\$$tag_name\$>&lt;?php", $content);
 }
 
 function eztags_from_end_if(&$content)
 {
-	$content = preg_replace('/endif[;\s]/', '?&gt;<$WPEndIf$>&lt;?php', $content);
+	global $_eztags_in_ifentries;
+
+	if ( !$_eztags_in_ifentries )
+		$tag_name = 'WPEndIf';
+	else
+	{
+		$tag_name = 'WPEndEntries';
+		$_eztags_in_ifentries = FALSE;
+	}
+
+	$content = preg_replace('/endif[;\s]/', "?&gt;<\$$tag_name\$>&lt;?php", $content);
 }
 
 function eztags_from_end_loop(&$content)
@@ -218,6 +242,9 @@ function eztags_from_id(&$content)
 
 function eztags_from_if_entries(&$content)
 {
+	global $_eztags_in_ifentries;
+	$_eztags_in_ifentries = TRUE;
+
 	$content = preg_replace('/if\s*\(\s*have_posts\(\)\s*\)\s*:/', '?&gt;<$WPIfEntries$>&lt;?php', $content);
 }
 
