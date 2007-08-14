@@ -1,3 +1,5 @@
+/* @override http://localhost:8888/wp-content/plugins/podcasting/podcasting-admin.css */
+
 table.pod_enclosure, table.pod_format {
 	border: 1px solid #ccc;
 	margin: 0 0 10px 0;
@@ -18,6 +20,10 @@ table.pod_format {
 	font-weight: bold;
 	background: #dfdfdf;
 	padding-right: 5px;
+}
+
+#podcasting table.pod_enclosure td.pod-player input {
+	text-align: center;
 }
 
 #podcasting table.pod_enclosure input, #podcasting table.pod_enclosure select,
@@ -70,7 +76,7 @@ podcasting table.pod_enclosure a:hover {
 	font-size: .78em;
 	padding: 5px;
 	width: 250px;
-	top: 12px;
+	top: 22px;
 	left: 5px;
 	background: #ffc;
 	border: 1px solid #666;
