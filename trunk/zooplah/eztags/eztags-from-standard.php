@@ -182,6 +182,7 @@ function eztags_from_edit_post_link(&$content)
 function eztags_from_else(&$content)
 {
 	global $_eztags_in_ifentries;
+
 	if ( !$_eztags_in_ifentries )
 		$tag_name = 'WPElse';
 	else
@@ -193,16 +194,16 @@ function eztags_from_else(&$content)
 function eztags_from_end_if(&$content)
 {
 	global $_eztags_in_ifentries;
+	$in_content = $content;
 
 	if ( !$_eztags_in_ifentries )
 		$tag_name = 'WPEndIf';
 	else
-	{
-		$tag_name = 'WPEndEntries';
-		$_eztags_in_ifentries = FALSE;
-	}
+		$tag_name = 'WPEndEntries';	
 
 	$content = preg_replace('/endif[;\s]/', "?&gt;<\$$tag_name\$>&lt;?php", $content);
+
+	if ( $in_content != $content ) $_eztags_in_ifentries = FALSE;
 }
 
 function eztags_from_end_loop(&$content)
@@ -243,9 +244,12 @@ function eztags_from_id(&$content)
 function eztags_from_if_entries(&$content)
 {
 	global $_eztags_in_ifentries;
-	$_eztags_in_ifentries = TRUE;
+	$in_content = $content;
+	//echo "$content => $in_content";
 
 	$content = preg_replace('/if\s*\(\s*have_posts\(\)\s*\)\s*:/', '?&gt;<$WPIfEntries$>&lt;?php', $content);
+
+	if ( $in_content != $content ) $_eztags_in_ifentries = TRUE;
 }
 
 function eztags_from_language_attributes(&$content)
