@@ -474,11 +474,15 @@ function podcasting_edit_form() {
 			if ( $enclosure_count > 0 ) $enclosure_ids .= ','; $enclosure_count++;
 			$enclosure_ids .= $enclosure['meta_id'];
 			$enclosure_value = explode("\n", $enclosure['meta_value']);
-			$enclosure_itunes = unserialize($enclosure_value[3]); ?>
+			$enclosure_itunes = unserialize($enclosure_value[3]);
+			$podcast_player = ( 'mp3' == substr(trim($enclosure_value[0]), -3) ) ? true : false; ?>
 			<table cellpadding="3" class="pod_enclosure">
 				<tr>
 					<td class="pod-title">File</td>
-					<td colspan="6"><input type="text" name="pod_file_<?php echo $enclosure['meta_id']; ?>" class="pod_file" value="<?php echo $enclosure_value[0]; ?>" readonly="readonly" /></td>
+					<td colspan="<?php echo ( $podcast_player ) ? 5 : 6; ?>"><input type="text" name="pod_file_<?php echo $enclosure['meta_id']; ?>" class="pod_file" value="<?php echo $enclosure_value[0]; ?>" readonly="readonly" /></td>
+					<?php if ( $podcast_player ) { ?>
+					<td class="pod-player"><input name="add_editor" type="button" class="" value="Send to editor &raquo;" onClick="document.getElementById('content').value += '\n\n[podcast]<?php echo trim($enclosure_value[0]); ?>[/podcast]'" /></td>
+					<?php } ?>
 				</tr>
 				<tr>
 					<td class="pod-title">Format</td>
