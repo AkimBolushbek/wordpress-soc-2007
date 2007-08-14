@@ -186,6 +186,8 @@ Currently implemented tags:
 	sep - The separator
 	prev - Text to display for the link to newer entries
 	next - Text to display for the link to older entries
+<$WPIfCommentsOpen$>
+	Render the following code only if comments are open.
 <$WPIfEntries$>
 	If there are entries in the current blog, the code below
 	it will be parsed.
@@ -195,6 +197,8 @@ Currently implemented tags:
 <$WPIfNoEntries$>
 	If there are no entries in the current blog, the code
 	below it will be parsed.
+<$WPIfPingsOpen$>
+	Render the following code only if comments are open.
 <$WPInfo:item$>
 	Displays the info about the blog's <item>.
 	Parameters: item.  Here are some popular items:
@@ -289,6 +293,9 @@ Currently implemented tags:
 <$WPSearch$>
 	What the user had searched for.
 
+<CommentsRSSLink>
+	Display a link to the RSS comments feed.
+	Note: The content is the link text.
 <CurrentCategory>
 	Displays the category of the current page.
 	Notes: The content is the heading for the current-
