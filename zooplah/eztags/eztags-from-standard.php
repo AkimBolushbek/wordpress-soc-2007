@@ -85,6 +85,16 @@ function eztags_from_comments(&$content)
 	$content = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $content);
 }
 
+function eztags_from_comments_rss_link(&$content)
+{
+	preg_match('/comments_rss_link\(([^\)]*)\);?/', $content, $matches);
+	list($match, $attrs) = $matches;
+
+	list($text, $file) = preg_split('/\s*,\s*/', $attrs);
+
+	$content = str_replace($match, "?&gt;<CommentsRSSLink>$text</CommentsRSSLink>&lt;?php", $content);
+}
+
 function eztags_from_content(&$content)
 {
 	$in_ct = $content;
@@ -245,7 +255,6 @@ function eztags_from_if_entries(&$content)
 {
 	global $_eztags_in_ifentries;
 	$in_content = $content;
-	//echo "$content => $in_content";
 
 	$content = preg_replace('/if\s*\(\s*have_posts\(\)\s*\)\s*:/', '?&gt;<$WPIfEntries$>&lt;?php', $content);
 
@@ -411,6 +420,7 @@ function eztags_parse_from(&$content)
 	eztags_from_comment_text($content);
 	eztags_from_comment_time($content);
 	eztags_from_comments($content);
+	eztags_from_comments_rss_link($content);
 	eztags_from_content($content);
 	eztags_from_date($content);
 	eztags_from_e($content, '_e');
