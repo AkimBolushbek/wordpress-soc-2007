@@ -41,6 +41,8 @@ First release (target date: 2007-09-01)
     references from the old name to the new name.
 
 Second release (target date: 2007-12-24)
+* Use the afore-implemented tag-to-function binding function to
+  bind all my tags.
 * Options page:
   * Size of the editor
   * Hide or show disabled files

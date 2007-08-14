@@ -1,4 +1,3 @@
-<!-- Shouldn't be visible in generated file
 === Easier Template Tags ===
 Contributors: 
 Donate link: 
@@ -6,7 +5,6 @@ Tags: theming
 Requires at least: 2.1
 Tested up to: 2.2.2
 Stable tag: trunk
--->
 
 Converts between PHP template tags and HTML-like easier template tags for easier theme editing.
 
