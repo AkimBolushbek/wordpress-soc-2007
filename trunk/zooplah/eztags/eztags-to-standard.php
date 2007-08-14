@@ -97,7 +97,9 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPEndLoop$>', '<?php endwhile; ?>', $content);
 	$content = str_replace('<$WPEntriesLoop$>', '<?php while (have_posts()) : the_post(); ?>', $content);
 	$content = str_replace('<$WPIfEntries$>', '<?php if ( have_posts() ) : ?>', $content);
+	$content = str_replace('<$WPIfCommentsOpen$>', '<?php if ( comments_open() ) : ?>', $content);
 	$content = str_replace('<$WPIfNoEntries$>', '<?php else : ?>', $content);
+	$content = str_replace('<$WPIfPingsOpen$>', '<?php if ( pings_open() ) : ?>', $content);
 	$content = preg_replace('/<\$WPInfo:([^\$]+)\$>/', '<?php bloginfo(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPLanguageAttributes$>', '<?php language_attributes(); ?>', $content);
 	$content = preg_replace('/<\$WPLinkPages:([^\$]*)\$>/', '<?php wp_link_pages(\'$1\'); ?>', $content);

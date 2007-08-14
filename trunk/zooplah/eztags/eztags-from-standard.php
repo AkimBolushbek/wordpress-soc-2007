@@ -85,6 +85,11 @@ function eztags_from_comments(&$content)
 	$content = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $content);
 }
 
+function eztags_from_comments_open(&$content)
+{
+	$content = preg_replace('/if\s*\(\s*comments_open\(\s*\)\s*\)\s*:/', '?&gt;<$WPIfCommentsOpen$>&lt;?php', $content);
+}
+
 function eztags_from_comments_rss_link(&$content)
 {
 	preg_match('/comments_rss_link\(([^\)]*)\);?/', $content, $matches);
@@ -312,6 +317,11 @@ function eztags_from_permalink(&$content)
 	$content = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $content);
 }
 
+function eztags_from_pings_open(&$content)
+{
+	$content = preg_replace('/if\s*\(\s*pings_open\(\s*\)\s*\)\s*:/', '?&gt;<$WPIfPingsOpen$>&lt;?php', $content);
+}
+
 function eztags_from_posts_nav_link(&$content)
 {
 	preg_match('/posts_nav_link\(([^\)]*)\);?/', $content, $matches);
@@ -420,6 +430,7 @@ function eztags_parse_from(&$content)
 	eztags_from_comment_text($content);
 	eztags_from_comment_time($content);
 	eztags_from_comments($content);
+	eztags_from_comments_open($content);
 	eztags_from_comments_rss_link($content);
 	eztags_from_content($content);
 	eztags_from_date($content);
@@ -446,6 +457,7 @@ function eztags_parse_from(&$content)
 	eztags_from_login($content);
 	eztags_from_meta($content);
 	eztags_from_permalink($content);
+	eztags_from_pings_open($content);
 	eztags_from_posts_nav_link($content);
 	eztags_from_query($content);
 	eztags_from_register($content);
