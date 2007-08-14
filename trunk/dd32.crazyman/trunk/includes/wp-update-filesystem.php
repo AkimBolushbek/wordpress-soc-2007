@@ -28,12 +28,15 @@ function WP_Filesystem($preference=false,$arg=false){
 	return true;
 }
 function _WP_Filesystem_bestOption($preference='direct'){
+	$tempFile = tempnam('/tmp', 'WPU');
 	switch($preference){
 		default:
 		case 'direct':
 			//Likely suPHP or windows.
-			if( getmyuid() == fileowner(tempnam("/tmp", "FOO")) )
+			if( getmyuid() == fileowner($tempFile) ){
+				unlink($tempFile);
 				return 'direct';
+			}
 			break;
 		case 'phpext':
 			if( extension_loaded('ftp') )
@@ -41,14 +44,23 @@ function _WP_Filesystem_bestOption($preference='direct'){
 			break;
 		case 'phpsocket':
 			if( extension_loaded('sockets') )
-				return 'ftpsocket';
+				return 'pemftp';
 			break;
 		case 'phpstream':
+			if( function_exists('stream_get_transports()') &&
+				in_array('tcp',stream_get_transports()) )
+				return 'pemftp';
 			break;
 	}
-	if( getmyuid() == fileowner(tempnam('/tmp', 'WPU')) ) return 'direct';
+	if( getmyuid() == fileowner($tempFile) ){
+		unlink($tempFile);
+		return 'direct';
+	} else {
+		unlink($tempFile);
+	}
 	if( extension_loaded('ftp') ) return 'ftpext';
-	if( extension_loaded('sockets') ) return 'ftpsocket';
+	if( extension_loaded('sockets') ) return 'pemftp';
+	if( in_array('tcp',stream_get_transports()) ) return 'pemftp';
 	return false;
 }
 ?>
