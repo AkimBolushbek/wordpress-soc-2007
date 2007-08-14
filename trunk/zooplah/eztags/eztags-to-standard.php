@@ -1,5 +1,11 @@
 <?php
 
+function eztags_to_comments_rss_link($content)
+{
+	$content = str_replace('<CommentsRSSLink>', '<?php comments_rss_link(', $content);
+	$content = str_replace('</CommentsRSSLink>', '); ?>', $content);
+}
+
 function eztags_to_post_nav_link(&$content)
 {
 	preg_match('/<\$WPEntriesNavigation([^\$]+)\$>/', $content, $matches);
@@ -8,13 +14,6 @@ function eztags_to_post_nav_link(&$content)
 
 	preg_match_all('/\w+\="([^"]*)"/', $attrs, $matches2);
 
-	/* I initiall tried this with a loop.
-	 * Everything got messed up.
-	 * If you've got any ideas... */
-	//if ( '__' != substr($matches2[1][0], 0, 2) )
-		//$matches2[1][0] = "'$matches2[1][0]'";
-	//if ( '__' != substr($matches2[1][1], 0, 2) )
-	//$matches2[1][1] = "'$matches2[1][1]'";
 	for ($i = 0; $i < count($matches2[1]); $i++)
 	{
 		if ( '__' != substr($matches2[1][$i], 0, 2) )
@@ -123,6 +122,7 @@ function eztags_parse_ez(&$content)
 	eztags_to_from_element($content, '/<EntryCategories>([^>]*)<\/EntryCategories>/', 'the_category');
 	eztags_to_from_element($content, '/<EntryContent>([^>]*)<\/EntryContent>/', 'the_content');
 
+	eztags_to_comments_rss_link($content);
 	eztags_to_post_nav_link($content);
 	eztags_to_translatable($content, '_e');
 }
