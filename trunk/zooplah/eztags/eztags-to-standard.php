@@ -93,7 +93,7 @@ function eztags_parse_ez(&$content)
 	$content = preg_replace('/<\$WPCategories:([^\$]+)\$>/', '<?php wp_list_categories(\'$1\'); ?>', $content);
 	$content = preg_replace('/<\$WPCategoriesOld:([^\$]+)\$>/', '<?php wp_list_cats(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPElse$>', '<?php else : ?>', $content);
-	$content = str_replace('<$WPEndEntries<$WPEndEntries$>$>', '<?php endif; ?>', $content);
+	$content = str_replace('<$WPEndEntries$>', '<?php endif; ?>', $content);
 	$content = str_replace('<$WPEndIf$>', '<?php endif; ?>', $content);
 	$content = str_replace('<$WPEndLoop$>', '<?php endwhile; ?>', $content);
 	$content = str_replace('<$WPEntriesLoop$>', '<?php while (have_posts()) : the_post(); ?>', $content);
