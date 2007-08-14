@@ -299,6 +299,18 @@ function eztags_from_permalink(&$content)
 	$content = preg_replace('/the_permalink\(\s*\);?/', '?&gt;<$EntryPermalink$>&lt;?php', $content);
 }
 
+function eztags_from_posts_nav_link(&$content)
+{
+	preg_match('/posts_nav_link\(([^\)]*)\);?/', $content, $matches);
+
+	list($match, $params) = $matches;
+	$params = str_replace("'", '', $params);
+
+	list($sep, $prev, $next) = preg_split('/\s*\,\s*/', $params);
+
+	$content = str_replace($match, "?&gt;<\$WPEntriesNavigation sep=\"$sep\" prev=\"$prev\" next=\"$next\"\$>&lt;?php", $content);
+}
+
 function eztags_from_post(&$content)
 {
 	$content = preg_replace('/the_post\(\s*\);?/', '?&gt;<$WPNextEntry$>&lt;?php', $content);
@@ -420,6 +432,7 @@ function eztags_parse_from(&$content)
 	eztags_from_login($content);
 	eztags_from_meta($content);
 	eztags_from_permalink($content);
+	eztags_from_posts_nav_link($content);
 	eztags_from_query($content);
 	eztags_from_register($content);
 	eztags_from_rewind_posts($content);
