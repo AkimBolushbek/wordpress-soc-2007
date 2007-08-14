@@ -105,11 +105,6 @@ if ( isset($_GET['action']) ) {
 add_action('admin_head','wpupdate_header');
 
 function wpupdate_header(){ ?>
-<style type="text/css">
-	.update{
-		font-weight:bold;
-	}
-</style>
 <script type="text/javascript">
 //<![CDATA[
 function checkUpdate(file){
@@ -282,7 +277,7 @@ if (empty($plugins)) {
 	<tr $style>
 		<td class='name'>{$plugin_data['Title']}</td>
 		<td class='vers'>{$plugin_data['Version']}</td>
-		<td class='vers' class='update' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>$updateText</td>
+		<td class='vers' id='wpupdate-".str_replace(array('/','.'),'',$plugin_file)."'>$updateText</td>
 		<td class='desc'><p>{$plugin_data['Description']} <cite>".sprintf(__('By %s'), $plugin_data['Author']).".</cite></p></td>
 		<td class='togl'>$toggle</td>";
 		if ( current_user_can('edit_plugins') ){
