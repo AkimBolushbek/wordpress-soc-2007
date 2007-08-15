@@ -186,11 +186,11 @@ Currently implemented tags:
 	sep - The separator
 	prev - Text to display for the link to newer entries
 	next - Text to display for the link to older entries
-<$WPFooter>
+<$WPFooter$>
 	Additional footer information.
 	Note: This won't do anything unless you're using a plugin
 		that adds this information.
-<$WPHeader>
+<$WPHeader$>
 	Additional header information.
 	Note: This won't do anything unless you're using a plugin
 		that adds this information.
@@ -258,7 +258,7 @@ Currently implemented tags:
 <$WPLoginOut$>
 	Provide a link to the log-in or log-out page, depending
 	on your log-in status.
-<$WPMeta>
+<$WPMeta$>
 	Additional meta information.
 	Note: This won't do anything unless you're using a plugin
 		that adds this information.
