@@ -85,6 +85,18 @@ function eztags_from_comments(&$content)
 	$content = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $content);
 }
 
+function eztags_from_comments_number(&$content)
+{
+	preg_match('/comments_number\(([^\)]*)\);?/', $content, $matches);
+
+	list($match, $params) = $matches;
+	$params = str_replace("'", '', $params);
+
+	list($zero, $one, $more, $number) = preg_split('/\s*\,\s*/', $params);
+
+	$content = str_replace($match, "?&gt;<\$EntryCommentsNumber zero=\"$zero\" one=\"$one\" more=\"$more\" number=\"$number\"\$>&lt;?php", $content);
+}
+
 function eztags_from_comments_open(&$content)
 {
 	$content = preg_replace('/if\s*\(\s*comments_open\(\s*\)\s*\)\s*:/', '?&gt;<$WPIfCommentsOpen$>&lt;?php', $content);
@@ -452,6 +464,7 @@ function eztags_parse_from(&$content)
 	eztags_from_comment_text($content);
 	eztags_from_comment_time($content);
 	eztags_from_comments($content);
+	eztags_from_comments_number($content);
 	eztags_from_comments_open($content);
 	eztags_from_comments_rss_link($content);
 	eztags_from_content($content);
