@@ -47,8 +47,8 @@ function GenerateResult($InputText,$StartChar,$SelectionSize,$Tag){
 	return $WaitedText;
 }
 
-function GenerateAJsUnitTest($order,$StartChar,$SelectionSize,$Action,$InputText,$WaitedText ){
-	$test="function testScenariosGenerate_".$order."(){ \n \t SetContentToEditor(\"".$InputText."\n); \n \t setselectedtext(".$StartChar.",".$EndChar."); \n \t ExecuteCommand(".$Action."); \n \t this->assertEqual(\"".$WaitedText."\",GetContentFromEditor()) ;\n } \n";
+function GenerateAJsUnitTest($order,$StartChar,$SelectionSize,$Action,$InputText,$OuputText ){
+	$test="function testScenariosGenerate_".$order."(){ \n \t SetContentToEditor(\"".$InputText."\n); \n \t setselectedtext(".$StartChar.",".$EndChar."); \n \t ExecuteCommand(".$Action."); \n \t this->assertEqual(\"".$OuputText."\",GetContentFromEditor()) ;\n } \n";
 return $test;
 }
 
@@ -76,7 +76,7 @@ $i=0;
 	foreach ($Scenarios as $Scenario){
 		$Tag            = ConvertAnActionInATag($Scenario['Action']);
 		$WaitedText  =GenerateResult($InputText,$Scenario['StartChar'],$Scenario['SelectionSize'],$Tag);
-		$UnitTest      =GenerateAJsUnitTest($Scenario['Order'],$Scenario['StartChar'],$Scenario['EndChar'],$Scenario['Action'],$InputText,$WaitedText );
+		$UnitTest      =GenerateAJsUnitTest($Scenario['Order'],$Scenario['StartChar'],$Scenario['EndChar'],$Scenario['Action'],$Scenario['InputText'],$Scenario['OuputText'] );
 		Write_ToTheEndOfOutput_File('../temp/JsUnitGeneratingTestsScenario.js',$UnitTest);
 	}
 
