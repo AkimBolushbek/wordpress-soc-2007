@@ -422,6 +422,18 @@ function eztags_from_trackback_url(&$content)
 	$content = preg_replace('/trackback_url\((true)?\);?/i', '?&gt;<$EntryTrackbackURL$>&lt;?php', $content);
 }
 
+function eztags_from_wp_title(&$content)
+{
+	preg_match('/wp_title\(([^\)]*)\);?/', $content, $matches);
+	list($match, $sep) = $matches;
+
+	$sep = str_replace("'", '', $sep);
+	$query = str_replace('&quot;', '', $query);
+
+	$content = str_replace($match, "?&gt;<\$WPPageTitle:$sep\$>&lt;?php", $content);
+	$content = str_replace('<$WPPageTitle:$>', '<$WPTitle$>', $content);
+}
+
 function eztags_parse_from(&$content)
 {
 	eztags_from_e($content, '__');
@@ -481,6 +493,7 @@ function eztags_parse_from(&$content)
 	eztags_from_title($content);
 	eztags_from_trackback_rdf($content);
 	eztags_from_trackback_url($content);
+	eztags_from_wp_title($content);
 
 	eztags_from_post($content);
 }
