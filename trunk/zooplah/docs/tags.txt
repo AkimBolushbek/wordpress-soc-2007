@@ -55,6 +55,12 @@ Currently implemented tags:
 <$CommentTime$>
 	The time of the current comment, formatted according to
 	your settings.
+<$CommentType[ attributes]$>
+	Display the type of comment this is.
+	Attributes: comment - The text to display if it's a
+		comment.
+	trackback - The text to display if it's a trackback.
+	pingback - The text to display if it's a pingback.
 
 <$EntryAuthor$>
 	The author of the current entry or blog.
