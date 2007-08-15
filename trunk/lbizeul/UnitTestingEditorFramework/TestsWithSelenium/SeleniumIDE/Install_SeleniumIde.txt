@@ -5,7 +5,7 @@
 	close firefox.
 
 - Modify in TestWordPressOnLine.html:
-	line : 13 the real url to TinyMceInstance.html
+	line : 13 give the real url to TinyMceInstance.html
 
 - launch The test :
 	Open firefox, go to "Tools/SeleniumIde"
