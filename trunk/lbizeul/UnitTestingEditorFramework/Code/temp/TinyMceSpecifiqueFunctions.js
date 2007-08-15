@@ -19,9 +19,9 @@ function ExecuteCommand(command){
 tinyMCE.execCommand(command);
 }
 
-//a revori si valide
-function SetFocus(StartChar,SelectionSize){ // fake all selection
-TinyMceInstance.focus();
-TinyMceInstance.select();
+function setselectedtext(start, end){ 
+var inst = tinyMCE.getInstanceById("TinyMceInstance");
+var focusElm = inst.getFocusElement();
+inst.selection.setSelectedText(start,end);
 }
 
