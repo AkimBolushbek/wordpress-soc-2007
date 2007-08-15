@@ -48,16 +48,9 @@ function GenerateResult($InputText,$StartChar,$SelectionSize,$Tag){
 }
 
 function GenerateAJsUnitTest($order,$StartChar,$SelectionSize,$Action,$InputText,$WaitedText ){
-	$test="function testScenariosGenerate_".$order."(){ \n \t SetContentToEditor(\"".$InputText."\n); \n \t SetFocus(".$StartChar.",".$SelectionSize."); \n \t ExecuteCommand(".$Action."); \n \t this->assertEqual(\"".$WaitedText."\",GetContentFromEditor()) ;\n } \n";
+	$test="function testScenariosGenerate_".$order."(){ \n \t SetContentToEditor(\"".$InputText."\n); \n \t setselectedtext(".$StartChar.",".$EndChar."); \n \t ExecuteCommand(".$Action."); \n \t this->assertEqual(\"".$WaitedText."\",GetContentFromEditor()) ;\n } \n";
 return $test;
 }
-
-#function OpenScenarioAndPutInAStructure ($ScenarioFile){	
-#}
-#print "\n new string: \n";
-#	print $NewString;
-#print GenerateResult('Hello World', 0,11,ConvertAnActionInATag('Bold'));
-#print str_replace("test",$InputText,$SelectedText);
 
 
 @unlink(".../temp/JsUnitGeneratingTestsScenario.js");
@@ -74,14 +67,14 @@ $i=0;
 		$Scenarios[$i]['Order']           =$Line[0];
 		$Scenarios[$i]['Action']          =$Line[1];
 		$Scenarios[$i]['StartChar']      =$Line[2];
-		$Scenarios[$i]['SelectionSize'] =$Line[3];
+		$Scenarios[$i]['EndChar'] =$Line[3];
 	$i++;
 	}
 
 	foreach ($Scenarios as $Scenario){
 		$Tag            = ConvertAnActionInATag($Scenario['Action']);
 		$WaitedText  =GenerateResult($InputText,$Scenario['StartChar'],$Scenario['SelectionSize'],$Tag);
-		$UnitTest      =GenerateAJsUnitTest($Scenario['Order'],$Scenario['StartChar'],$Scenario['SelectionSize'],$Scenario['Action'],$InputText,$WaitedText );
+		$UnitTest      =GenerateAJsUnitTest($Scenario['Order'],$Scenario['StartChar'],$Scenario['EndChar'],$Scenario['Action'],$InputText,$WaitedText );
 		Write_ToTheEndOfOutput_File('../temp/JsUnitGeneratingTestsScenario.js',$UnitTest);
 	}
 
