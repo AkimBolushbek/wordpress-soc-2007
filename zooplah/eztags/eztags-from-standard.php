@@ -80,6 +80,18 @@ function eztags_from_comment_time(&$content)
 	$content = preg_replace('/([^_])comment_time\(\);?/', '$1?&gt;<$CommentTime$>&lt;?php', $content);
 }
 
+function eztags_from_comment_type(&$content)
+{
+	preg_match('/comment_type\(([^\)]*)\);?/', $content, $matches);
+
+	list($match, $params) = $matches;
+	$params = str_replace("'", '', $params);
+
+	list($comment, $trackback, $pingback) = preg_split('/\s*\,\s*/', $params);
+
+	$content = str_replace($match, "?&gt;<\$CommentType comment=\"$comment\" trackback=\"$trackback\" pingback=\"$pingback\"\$>&lt;?php", $content);
+}
+
 function eztags_from_comments(&$content)
 {
 	$content = preg_replace('/comments_template\(\s*\);?/', '?&gt;<$WPLoadComments$>&lt;?php', $content);
@@ -463,6 +475,7 @@ function eztags_parse_from(&$content)
 	eztags_from_comment_date($content);
 	eztags_from_comment_text($content);
 	eztags_from_comment_time($content);
+	eztags_from_comment_type($content);
 	eztags_from_comments($content);
 	eztags_from_comments_number($content);
 	eztags_from_comments_open($content);
