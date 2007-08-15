@@ -286,6 +286,9 @@ Currently implemented tags:
 		hierarchical=0|1
 		meta_key=<text>
 		meta_value=<text>
+<$WPPageTitle[:sep]$>
+	The title of the current page (for example, blog entry),
+	separated by <sep>.
 <$WPRegister$>
 	Link to register as a user on the blog, if that has been
 	enabled.

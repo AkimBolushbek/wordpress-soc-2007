@@ -114,6 +114,8 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPMeta$>', '<?php wp_meta(); ?>', $content);
 	$content = str_replace('<$WPNextEntry$>', '<?php the_post(); ?>', $content);
 	$content = preg_replace('/<\$WPPages:([^\$]*)\$>/', '<?php wp_list_pages(\'$1\'); ?>', $content);
+	$content = str_replace('<$WPPageTitle$>', '<?php wp_title(); ?>', $content);
+	$content = preg_replace('/<\$WPPageTitle:([^\$]*)\$>/', '<?php wp_title(\'$1\'); ?>', $content);
 	$content = preg_replace('/<\$WPQuery:([^\$]*)\$>/', '<?php 
 	query_posts(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPRegister$>', '<?php wp_register(); ?>', $content);
