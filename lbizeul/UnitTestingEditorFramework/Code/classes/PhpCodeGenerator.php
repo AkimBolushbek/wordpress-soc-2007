@@ -67,7 +67,9 @@ $i=0;
 		$Scenarios[$i]['Order']           =$Line[0];
 		$Scenarios[$i]['Action']          =$Line[1];
 		$Scenarios[$i]['StartChar']      =$Line[2];
-		$Scenarios[$i]['EndChar'] =$Line[3];
+		$Scenarios[$i]['EndChar'] 	 =$Line[3];
+		$Scenarios[$i]['InputText'] 	 =$Line[4];
+		$Scenarios[$i]['OuputText'] 	 =$Line[5];
 	$i++;
 	}
 
