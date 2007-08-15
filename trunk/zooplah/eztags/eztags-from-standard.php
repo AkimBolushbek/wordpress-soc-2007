@@ -236,6 +236,11 @@ function eztags_from_excerpt(&$content)
 	$content = preg_replace('/the_excerpt\(\s*\);?/', '?&gt;<$EntryExcerpt$>&lt;?php', $content);
 }
 
+function eztags_from_foot(&$content)
+{
+	$content = preg_replace('/wp_footer\(\s*\);?/', '?&gt;<$WPFooter$>&lt;?php', $content);
+}
+
 function eztags_from_footer(&$content)
 {
 	$content = preg_replace('/get_footer\(\s*\);?/', '?&gt;<$WPLoadFooter$>&lt;?php', $content);
@@ -244,6 +249,11 @@ function eztags_from_footer(&$content)
 function eztags_from_get_archives(&$content)
 {
 	$content = preg_replace('/wp_get_archives\(\'?([^\']*)\'?\);?/', '?&gt;<$WPArchives:$1$>&lt;?php', $content);
+}
+
+function eztags_from_head(&$content)
+{
+	$content = preg_replace('/wp_head\(\s*\);?/', '?&gt;<$WPHeader$>&lt;?php', $content);
 }
 
 function eztags_from_header(&$content)
@@ -442,8 +452,10 @@ function eztags_parse_from(&$content)
 	eztags_from_end_loop($content);
 	eztags_from_entries_loop($content);
 	eztags_from_excerpt($content);
+	eztags_from_foot($content);
 	eztags_from_footer($content);
 	eztags_from_get_archives($content);
+	eztags_from_head($content);
 	eztags_from_header($content);
 	eztags_from_id($content);
 	eztags_from_if_entries($content);

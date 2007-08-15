@@ -186,6 +186,14 @@ Currently implemented tags:
 	sep - The separator
 	prev - Text to display for the link to newer entries
 	next - Text to display for the link to older entries
+<$WPFooter>
+	Additional footer information.
+	Note: This won't do anything unless you're using a plugin
+		that adds this information.
+<$WPHeader>
+	Additional header information.
+	Note: This won't do anything unless you're using a plugin
+		that adds this information.
 <$WPIfCommentsOpen$>
 	Render the following code only if comments are open.
 <$WPIfEntries$>
@@ -252,6 +260,8 @@ Currently implemented tags:
 	on your log-in status.
 <$WPMeta>
 	Additional meta information.
+	Note: This won't do anything unless you're using a plugin
+		that adds this information.
 <$WPNextEntry$>
 	Advance to the next blog entry.  The <$Entry*$> tags will
 	then give information about the next entry instead of the
