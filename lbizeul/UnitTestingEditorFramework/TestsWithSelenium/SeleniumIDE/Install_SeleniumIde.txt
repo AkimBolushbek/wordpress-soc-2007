@@ -5,12 +5,10 @@
 	close firefox.
 
 - Modify in TestWordPressOnLine.html:
-	line : 13 BlogURL by The url of your Blog
-	line : 24 LOGIN by your login
-	line : 29 PASSWORD by your password
+	line : 13 the real url to TinyMceInstance.html
 
 - launch The test :
 	Open firefox, go to "Tools/SeleniumIde"
-	In SeleniumIde windows click on "File/Open" select the "TestWordPressOnLine.html" file.
+	In SeleniumIde windows click on "File/Open" select the "TestTinyMceWithSeleniumIDE.html" file.
 	Press on green arrow and let starts the test.
 
