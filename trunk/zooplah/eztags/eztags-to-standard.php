@@ -16,8 +16,9 @@ function eztags_to_comment_type(&$content)
 	
 	reset($matches2);
 	$content = str_replace($match, '<?php comment_type(' . join($matches2[1], ', ') . '); ?>', $content);
+}
 
-function eztags_to_comments_rss_link($content)
+function eztags_to_comments_rss_link(&$content)
 {
 	$content = str_replace('<CommentsRSSLink>', '<?php comments_rss_link(', $content);
 	$content = str_replace('</CommentsRSSLink>', '); ?>', $content);
@@ -39,6 +40,7 @@ function eztags_to_comments_number(&$content)
 	
 	reset($matches2);
 	$content = str_replace($match, '<?php comments_number(' . join($matches2[1], ', ') . '); ?>', $content);
+}
 
 
 function eztags_to_post_nav_link(&$content)
@@ -151,8 +153,7 @@ function eztags_parse_ez(&$content)
 	$content = preg_replace('/<\$WPPages:([^\$]*)\$>/', '<?php wp_list_pages(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPPageTitle$>', '<?php wp_title(); ?>', $content);
 	$content = preg_replace('/<\$WPPageTitle:([^\$]*)\$>/', '<?php wp_title(\'$1\'); ?>', $content);
-	$content = preg_replace('/<\$WPQuery:([^\$]*)\$>/', '<?php 
-	query_posts(\'$1\'); ?>', $content);
+	$content = preg_replace('/<\$WPQuery:([^\$]*)\$>/', '<?php query_posts(\'$1\'); ?>', $content);
 	$content = str_replace('<$WPRegister$>', '<?php wp_register(); ?>', $content);
 	$content = str_replace('<$WPRewind$>', '<?php rewind_posts(); ?>', $content);
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
