@@ -16,8 +16,6 @@ When the plugin is activated, it creates an *Easier Theme Editor* subpanel in th
 
 1. Upload the eztags directory to the wp-content/plugins directory on your server.  You can also upload the contents of the eztags directory to wp-contents/plugins, but that's far more likely to create a clutter.
 1. Activate the plugin (*Easier Template Tags*).
-1. Go to *Presentation* in the *Site Admin* area, then into *Easier Theme Editor*, select the file you want to edit, and edit it.
-1. Push *Save* to update your template file.
 
 = Getting a Newer Version =
 
@@ -41,7 +39,13 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 
 == Use ==
 
-See [docs/tags.txt](docs/tags.txt).
+1. Go to area.
+1. Go to the *Presentation* panel.
+1. Go to the *Easier Theme Editor* subpanel.
+1. Select the template file you want to edit.
+1. See [docs/tags.txt](docs/tags.txt) for a list of tags that you can use.
+1. Edit the file using those tags.
+1. Push *Save* to update your template file.
 
 == Development ==
 
