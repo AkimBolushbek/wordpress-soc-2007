@@ -6,6 +6,24 @@ function eztags_to_comments_rss_link($content)
 	$content = str_replace('</CommentsRSSLink>', '); ?>', $content);
 }
 
+function eztags_to_comments_number(&$content)
+{
+	preg_match('/<\$EntryCommentsNumber([^\$]+)\$>/', $content, $matches);
+
+	list($match, $attrs) = $matches;
+
+	preg_match_all('/\w+\="([^"]*)"/', $attrs, $matches2);
+
+	for ($i = 0; $i < count($matches2[1]); $i++)
+	{
+		if ( '__' != substr($matches2[1][$i], 0, 2) )
+			$matches2[1][$i] = '\'' . $matches2[1][$i] . '\'';
+	}
+	
+	reset($matches2);
+	$content = str_replace($match, '<?php comments_number(' . join($matches2[1], ', ') . '); ?>', $content);
+
+
 function eztags_to_post_nav_link(&$content)
 {
 	preg_match('/<\$WPEntriesNavigation([^\$]+)\$>/', $content, $matches);
@@ -128,6 +146,7 @@ function eztags_parse_ez(&$content)
 	eztags_to_from_element($content, '/<EntryCategories>([^>]*)<\/EntryCategories>/', 'the_category');
 	eztags_to_from_element($content, '/<EntryContent>([^>]*)<\/EntryContent>/', 'the_content');
 
+	eztags_to_comments_number($content);
 	eztags_to_comments_rss_link($content);
 	eztags_to_post_nav_link($content);
 	eztags_to_translatable($content, '_e');

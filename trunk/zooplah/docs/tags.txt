@@ -63,6 +63,17 @@ Currently implemented tags:
 <$EntryAuthorPostsLink$>
 	Link to the posts that the author of the current post
 	also wrote.
+<$EntryCommentsNumber[ attributes]$>
+	Display the number of comments for the current entry.
+	Attributes: zero - Text to display when there are no
+		comments.
+	one - Text to display when there's one comment
+	more - Text to display when there are more than one
+		comment.
+	number - Number of comments.
+	Note: If you don't understand what <number> is for, rest
+		assured I don't either.  I'd advise not to use
+		it, since it's optional anyway.
 <$EntryDate$>
 	The date of the current entry.
 	Notes: Formatted according to your settings.

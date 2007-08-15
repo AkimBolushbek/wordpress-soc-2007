@@ -1,5 +1,5 @@
 First release (target date: 2007-09-01)
-1. Implement what my mentor wants me to do:
+1. Implement what my mentor wants me to do (before 2008-08-20):
 	a) Tags for empty loops.
 	b) Merge <$WPIfEntries$> and <$WPEntriesLoop$> into a
 	   single tag (maybe, depending on my mentor's feedback
