@@ -1,0 +1,74 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>TestTinyMceWithSeleniumIDE</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">TestTinyMceWithSeleniumIDE</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>http://wordpress-soc-2007.googlecode.com/svn/trunk/lbizeul/UnitTestingEditorFramework/TinyMceInstance.html</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().tinyMCE.setContent("Hello World"); true</td>
+	<td>100</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().tinyMCE.execCommand('mceFocus', false, 'TinyMceInstance');true</td>
+	<td>100</td>
+</tr>
+<tr>
+	<td>shiftKeyDown</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>keyPress</td>
+	<td>TinyMceInstance</td>
+	<td>\39</td>
+</tr>
+<tr>
+	<td>waitForCondition</td>
+	<td>selenium.browserbot.getCurrentWindow().tinyMCE.execCommand('Bold');true</td>
+	<td>100</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
