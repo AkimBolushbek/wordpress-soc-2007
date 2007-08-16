@@ -169,6 +169,8 @@ function eztags_parse_ez(&$content)
 	eztags_to_comments_rss_link($content);
 	eztags_to_post_nav_link($content);
 	eztags_to_translatable($content, '_e');
+
+	eztags_wind($content);
 }
 
 ?>
