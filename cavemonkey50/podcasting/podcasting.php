@@ -41,6 +41,9 @@ add_action('rss2_head', 'podcasting_add_itunes_feed');
 add_filter('rss_enclosure', 'podcasting_remove_enclosures');
 add_action('rss2_item', 'podcasting_add_itunes_item');
 
+// Add the podcast player
+add_filter('the_content', 'podcasting_add_player');
+
 
 /* ------------------------------------ INSTALL ------------------------------------ */
 
@@ -822,5 +825,18 @@ function podcasting_add_itunes_item() {
 			echo '<itunes:explicit>' . $enclosure_itunes['explicit'] . '</itunes:explicit>' . "\n";
 	}
 } // podcasting_add_itunes_item()
+
+// Find [podcast] sytax
+function podcasting_add_player($content) {
+	$content = preg_replace_callback("/\[podcast](.*)\[\/podcast]/i", "podcasting_player_syntax", $content);	
+	return $content;
+}
+
+// Replace a URL with a podcast player
+function podcasting_player_syntax($url) {
+	$url = $url[1];
+	$player = $url;
+	return $player;
+}
 
 ?>
