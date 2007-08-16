@@ -525,6 +525,7 @@ function eztags_parse_from(&$content)
 	eztags_from_wp_title($content);
 
 	eztags_from_post($content);
+
 	eztags_wind($content);
 }
 
