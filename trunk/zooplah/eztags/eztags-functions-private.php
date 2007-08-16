@@ -53,7 +53,7 @@ function eztags_wind(&$content)
 			call_user_func_array($func, $param);
 		}
 		else
-			call_user_func($func, $content);
+			call_user_func($func, &$content);
 	}
 }
 
