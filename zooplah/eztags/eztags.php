@@ -25,11 +25,11 @@ Author URI: http://zooplah.farvista.net/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once 'eztags-functions-private.php';
+require_once 'includes/eztags-functions-private.php';
 
 function add_eztags_admin_pages()
 {
-	add_theme_page(_z('Easier Template Tags'), _z('Easier Theme Editor'), edit_themes, get_eztags_dir() . 'eztags-subpanel.php');
+	add_theme_page(_z('Easier Template Tags'), _z('Easier Theme Editor'), edit_themes, get_eztags_dir() . 'pages/eztags-subpanel.php');
 }
 
 add_action('admin_menu', 'add_eztags_admin_pages');

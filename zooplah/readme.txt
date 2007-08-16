@@ -43,7 +43,7 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 1. Go to the *Presentation* panel.
 1. Go to the *Easier Theme Editor* subpanel.
 1. Select the template file you want to edit.
-1. See [docs/tags.txt](docs/tags.txt) for a list of tags that you can use.
+1. See [eztags/docs/tags.txt](eztags/docs/tags.txt) for a list of tags that you can use.
 1. Edit the file using those tags.
 1. Push *Save* to update your template file.
 
@@ -51,7 +51,7 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 
 = Improving the plugin =
 
-See [docs/specs.txt](docs/specs.txt) for how the plugin works.  If you want to make it better, then by all means*...  **Note**:  For everyone's sake, please wait until after Summer of Code 2007 (let's say, until September). The plugin won't be done before then and I'm sure my mentor won't like it not being completely my work.  But after that, I'll be glad if someone likes my plugin, finds it useful and wants to improve it.
+See [eztags/docs/specs.txt](eztags/docs/specs.txt) for how the plugin works.  If you want to make it better, then by all means*...  **Note**:  For everyone's sake, please wait until after Summer of Code 2007 (let's say, until September). The plugin won't be done before then and I'm sure my mentor won't like it not being completely my work.  But after that, I'll be glad if someone likes my plugin, finds it useful and wants to improve it.
 
 = If it doesn't work with a theme =
 
@@ -85,4 +85,4 @@ This plugin is licensed under the [GPL](http://www.gnu.org/copyleft/gpl.html "Ge
 * The easier tags are case sensitive (title, TITLE, and Title are different entities).
 * Not all PHP will be converted to an easier format.  Just ignore the parts that you don't understand.
 
-See [eztags/eztags-caveats.html](eztags/eztags-caveats.html) for more issues.
+See [eztags/docs/eztags-caveats.html](eztags/docs/eztags-caveats.html) for more issues.
