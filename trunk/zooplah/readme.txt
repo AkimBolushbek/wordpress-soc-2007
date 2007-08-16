@@ -8,6 +8,11 @@ Stable tag: trunk
 
 Converts between PHP template tags and HTML-like easier template tags for easier theme editing.
 
+<script type="text/javascript">
+  if (location.href.indexOf('wp-plugins') != -1)
+    document.write('<p><strong>Note</strong>: Relative links will only work if you\'re reading this from your installation.</p>');
+</script>
+
 == Description ==
 
 When the plugin is activated, it creates an *Easier Theme Editor* subpanel in the *Presentation* panel of the Administration area *Site Admin* link in most themes).  After you [make the files writable with your FTP client](http://codex.wordpress.org/Changing_File_Permissions#Using_an_FTP_Client), you can edit the files with easier tags.  The plugin will try to automatically convert as many PHP tags to easier tags as possible, but may not be completely accurate (though it's getting better all the time).  When you save the files, the easier tags are converted back into PHP tags, and these tags will be converted back to easier tags the next time you view the file through the easier theme editor.
@@ -43,7 +48,7 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 1. Go to the *Presentation* panel.
 1. Go to the *Easier Theme Editor* subpanel.
 1. Select the template file you want to edit.
-1. See [eztags/docs/tags.txt](eztags/docs/tags.txt) for a list of tags that you can use.
+1. See [tags.txt](tags.txt) for a list of tags that you can use.
 1. Edit the file using those tags.
 1. Push *Save* to update your template file.
 
@@ -51,14 +56,14 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 
 = Improving the plugin =
 
-See [eztags/docs/specs.txt](eztags/docs/specs.txt) for how the plugin works.  If you want to make it better, then by all means*...  **Note**:  For everyone's sake, please wait until after Summer of Code 2007 (let's say, until September). The plugin won't be done before then and I'm sure my mentor won't like it not being completely my work.  But after that, I'll be glad if someone likes my plugin, finds it useful and wants to improve it.
+See [specs.txt](specs.txt) for how the plugin works.  If you want to make it better, then by all means*...  **Note**:  For everyone's sake, please wait until after Summer of Code 2007 (let's say, until September). The plugin won't be done before then and I'm sure my mentor won't like it not being completely my work.  But after that, I'll be glad if someone likes my plugin, finds it useful and wants to improve it.
 
 = If it doesn't work with a theme =
 
 That's a very real possibility.  Two courses of action are possible.  One is to submit a bug.  However, if this thing only affects one theme, it probably will be easier to do the second: change the theme to a more coherent format.  That will help on both our sides.
 
 = Adding tags to your plugin =
-eztags/eztags-functions-public.php contains the `eztags_bind()` function for that.  Here's an example.
+eztags/includes/eztags-functions-public.php contains the `eztags_bind()` function for that.  Here's an example.
 
 <pre><code>
 function mytheme_foo(&$content, $myparam)
@@ -85,4 +90,4 @@ This plugin is licensed under the [GPL](http://www.gnu.org/copyleft/gpl.html "Ge
 * The easier tags are case sensitive (title, TITLE, and Title are different entities).
 * Not all PHP will be converted to an easier format.  Just ignore the parts that you don't understand.
 
-See [eztags/docs/eztags-caveats.html](eztags/docs/eztags-caveats.html) for more issues.
+See [eztags-caveats.html](eztags-caveats.html) for more issues.
