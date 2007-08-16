@@ -35,7 +35,7 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 
 == Screenshots ==
 
-1. **TODO**:  Create a screenshot and describe it here.
+1. Editing the index.php template file (*Main Index Template*) of my theme with the *Easier Theme Editor*.
 
 == Use ==
 
@@ -78,11 +78,11 @@ eztags_bind('mytheme_foo', $myvar);
 
 = * Licensing =
 
-This plugin is licensed under the [GPL](http://www.gnu.org/copyleft/gpl.html "General Public License").  It had to be.  I personally like the [BSD](http://www.opensource.org/licenses/bsd-license.php "Berkeley Software Distribution")-style licenses better.  They give you more freedom, I think, and require only that you indicate the origin of your code (that I wrote the original code), but you don't have to release your full modified code.  I, however, wasn't given a choice in the matter, I'm afraid.
+This plugin is licensed under the [GPL](http://www.gnu.org/copyleft/gpl.html "General Public License").  It had to be.  I personally like the [BSD](http://www.opensource.org/licenses/bsd-license.php "Berkeley Software Distribution")-style licenses better.  They give you more freedom, I think, and require only that you indicate the origin of your code (that I wrote the original code) without requiring you to release your full modified code.  However, part of [The Agreement](http://groups.google.com/group/wordpress-soc-2007/web/welcome?hl=en) was to license the code under the GPL.
 
 == Known problems and bugs ==
 
 * The easier tags are case sensitive (title, TITLE, and Title are different entities).
 * Not all PHP will be converted to an easier format.  Just ignore the parts that you don't understand.
 
-See [eztags/eztags-caveats.html](eztags/eztags-caveats.htm) for more issues.
+See [eztags/eztags-caveats.html](eztags/eztags-caveats.html) for more issues.
