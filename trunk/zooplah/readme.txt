@@ -1,6 +1,6 @@
 === Easier Template Tags ===
 Contributors: 
-Donate link: 
+Donate link:  
 Tags: theming
 Requires at least: 2.1
 Tested up to: 2.2.2
@@ -39,7 +39,7 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 
 == Use ==
 
-1. Go to area.
+1. Go to the *Site Admin* area.
 1. Go to the *Presentation* panel.
 1. Go to the *Easier Theme Editor* subpanel.
 1. Select the template file you want to edit.
@@ -56,6 +56,25 @@ See [docs/specs.txt](docs/specs.txt) for how the plugin works.  If you want to m
 = If it doesn't work with a theme =
 
 That's a very real possibility.  Two courses of action are possible.  One is to submit a bug.  However, if this thing only affects one theme, it probably will be easier to do the second: change the theme to a more coherent format.  That will help on both our sides.
+
+= Adding tags to your plugin =
+eztags/eztags-functions-public.php contains the `eztags_bind()` function for that.  Here's an example.
+
+<pre><code>
+function mytheme_foo(&$content, $myparam)
+{
+&nbsp;&nbsp;&nbsp;&nbsp;$in_str = $content;
+&nbsp;&nbsp;&nbsp;&nbsp;$content = preg_replace('/foo\(\);?/', "?&amp;gt;<\$MyFoo:$myparam\$>&amp;lt;?php", $content);
+&nbsp;&nbsp;&nbsp;&nbsp;if ( $content == $in_str )
+&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$content = str_replace("&lt;\$MyFoo:$myparam\$&gt;", '&lt;?php foo(); ?&gt;', $content);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+}
+
+$myvar = 'Bar';
+
+eztags_bind('mytheme_foo', $myvar);
+</code></pre>
 
 = * Licensing =
 
