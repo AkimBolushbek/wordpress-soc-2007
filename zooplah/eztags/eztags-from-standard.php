@@ -1,5 +1,7 @@
 <?php
 
+require_once 'eztags-functions-public.php';
+
 $_eztags_in_ifentries = FALSE;
 
 /* Converts standard tags to easy tags.
@@ -494,7 +496,8 @@ function eztags_parse_from(&$content)
 	eztags_from_footer($content);
 	eztags_from_get_archives($content);
 	eztags_from_head($content);
-	eztags_from_header($content);
+	//eztags_from_header($content);
+	eztags_bind('eztags_from_header');
 	eztags_from_id($content);
 	eztags_from_if_entries($content);
 	eztags_from_language_attributes($content);
@@ -522,6 +525,7 @@ function eztags_parse_from(&$content)
 	eztags_from_wp_title($content);
 
 	eztags_from_post($content);
+	eztags_wind($content);
 }
 
 function eztags_parse_std(&$content)
