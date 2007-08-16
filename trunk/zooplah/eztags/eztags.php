@@ -25,7 +25,7 @@ Author URI: http://zooplah.farvista.net/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once 'eztags-functions.php';
+require_once 'eztags-functions-private.php';
 
 function add_eztags_admin_pages()
 {
