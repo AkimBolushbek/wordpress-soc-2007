@@ -42,7 +42,9 @@ add_filter('rss_enclosure', 'podcasting_remove_enclosures');
 add_action('rss2_item', 'podcasting_add_itunes_item');
 
 // Add the podcast player
+add_action('wp_head', 'podcasting_add_player_javascript');
 add_filter('the_content', 'podcasting_add_player');
+$podcasting_player_id = 0; // Each new player increases the ID
 
 
 /* ------------------------------------ INSTALL ------------------------------------ */
@@ -826,6 +828,11 @@ function podcasting_add_itunes_item() {
 	}
 } // podcasting_add_itunes_item()
 
+// Add the podcasting player javascript
+function podcasting_add_player_javascript() {
+	echo '	<script language="javascript" type="text/javascript" src="'. get_option('siteurl') . '/wp-content/plugins/podcasting/player/player.js" />' . "\n";
+}
+
 // Find [podcast] sytax
 function podcasting_add_player($content) {
 	$content = preg_replace_callback("/\[podcast](.*)\[\/podcast]/i", "podcasting_player_syntax", $content);	
@@ -834,9 +841,17 @@ function podcasting_add_player($content) {
 
 // Replace a URL with a podcast player
 function podcasting_player_syntax($url) {
-	$url = $url[1];
-	$player = $url;
-	return $player;
+	global $podcasting_player_id;
+	
+	if ( is_feed() ) {
+		return '<a href="' . $url[1] . '">Download Podcast</a>';
+	} else {
+		$podcasting_player_id++;
+		$podcasting_player_url = get_option('siteurl') . '/wp-content/plugins/podcasting/player/player.swf';
+		$podcasting_player_vars = "playerID=" . $podcasting_player_id . '&amp;soundFile=' . rawurlencode($url[1]);
+
+		return '<object type="application/x-shockwave-flash" data="' . $podcasting_player_url . '" width="290" height="24" id="audioplayer' . $podcasting_player_id . '"><param name="movie" value="' . $podcasting_player_url . '" /><param name="FlashVars" value="' . $podcasting_player_vars . '" /><param name="quality" value="high" /><param name="menu" value="false" /><param name="wmode" value="transparent" /></object>';
+	}
 }
 
 ?>
