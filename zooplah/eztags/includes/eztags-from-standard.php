@@ -1,7 +1,5 @@
 <?php
 
-require_once 'eztags-functions-public.php';
-
 $_eztags_in_ifentries = FALSE;
 
 /* Converts standard tags to easy tags.

@@ -1,5 +1,7 @@
 <?php
 
+require_once 'includes/eztags-functions-private.php';
+
 /**
  @desc Binds a function as a conversion routine
  @param string A function to bind
