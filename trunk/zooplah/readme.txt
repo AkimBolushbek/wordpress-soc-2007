@@ -85,9 +85,9 @@ eztags_bind('mytheme_foo', $myvar);
 
 This plugin is licensed under the [GPL](http://www.gnu.org/copyleft/gpl.html "General Public License").  It had to be.  I personally like the [BSD](http://www.opensource.org/licenses/bsd-license.php "Berkeley Software Distribution")-style licenses better.  They give you more freedom, I think, and require only that you indicate the origin of your code (that I wrote the original code) without requiring you to release your full modified code.  However, part of [The Agreement](http://groups.google.com/group/wordpress-soc-2007/web/welcome?hl=en) was to license the code under the GPL.
 
-== Known problems and bugs ==
+== Current caveats ==
 
 * The easier tags are case sensitive (title, TITLE, and Title are different entities).
-* Not all PHP will be converted to an easier format.  Just ignore the parts that you don't understand.
+* In many themes, not all PHP can be converted to an easier format.  Just ignore the parts that you don't understand.
 
-See [eztags-caveats.html](eztags-caveats.html) for more issues.
+See [eztags-caveats.html](eztags-caveats.html) for more.
