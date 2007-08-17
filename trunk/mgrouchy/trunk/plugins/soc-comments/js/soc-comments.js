@@ -1,3 +1,4 @@
+
 function addReplyForm(action, commentid, comment_post_id, userident, useremail, userurl, noncefield, redirect){
 	var divname = 'com-' + commentid;
 	var divid = '#' + divname;
@@ -6,7 +7,7 @@ function addReplyForm(action, commentid, comment_post_id, userident, useremail, 
 	if ((jQuery("*").index( jQuery('#comment-reply-form')[0] )) != -1){
 		return clearInner(divid);
 	}
-
+	alert(action);
 	// build our form and put it the comments div
 	jQuery('#' + divname).css({display: 'none'});
 	jQuery("<form action=\"" + action + "\" method=\"POST\" id=\"comment-reply-form\">" + 
@@ -21,9 +22,8 @@ function addReplyForm(action, commentid, comment_post_id, userident, useremail, 
 	      "<input type=\"hidden\" id=\"_wp_unfiltered_html_comment\" name=\"_wp_unfiltered_html_comment\" value=\"" + noncefield + "\" /></p> </form>").appendTo(divid);
 	
 	//bind our form, then show it
-	bindForm('replydiv','comment-reply-form');
-	jQuery(divid).show("slow");
-	
+	bindReplyForm('comment-reply-form');
+	jQuery(divid).slideDown("slow");
 	return false;	
 }
 
@@ -35,7 +35,6 @@ function openLink(url,  method, target) {
 	jQuery.ajax({
 		type: method,
 		url: url,
-		//data: querystring,
 		dataType : "html",
 		success : function(html) {
 			jQuery(target).attr("innerHTML", html);
@@ -54,29 +53,45 @@ function clearInner(elemid) {
 }
 
 
+//bind reply form using form plugin
+function bindReplyForm(formname ) {
+	jQuery(document).ready(function() {
+		var options = {
+			beforeSubmit: addFormData ,
+			success: showReplyResponse,
+		};
+
+	//bind form providing callback
+	jQuery('#' + formname).ajaxForm(options);
+	});
+}
+
 //bind a form using form plugin
 function bindForm(divname,formname) {
 	jQuery(document).ready(function() {
 	    var options = {
 	        target: '#' + divname,
 			beforeSubmit: addFormData ,
-			//success: showResponse,
 	    };
 	    // bind form and provide a simple callback function
 	    jQuery('#' + formname).ajaxForm(options);
 	});
 }
 
+//push data onto the form submit call
 function addFormData(formData, jqForm, options ) {
 	formData.push({ name: 'ajax', value: '1'});	
-	
-	//for testing purposes 
-	//var qs = jQuery.param(formData);
-	//alert(qs);
 	return true;
 }
 
-//for testing
-function showResponse(responseText, statusText) {
-		alert('responseText: \n' + responseText );
+//show the response from the submission of the reply form
+function showReplyResponse(responseText, statusText) {
+
+	jQuery(document).ready(function() {
+		//remove the reply form
+		jQuery('#comment-reply-form').remove();
+		//append our comment
+		comList = jQuery('#the-comment-list');
+		comList.prepend(responseText).slideDown("slow");
+	});
 }
