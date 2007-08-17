@@ -282,7 +282,7 @@ function eztags_from_head(&$content)
 
 function eztags_from_header(&$content)
 {
-	$content = preg_replace('/get_header\(\s*\);?/', '?&gt;<$WPLoadHeader$>&lt;?php', $content);
+	$content = preg_replace('/get_header\(\s*\);?/', eztags_add('<$WPLoadHeader$>'), $content);
 }
 
 function eztags_from_id(&$content)
