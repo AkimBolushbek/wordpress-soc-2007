@@ -39,7 +39,9 @@ $file_show = basename( $file );
 ?>
 
 <script type="text/javascript">
-document.title = '<?php bloginfo(); ?> > <?php echo $title; ?> [<?php echo basename($_GET['file']) ?>] - WordPress';
+var currentEditFile = '<?php echo basename($_GET['file']) ?>';
+if (!currentEditFile) currentEditFile = 'style.css';
+document.title = '<?php bloginfo(); ?> > <?php echo $title; ?> [' + currentEditFile + '] - WordPress';
 </script>
 
 <?php
