@@ -9,7 +9,7 @@ GZIPFLAGS =
 
 all:
 	cd eztags && $(MAKE)
-	echo '<meta http-equiv="refresh" content="0; eztags/docs/readme.html">' >> readme.html
+	echo '<meta http-equiv="refresh" content="0; eztags/docs/readme.html">' > readme.html
 	sed -r \
 		-e 's/(Donate\s+link:\s*)(.*)/\1[Donate](\2)/g' \
 		-e 's/(\w+:.*)/\1<br>/g' \
@@ -38,4 +38,4 @@ bz2:
 	$(MAKE) tarball GZIP=bz2
 
 soc:
-	$(MAKE) tarball PLUGIN_NAME=2007_wordpress PLUGIN_VERSION=bowes_keith PLUGIN_SPACER=_
+	$(MAKE) gz PLUGIN_NAME=2007_wordpress PLUGIN_VERSION=bowes_keith PLUGIN_SPACER=_
