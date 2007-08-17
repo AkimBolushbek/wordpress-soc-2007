@@ -147,8 +147,9 @@ list($_comments, $total) = $soc_com->get_comment_list( $start, $numcomments, iss
 $comments = array_slice($_comments, 0, $numcomments);
 $extra_comments = array_slice($_comments, $numcomments);
 
+//remove the ajax query arg as to not break pagination, later we can improve this and add ajax pagination.
 $page_links = paginate_links( array(
-	'base' => add_query_arg( 'apage', '%#%' ), 
+	'base' =>  add_query_arg(array('ajax' => '0', 'apage' => '%#%')), 
 	'format' => '',
 	'total' => ceil($total / $numcomments),
 	'current' => $page
