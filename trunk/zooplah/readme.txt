@@ -24,7 +24,7 @@ When the plugin is activated, it creates an *Easier Theme Editor* subpanel in th
 
 = Getting a Newer Version =
 
-You can get the absolute latest code from <http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/>.  [Snapshots](http://code.google.com/p/wordpress-soc-2007/downloads/list) are also available.
+You can get checkout the absolute latest code from the [Google Code Subversion repository](http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/).  [Snapshots](http://code.google.com/p/wordpress-soc-2007/downloads/list) are also available, but pretty much guaranteed to be outdated.  I expect to have a release on [my site](http://kechjo.cogia.net) in September.
 
 Keep in mind that it's in testing right now.
 
