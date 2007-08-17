@@ -69,10 +69,11 @@ eztags/includes/eztags-functions-public.php contains the `eztags_bind()` functio
 function mytheme_foo(&$content, $myparam)
 {
 &nbsp;&nbsp;&nbsp;&nbsp;$in_str = $content;
-&nbsp;&nbsp;&nbsp;&nbsp;$content = preg_replace('/foo\(\);?/', "?&amp;gt;<\$MyFoo:$myparam\$>&amp;lt;?php", $content);
+&nbsp;&nbsp;&nbsp;&nbsp;$new_tag = eztags_add("<\$MyFoo:$myparam\$>");
+&nbsp;&nbsp;&nbsp;&nbsp;$content = preg_replace('/foo\(\);?/', $new_tag, $content);
 &nbsp;&nbsp;&nbsp;&nbsp;if ( $content == $in_str )
 &nbsp;&nbsp;&nbsp;&nbsp;{
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$content = str_replace("&lt;\$MyFoo:$myparam\$&gt;", '&lt;?php foo(); ?&gt;', $content);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$content = str_replace($new_tag, '&lt;?php foo(); ?&gt;', $content);
 &nbsp;&nbsp;&nbsp;&nbsp;}
 }
 
