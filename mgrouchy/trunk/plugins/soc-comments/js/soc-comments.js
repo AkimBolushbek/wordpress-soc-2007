@@ -7,7 +7,7 @@ function addReplyForm(action, commentid, comment_post_id, userident, useremail, 
 	if ((jQuery("*").index( jQuery('#comment-reply-form')[0] )) != -1){
 		return clearInner(divid);
 	}
-	alert(action);
+	
 	// build our form and put it the comments div
 	jQuery('#' + divname).css({display: 'none'});
 	jQuery("<form action=\"" + action + "\" method=\"POST\" id=\"comment-reply-form\">" + 
