@@ -9,23 +9,21 @@ First release (target date: 2007-09-01)
 	   theme.
 	e) Allow plugin authors to bind their own tags to custom
 	   functions.
-2. Create a preprocessor and a postprocessor to make the parser
-   simpler and more accurate.
-3. Release a test build to the WordPress-Soc group to get
+2. Release a test build to the WordPress-Soc group to get
    feedback, and implement and fix things I deem worthy.
-4. Reorganize the files and directories to be more intuitive to
+3. Reorganize the files and directories to be more intuitive to
    those who might download it.
-5. Create a screenshot and describe it.
-6. Release a test build to the public.
-7. Create a Makefile.  It should run that script, generate an HTML
+4. Create a screenshot and describe it.
+5. Release a test build to the public.
+6. Create a Makefile.  It should run that script, generate an HTML
    README file (from readme.txt) using Markdown, merge all the PO
    files with the master POT file and convert the PO files into
    MO files, and create a zip file.
-8. Use more esoteric Markdown features, since the primary README
+7. Use more esoteric Markdown features, since the primary README
    file is going to be the HTML version.
-9. Link to the HTML README, tags listing, and caveats from
+8. Link to the HTML README, tags listing, and caveats from
     ez-tagssubpanel.php.
-10. Collect things that the public testers say and try to fix the
+9. Collect things that the public testers say and try to fix the
     ones in the scope of the project.
 
 ...
@@ -48,8 +46,8 @@ Second release (target date: 2007-12-24)
   * Size of the editor
   * Hide or show disabled files
 * Donate link on the pages
-* Make parsing of PHP arguments with commas and parentheses less
-  screwy.
+* Make a preprocessor and a postprocessor so that PHP arguments
+  with commas and parentheses will be less screwy.
 * New Theme wizard.
 * Tutorial on making a basic theme.
 * Use object orientation.
