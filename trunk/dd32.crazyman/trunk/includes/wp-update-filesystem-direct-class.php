@@ -185,15 +185,20 @@ class WP_Filesystem_Direct{
 		}
 	}
 	function delete($file,$recursive=false){
+		$file = str_replace('\\','/',$file); //for win32, occasional problems deleteing files otherwise
 		if( $this->is_file($file) )
 			return @unlink($file);
 		if( !$recursive )
 			return @rmdir($file);
-		$filelist = $this->dir($file.'/');
+		$filelist = $this->dirlist($file);
+
 		$reval = true;
-		foreach($filelist as $filename){
-			$retval = $retval && $this->delete($file.'/'.$filename,$recursive);
+		foreach($filelist as $filename=>$fileinfo){
+			if( ! $this->delete($file.'/'.$filename,$recursive) )
+				$retval = false;
 		}
+		if( ! @rmdir($file) )
+			return false;
 		return $retval;
 	}
 	

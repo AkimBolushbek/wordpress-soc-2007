@@ -28,29 +28,31 @@ function WP_Filesystem($preference=false,$arg=false){
 	return true;
 }
 function _WP_Filesystem_bestOption($preference='direct'){
-	$tempFile = tempnam('/tmp', 'WPU');
+	$tempFile = tempnam('/tmp', 'WPU'); //Remember, We have to unlink this file.
 	switch($preference){
 		default:
 		case 'direct':
 			//Likely suPHP or windows.
-			if( getmyuid() == fileowner($tempFile) ){
-				unlink($tempFile);
-				return 'direct';
-			}
+			if( getmyuid() == fileowner($tempFile) )
+				$method = 'direct';
 			break;
 		case 'phpext':
 			if( extension_loaded('ftp') )
-				return 'ftpext';
+				$method = 'ftpext';
 			break;
 		case 'phpsocket':
 			if( extension_loaded('sockets') )
-				return 'pemftp';
+				$method = 'ftpsockets';
 			break;
-		case 'phpstream':
+		/*case 'phpstream':
 			if( function_exists('stream_get_transports()') &&
 				in_array('tcp',stream_get_transports()) )
-				return 'pemftp';
-			break;
+				$method = 'pemftp';
+			break;*/
+	}
+	if( $method ){
+		unlink($tempFile);
+		return $method;
 	}
 	if( getmyuid() == fileowner($tempFile) ){
 		unlink($tempFile);
@@ -59,8 +61,8 @@ function _WP_Filesystem_bestOption($preference='direct'){
 		unlink($tempFile);
 	}
 	if( extension_loaded('ftp') ) return 'ftpext';
-	if( extension_loaded('sockets') ) return 'pemftp';
-	if( in_array('tcp',stream_get_transports()) ) return 'pemftp';
+	if( extension_loaded('sockets') ) return 'ftpsockets';
+	//if( in_array('tcp',stream_get_transports()) ) return 'pemftp';
 	return false;
 }
 ?>
