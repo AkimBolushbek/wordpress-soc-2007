@@ -16,17 +16,17 @@ So the format is:
 <ContainerTag>content</ContainerTag>
 <$Tag$>
 
-Some tags contain parameters.  The syntax is:
+Tags can have attributes, like in HTML.  Unlike HTML, attributes
+are all lower-case, and must have a value in double quotes.
+
+Instead of having only a single attribute, some tags have a
+parameter.  The syntax is:
 TagName:parameter
 
 The parameter can be empty, in which case the colon is still
 required.  In tags without parameters, the colon is forbidden
 (for the obvious reason that the colon marks the beginning of a
 parameter).
-
-Theoretically, tags with multiple parameters can exist, but there
-are none currently implemented.  The syntax most likely is:
-TagName:parameter1:parameter2:parametern:...
 
 Currently, tags and parameters are case-sensitive.  That may
 change in the future, though all it will really do is add bloat

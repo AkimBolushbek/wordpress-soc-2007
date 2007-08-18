@@ -43,12 +43,14 @@ var currentEditFile = '<?php if ( !$f = basename($_GET['file']) ) $f = 'style.cs
 document.title = '<?php bloginfo(); ?> > <?php echo $title; ?> [' + currentEditFile + '] - WordPress';
 </script>
 
-<div>
-	<a href="<?php bloginfo('url'); echo get_eztags_dir(); ?>/eztags/docs/readme.html"><?php _ez('README file'); ?></a>
+<hr />
+
+<div style="padding: 0.2em 0; text-align: center">
+	<a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>docs/readme.html"><?php _ez('README file'); ?></a>
  |
-	<a href="<?php bloginfo('url'); echo get_eztags_dir(); ?>/eztags/docs/tags.txt"><?php _ez('Supported tags'); ?></a>
+	<a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>docs/tags.txt"><?php _ez('Supported tags'); ?></a>
  |
-	<a href="<?php bloginfo('url'); echo get_eztags_dir(); ?>/eztags/docs/caveats.html"><?php _ez('Caveats'); ?></a>
+	<a href="<?php bloginfo('url'); ?>/wp-content/plugins/<?php echo get_eztags_dir(); ?>docs/caveats.html"><?php _ez('Caveats'); ?></a>
 </div>
 
 <hr />
