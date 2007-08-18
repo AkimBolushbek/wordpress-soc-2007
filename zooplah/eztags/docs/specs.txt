@@ -10,7 +10,7 @@ See tags.txt.  I'm putting them in that file because users (not
 just hackers) might find them useful.
 
 THE FUNCTIONING
-Right now, eztags-smediator.php contains two routines: ez2std()
+Right now, eztags-mediator.php contains two routines: ez2std()
 for converting easy tags to PHP functions and std2ez() for doing
 the reverse.
 
