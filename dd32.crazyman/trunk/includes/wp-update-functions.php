@@ -22,6 +22,10 @@ function wpupdate_get_plugin_data( $plugin_file ) {
 		$update_uri = trim( $update_uri[1] );
 	else
 		$update_uri = '';
+	if ( preg_match( '|Slug:(.*)|i', $plugin_data, $slug ))
+		$slug = trim( $slug[1] );
+	else
+		$slug = '';
 
 	$description = wptexturize( trim( $description[1] ));
 
@@ -38,7 +42,7 @@ function wpupdate_get_plugin_data( $plugin_file ) {
 		$author = '<a href="' . trim( $author_uri[1] ) . '" title="'.__( 'Visit author homepage' ).'">' . trim( $author_name[1] ) . '</a>';
 	}
 
-	return array ('Name' => $name, 'Title' => $plugin, 'Description' => $description, 'Author' => $author, 'Version' => $version, 'Update' => $update_uri );
+	return array ('Name' => $name, 'Title' => $plugin, 'Description' => $description, 'Author' => $author, 'Version' => $version, 'Update' => $update_uri, 'Slug' => $slug );
 }
 
 function wpupdate_get_plugins($plugin_root='') {

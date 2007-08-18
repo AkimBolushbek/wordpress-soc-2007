@@ -1,4 +1,14 @@
 <?php
+add_filter('wpupdate_update-url','wpupdate_wordpressorg_slug',101,2);
+
+function wpupdate_wordpressorg_slug($url,$info){
+	if( !empty($url) )
+		return $url;
+	if( !empty($info['Slug']) ){
+		$url = 'http://wordpress.org/extend/plugins/' . $info['Slug'] . '/';
+	}
+	return $url;
+}
 
 add_filter('wpupdate_pluginSearchProviders','wpupdate_wordpressorg_search',1);
 /**

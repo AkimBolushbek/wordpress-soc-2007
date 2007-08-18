@@ -261,7 +261,7 @@ if (empty($plugins)) {
 					( isset($updateStat['Errors']) && 
 					  in_array('Not Found', $updateStat['Errors']) )
 					)
-				 ){
+			){
 				//Plugin is disabled, and set to not check inactive plugins
 				$updateText = __('Not Checked');
 			} else {

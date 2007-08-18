@@ -158,8 +158,17 @@ class WP_Update{
 		
 		$pluginUpdateInfo = false;
 		//If cached requests are allowed, retrieve it
-		if( ! $skipcache ) 
+		if( ! $skipcache ) {
 			$pluginUpdateInfo = wp_cache_get('wpupdate_'.$pluginfile, 'wpupdate');
+			if( ! $pluginUpdateInfo ){
+				//Check for the Option being set.
+				$pluginUpdateInfo = get_option('wpupdate_' . $pluginfile);
+				if( $pluginUpdateInfo ){
+					if( $pluginUpdateInfo['Expire'] + $pluginUpdateInfo['LastChecked'] > time()  )//Check it hasnt expired (wp_cache handled expires in that case)
+						$pluginUpdateInfo = false;
+				}
+			}// end if ! $pluginUpdateInfo
+		} //end if $skipcache
 		//If no data is available, And we're not forcing a check, return an error
 		if( ! $pluginUpdateInfo && ! $forcecheck )
 			return array('Errors'=>array('Not Cached'));
@@ -169,7 +178,7 @@ class WP_Update{
 		
 		//If no Update info, or we're forcing a recheck
 		if( ! $pluginUpdateInfo || $forcecheck ){
-			$pluginData['Update'] = apply_filters('wpupdate_update-url-' . $pluginfile, $pluginData['Update']);
+			$pluginData['Update'] = apply_filters('wpupdate_update-url', $pluginData['Update'], $pluginData);
 			if ( !empty($pluginData['Update']) ){
 				//We have a custom update URL.
 				$pluginUpdateInfo = $this->checkPluginUpdateCustom($pluginData['Update']);
@@ -196,8 +205,15 @@ class WP_Update{
 			//If no update info is available, we cant find it.
 			if( empty($pluginUpdateInfo) )
 				$pluginUpdateInfo = array('Errors'=>array('Not Found'), 'Expire' =>7*24*60*60); //,'(Will check again in 1 week)'
+				
+			$pluginUpdateInfo['LastChecked'] = time();
 			
 			wp_cache_set('wpupdate_'.$pluginfile, $pluginUpdateInfo, 'wpupdate', $pluginUpdateInfo['Expire']);
+			if( false !== get_option('update_'.$pluginfile) )
+				update_option('update_'.$pluginfile, $pluginUpdateInfo);
+			else 
+				add_option('update_'.$pluginfile, $pluginUpdateInfo, 'Update Information for ' . $pluginfile, 'no');
+				//We dont want to autoload this for every page, Reduce memory usage exept when needed.
 		}
 		
 		//If Erorrs are set, it means we hit a snag in the update check process which has prevented checking.
@@ -224,7 +240,6 @@ class WP_Update{
 		}
 	}
 	
-	
 	function checkPluginUpdateURL($url){
 		$update = null;
 		//First, Get the Hostname
@@ -237,6 +252,56 @@ class WP_Update{
 		return $update;
 	}
 	
+	/**
+	 * Checks a Custom update URL for a plugin
+	 * @param string $uri the update link for the plugin
+	 * @return mixed array of details on sucess, false on failure
+	 */
+	function checkPluginUpdateCustom($uri){
+		$snoopy = new Snoopy();
+		$snoopy->fetch($uri);
+		//TODO: Also should determine the type of the data, and if its a URL of wordpress.org or something
+		if( strpos($snoopy->results, '<?xml') > -1 ){
+			$data = $this->__PluginUpdateCustomParse($snoopy->results);
+		/*} elseif( is_rss($snoopy->results){
+			Blah */
+		} else {
+			$data = false;
+		}
+		return $data;		
+	}
+	function  __PluginUpdateCustomParse($data){
+		preg_match('#<plugin>(.*?)<\/plugin>#is',$data,$items);
+			preg_match('#<name>(.*?)<\/name>#i'				,$items[1],$pluginname);
+			preg_match('#<version>(.*?)<\/version>#i'		,$items[1],$version);
+			preg_match('#<lastupdate>(.*?)<\/lastupdate>#i'	,$items[1],$lastupdate);
+			preg_match('#<download>(.*?)<\/download>#i'		,$items[1],$download);
+			preg_match('#<author>(.*?)<\/author>#i'			,$items[1],$author);
+			preg_match('#<authorhomepage>(.*?)<\/authorhomepage>#i'	,$items[1],$authorhome);
+			preg_match('#<pluginhomepage>(.*?)<\/pluginhomepage>#i'	,$items[1],$pluginhome);
+			preg_match('#<expire>(\d+?)<\/expire>#i'			,$items[1],$expire);
+
+			preg_match('#<requirements>(.*?)<\/requirements>#is',$items[1],$_requirements);
+				preg_match_all('#<requirement>(.*?)<\/requirement>#is',$_requirements[1],$_requirements);
+					for($i=0; $i < count($_requirements[1]);$i++){
+						preg_match('#<name>(.*?)<\/name>#i',$_requirements[1][$i],$name);
+						preg_match('#<type>(.*?)<\/type>#i',$_requirements[1][$i],$type);
+						preg_match('#<minversion>(.*?)<\/minversion>#i',$_requirements[1][$i],$min);
+						preg_match('#<tested>(.*?)<\/tested>#i',$_requirements[1][$i],$tested);
+						$requirements[] = array('Name'=>trim($name[1]), 'Type'=>trim($type[1]), 'Min'=>trim($min[1]), 'Tested'=>trim($tested[1]));
+					}
+		return array(
+						'Name' => trim($pluginname[1]),
+						'Version' => trim($version[1]),
+						'LastUpdate' => trim($lastupdate[1]),
+						'Download' => trim($download[1]),
+						'Author' => trim($author[1]),
+						'AuthorHomepage' => trim($authorhome[1]),
+						'PluginHomepage' => trim($pluginhome[1]),
+						'Expire' => trim($expire[1]),
+						'Requirements' => $requirements
+					);
+	}
 	function checkPluginCompatible($pluginUpdateInfo){
 		global $wp_version;
 		$pluginCompatible = true; //We'll override this later
@@ -344,58 +409,6 @@ class WP_Update{
 			
 		return $pluginCompatible;
 	}
-	
-	/**
-	 * Checks a Custom update URL for a plugin
-	 * @param string $uri the update link for the plugin
-	 * @return mixed array of details on sucess, false on failure
-	 */
-	function checkPluginUpdateCustom($uri){
-		$snoopy = new Snoopy();
-		$snoopy->fetch($uri);
-		//TODO: Also should determine the type of the data, and if its a URL of wordpress.org or something
-		if( strpos($snoopy->results, '<?xml') > -1 ){
-			$data = $this->__PluginUpdateCustomParse($snoopy->results);
-		/*} elseif( is_rss($snoopy->results){
-			Blah */
-		} else {
-			$data = false;
-		}
-		return $data;		
-	}
-	function  __PluginUpdateCustomParse($data){
-		preg_match('#<plugin>(.*?)<\/plugin>#is',$data,$items);
-			preg_match('#<name>(.*?)<\/name>#i'				,$items[1],$pluginname);
-			preg_match('#<version>(.*?)<\/version>#i'		,$items[1],$version);
-			preg_match('#<lastupdate>(.*?)<\/lastupdate>#i'	,$items[1],$lastupdate);
-			preg_match('#<download>(.*?)<\/download>#i'		,$items[1],$download);
-			preg_match('#<author>(.*?)<\/author>#i'			,$items[1],$author);
-			preg_match('#<authorhomepage>(.*?)<\/authorhomepage>#i'	,$items[1],$authorhome);
-			preg_match('#<pluginhomepage>(.*?)<\/pluginhomepage>#i'	,$items[1],$pluginhome);
-			preg_match('#<expire>(\d+?)<\/expire>#i'			,$items[1],$expire);
-
-			preg_match('#<requirements>(.*?)<\/requirements>#is',$items[1],$_requirements);
-				preg_match_all('#<requirement>(.*?)<\/requirement>#is',$_requirements[1],$_requirements);
-					for($i=0; $i < count($_requirements[1]);$i++){
-						preg_match('#<name>(.*?)<\/name>#i',$_requirements[1][$i],$name);
-						preg_match('#<type>(.*?)<\/type>#i',$_requirements[1][$i],$type);
-						preg_match('#<minversion>(.*?)<\/minversion>#i',$_requirements[1][$i],$min);
-						preg_match('#<tested>(.*?)<\/tested>#i',$_requirements[1][$i],$tested);
-						$requirements[] = array('Name'=>$name[1], 'Type'=>$type[1], 'Min'=>$min[1], 'Tested'=>$tested[1]);
-					}
-		return array(
-						'Name' => $pluginname[1],
-						'Version' => $version[1],
-						'LastUpdate' => $lastupdate[1],
-						'Download' => $download[1],
-						'Author' => $author[1],
-						'AuthorHomepage' => $authorhome[1],
-						'PluginHomepage' => $pluginhome[1],
-						'Expire' => $expire[1],
-						'Requirements' => $requirements
-					);
-	}
-	
 	function updateNotifications(){
 		$previous = get_option('wpupdate_notifications');
 		$new = array();
