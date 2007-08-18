@@ -157,7 +157,6 @@ function eztags_parse_ez(&$content)
 	$content = str_replace('<$WPRegister$>', '<?php wp_register(); ?>', $content);
 	$content = str_replace('<$WPRewind$>', '<?php rewind_posts(); ?>', $content);
 	$content = str_replace('<$WPSearch$>', '<?php the_search_query(); ?>', $content);
-	$content = str_replace('<$WPTitle$>', '<?php wp_title(); ?>', $content);
 
 	eztags_to_from_element($content, '/<CurrentCategory>([^>]*)<\/CurrentCategory>/', 'single_cat_title');
 	eztags_to_from_element($content, '/<EditComment>([^>]*)<\/EditComment>/', 'edit_comment_link');

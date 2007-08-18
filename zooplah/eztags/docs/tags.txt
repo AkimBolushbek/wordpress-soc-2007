@@ -345,8 +345,8 @@ Currently implemented tags:
                the categories.
 <EntryContent>
 	Displays the content of the current entry.
-	Notes: The content of this attribute is a localizable string
-		that will be displayed when excerpts are used.
+	Notes: The content of this attribute is a string that
+		will be displayed when excerpts are used.
 <TranslatableString>
 	Text to be translated.
 	Notes:
