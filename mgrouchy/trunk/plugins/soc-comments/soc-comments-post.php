@@ -11,6 +11,8 @@ require(  '../../../wp-config.php' );
 if (!isset($_POST['ajax'])) $ajax = 0;
 else $ajax = (int) $_POST['ajax'];
 
+if (!isset($_POST['postcomments'])) $postcomments = 0;
+else $postcomments = (int) $_POST['postcomments'];
 
 $comment_post_ID = (int) $_POST['comment_post_ID'];
 
@@ -72,17 +74,27 @@ if ( !$user->ID ) {
 	setcookie('comment_author_url_' . COOKIEHASH, clean_url($comment->comment_author_url), time() + 30000000, COOKIEPATH, COOKIE_DOMAIN);
 }
 if ( $ajax ) {
-	//$out .= "<comment_data>";
-	$soc_com->get_comment_list_item($comment_id);
-	//$out .= "<author>" . $comment_author . "</author>";
-	//$out .= "<author_email>" . $comment_author_email . "</author_email>";
-	//$out .= "<author_url>" . $comment_author_url . "</author_url>";
-	//$out .= "<comment_content>" . $comment_content . "</comment_content>";
-	//$out .= "<comment_type>" . $comment_comment_type . "</comment_type>";	
-	//$out .= "</comment_data>";
-	//echo $out;
-	return;
 	
+	if ( $postcomments ) {	
+		//inspiration for this code derived from another ajax commenting plugin
+		$comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments} WHERE comment_ID = {$wpdb->insert_id} LIMIT 1;");
+		$commentcount = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments} WHERE comment_post_ID = '".$wpdb->escape($_comm    ent_post_ID)."' LIMIT 1;");
+		$post->comment_status = $wpdb->get_var("SELECT comment_status FROM {$wpdb->posts} WHERE ID = '".$wpdb->escape($_commen    t_post_ID)."' LIMIT 1;");
+
+		ob_start();
+		$comments = array($comment); 
+		include(TEMPLATEPATH.'/comments.php');
+	   	$commentout = ob_get_clean();
+   	    preg_match('#<li(.*?)>(.*)</li>#ims', $commentout, $matches); // Regular Expression cuts out the LI element's HTML
+ 
+   echo '<li '.$matches[1].' style="display:none">'.$matches[2].'</li>';
+   exit;
+		
+	
+	}
+	$soc_com->get_comment_list_item($comment_id);
+	exit;
+
 }
 
 $location = ( empty($_POST['redirect_to']) ? get_permalink($comment_post_ID) : $_POST['redirect_to'] ) . '#comment-' . $comment_id;
