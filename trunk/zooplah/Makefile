@@ -41,4 +41,4 @@ bz2:
 	$(MAKE) tarball GZIP=bz2
 
 soc:
-	$(MAKE) gz PLUGIN_NAME=2007_wordpress PLUGIN_VERSION=bowes_keith PLUGIN_SPACER=_
+	$(MAKE) PLUGIN_NAME=2007_wordpress PLUGIN_VERSION=bowes_keith PLUGIN_SPACER=_ gz
