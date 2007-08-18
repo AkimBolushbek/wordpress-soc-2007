@@ -223,9 +223,6 @@ function folder_diff($folder1, $folder2){
 	$folder1Listing = $wp_filesystem->dirlist($folder1,false,false);
 	$folder2Listing = $wp_filesystem->dirlist($folder2,false,false);
 
-	//if( empty($folder1Listing) || empty($folder2Listing) )
-	//	return false;
-	
 	foreach((array)$folder1Listing as $fileName => $fileItem){
 		if( 'file' == $fileItem['type'] ){
 			if( !isset($folder2Listing[ $fileName ]) ){
@@ -256,7 +253,7 @@ function folder_diff($folder1, $folder2){
 			}
 		}
 	}
-	foreach($folder2Listing as $fileName => $fileItem){
+	foreach((array)$folder2Listing as $fileName => $fileItem){
 		if( isset( $Files[ $fileName ] ) )
 			continue; //If the file is allready accounted for, skip
 		if( 'file' == $fileItem['type'] ){

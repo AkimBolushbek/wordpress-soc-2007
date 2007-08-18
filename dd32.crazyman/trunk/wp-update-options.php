@@ -155,15 +155,15 @@
 		<h3>Connection Options</h3>
 		<input type="checkbox" name="filesystem[ftp][ssl]"<?php checked($ftp['ssl'],true); ?> /> Secure connection <em>(sFTP)</em><br />
 		FTP Connection: <select name="filesystem[ftp][method]" >
-							<option value="phpext"
-								<?php if( !extension_loaded('ftp') ){ echo ' disabled="disabled"';} 
-										selected('phpext',$ftp['method']); ?>>PHP FTP Extension</option>
-							<option value="phpsocket"
-								<?php if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} 
-										selected('phpsocket',$ftp['method']); ?>>PHP Sockets</option>
-							<option value="phpstream"
-								<?php if( !function_exists('fsockopen') ){ echo ' disabled="disabled"';} 
-										selected('phpstream',$ftp['method']); ?>>PHP Stream Sockets</option>
+							<option value="phpext"<?php 
+								if( !extension_loaded('ftp') ){ echo ' disabled="disabled"';} 
+								selected('phpext',$ftp['method']); ?>>PHP FTP Extension</option>
+							<option value="phpsocket"<?php
+								if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} 
+								selected('phpsocket',$ftp['method']); ?>>PHP Sockets</option>
+							<option value="phpstream"<?php 
+								if( !function_exists('fsockopen') ){ echo ' disabled="disabled"';} 
+								selected('phpstream',$ftp['method']); ?>>PHP Stream Sockets</option>
 						</select>
 		<div id="ftp-status">&nbsp;</div>
 		

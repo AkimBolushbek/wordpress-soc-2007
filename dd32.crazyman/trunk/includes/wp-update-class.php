@@ -448,12 +448,13 @@ class WP_Update{
 	
 	/** INSTALL FUNCITONS **/
 	function installPlugin($filename,$fileinfo=array()){
-		return $this->installItem($filename, $fileinfo, 'wp-content/plugins/');
+		return $this->installItemFromZip($filename, $fileinfo, 'wp-content/plugins/');
 	}
 	function installTheme($filename,$fileinfo=array()){
-		return $this->installItem($filename, $fileinfo, 'wp-content/themes/');
+		return $this->installItemFromZip($filename, $fileinfo, 'wp-content/themes/');
 	}
-	function installItem($filename,$fileinfo=array(),$destination=''){
+	//ToDo: Internationalise
+	function installItemFromZip($filename,$fileinfo=array(),$destination=''){
 		global $wp_filesystem;
 		if( ! $wp_filesystem || ! is_object($wp_filesystem) )
 			WP_Filesystem();
@@ -478,6 +479,68 @@ class WP_Update{
 		}
 		if ( 0 == count($archiveFiles) )
 			return array('Errors'=>array('Empty Archive'));
+		
+		//First of all, Does the zip file contain a base folder?
+		$base = $fs->get_base_dir() . $destination;
+		$messages[] = "Base Directory: <strong>$base</strong>";
+		
+		$fs->setDefaultPermissions( $fs->getchmod($base) );
+		
+		//Check if the destination directory exists, If not, create it.
+		$path = explode('/',$base);
+		$tmppath = '';
+		for( $j = 0; $j < count($path) - 1; $j++ ){
+			$tmppath .= $path[$j] . '/';
+			if( ! $fs->is_dir($tmppath) )
+				$messages[] = __('<strong>Creating folder</strong>: ') . $tmppath . succeeded( $fs->mkdir($tmppath) );
+		}
+		
+		if( count($archiveFiles) > 1){
+			//Multiple files, they'll need to be in a folder
+			$baseFolderName = false;
+
+			foreach((array)$archiveFiles as $thisFileInfo){
+				//If no Slash then it needs to be put in a folder
+				
+				if( false === strpos($thisFileInfo['filename'],'/') ){
+					$messages[] = 'Installing to Subdirectory: <strong>' . basename($fileinfo['name'],'.zip') . '</strong>';
+
+					$base .= basename($fileinfo['name'],'.zip');
+					if( $fs->is_dir($base) )
+						return array('Errors'=>array('Folder Exists! Install cannot continue' . $base));
+					
+					$messages[] = __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip') . succeeded( $fs->mkdir( $base ) );
+					break; //We've created any folders we need, we can now break out of this loop.
+				}
+			}
+		}
+		//Inflate the files and Create Directory Structure
+		foreach($archiveFiles as $archiveFile){
+			$path = explode('/',$archiveFile['filename']);
+			$tmppath = '';
+			//Loop through each of the items and check the folder exists.
+			for( $j = 0; $j < count($path) - 1; $j++ ){
+				$tmppath .= $path[$j] . '/';
+				if( ! $fs->is_dir($base . $tmppath) )
+					$messages[] = __('<strong>Creating folder</strong>: ') . $tmppath . succeeded( $fs->mkdir($base . $tmppath) );
+			}//end for
+			//We've made sure the folders are there, So lets extract the file now:
+			if( ! $archiveFile['folder'] )
+				$messages[] = __('<strong>Inflating File</strong>: ') . $archiveFile['filename'] . 
+							succeeded( $fs->put_contents($base.$archiveFile['filename'], $archiveFile['content']) );
+		}
+		return $messages;
+	} //end installItem()
+	function installItemFromFolder($source,$destination){
+		require_once('wp-update-filesystem.php');
+		global $wp_filesystem;
+		if( ! $wp_filesystem || ! is_object($wp_filesystem) )
+			WP_Filesystem();
+		if( ! is_object($wp_filesystem) )
+			return array('Errors'=>array('Filesystem options not set correctly'));
+		$fs =& $wp_filesystem; //Just for simplicity
+
+		$messages = array();
 		
 		//First of all, Does the zip file contain a base folder?
 		$base = $fs->get_base_dir() . $destination;
