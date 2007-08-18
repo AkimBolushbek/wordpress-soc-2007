@@ -455,7 +455,7 @@ function eztags_from_wp_title(&$content)
 	$query = str_replace('&quot;', '', $query);
 
 	$content = str_replace($match, "?&gt;<\$WPPageTitle:$sep\$>&lt;?php", $content);
-	$content = str_replace('<$WPPageTitle:$>', '<$WPTitle$>', $content);
+	$content = str_replace('<$WPPageTitle:$>', '<$WPPageTitle$>', $content);
 }
 
 function eztags_parse_from_init()
