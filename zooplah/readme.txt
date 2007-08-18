@@ -91,4 +91,4 @@ This plugin is licensed under the [GPL](http://www.gnu.org/copyleft/gpl.html "Ge
 * The easier tags are case sensitive (title, TITLE, and Title are different entities).
 * In many themes, not all PHP can be converted to an easier format.  Just ignore the parts that you don't understand.
 
-See [eztags-caveats.html](eztags-caveats.html) for more.
+See [caveats.html](caveats.html) for more.

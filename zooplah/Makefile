@@ -7,9 +7,13 @@ PLUGIN_SPACER = -
 GZIP = gzip
 GZIPFLAGS =
 
-all:
+all: readme.html eztags/docs/readme.html
 	cd eztags && $(MAKE)
+
+readme.html:
 	echo '<meta http-equiv="refresh" content="0; eztags/docs/readme.html">' > readme.html
+
+eztags/docs/readme.html: readme.txt
 	sed -r \
 		-e 's/(Donate\s+link:\s*)(.*)/\1[Donate](\2)/g' \
 		-e 's/(\w+:.*)/\1<br>/g' \
@@ -31,8 +35,7 @@ tarball: clean all
 	tar cf $(PLUGIN_NAME)$(PLUGIN_SPACER)$(PLUGIN_VERSION).tar *
 	$(GZIP) $(GZIPFLAGS) $(PLUGIN_NAME)$(PLUGIN_SPACER)$(PLUGIN_VERSION).tar
 
-gz:
-	$(MAKE) tarball
+gz: tarball
 
 bz2:
 	$(MAKE) tarball GZIP=bz2

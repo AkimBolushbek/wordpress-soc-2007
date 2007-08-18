@@ -4,9 +4,7 @@
 %.mo: %.po
 	msgfmt -o $@ $<
 
-all:
-	$(foreach pos, $(wildcard *.po), $(MAKE) $(pos))
-	$(foreach pos, $(wildcard *.po), $(MAKE) $(subst .po,.mo, $(pos)))
+all: $(wildcard *.po) $(subst .po,.mo, $(wildcard *.po))
 
 clean:
 	rm -f *.mo
