@@ -39,16 +39,19 @@ $file_show = basename( $file );
 ?>
 
 <script type="text/javascript">
-var currentEditFile = '<?php echo basename($_GET['file']) ?>';
-if (!currentEditFile) currentEditFile = 'style.css';
+var currentEditFile = '<?php if ( !$f = basename($_GET['file']) ) $f = 'style.css'; echo $f; ?>';
 document.title = '<?php bloginfo(); ?> > <?php echo $title; ?> [' + currentEditFile + '] - WordPress';
 </script>
 
-<?php
+<div>
+	<a href="<?php bloginfo('url'); echo get_eztags_dir(); ?>/eztags/docs/readme.html"><?php _ez('README file'); ?></a>
+ |
+	<a href="<?php bloginfo('url'); echo get_eztags_dir(); ?>/eztags/docs/tags.txt"><?php _ez('Supported tags'); ?></a>
+ |
+	<a href="<?php bloginfo('url'); echo get_eztags_dir(); ?>/eztags/docs/caveats.html"><?php _ez('Caveats'); ?></a>
+</div>
 
-printf(_z('<p><em>This plugin is in <a href="http://en.wikipedia.org/wiki/Software_release_cycle#Beta" title="What beta means">beta</a> and has some known issues.  See <a href="%s/wp-content/plugins/%sdocs/eztags-caveats.html">Easy Tags Caveats</a> for more information.  Please don\'t save anything with this plugin or submit feedback before reading that document.</em></p>'), get_bloginfo('url'), get_eztags_dir());
-
-?>
+<hr />
 
 <?php
 
