@@ -63,6 +63,7 @@ See [specs.txt](specs.txt) for how the plugin works.  If you want to make it bet
 That's a very real possibility.  Two courses of action are possible.  One is to submit a bug.  However, if this thing only affects one theme, it probably will be easier to do the second: change the theme to a more coherent format.  That will help on both our sides.
 
 = Adding tags to your plugin =
+
 eztags/includes/eztags-functions-public.php contains the `eztags_bind()` function for that.  Here's an example.
 
 <pre><code>
