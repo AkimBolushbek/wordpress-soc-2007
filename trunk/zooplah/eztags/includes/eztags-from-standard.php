@@ -356,6 +356,11 @@ function eztags_from_pings_open(&$content)
 	$content = preg_replace('/if\s*\(\s*pings_open\(\s*\)\s*\)\s*:/', '?&gt;<$WPIfPingsOpen$>&lt;?php', $content);
 }
 
+function eztags_from_post(&$content)
+{
+	$content = preg_replace('/the_post\(\s*\);?/', '?&gt;<$WPNextEntry$>&lt;?php', $content);
+}
+
 function eztags_from_posts_nav_link(&$content)
 {
 	preg_match('/posts_nav_link\(([^\)]*)\);?/', $content, $matches);
@@ -366,11 +371,6 @@ function eztags_from_posts_nav_link(&$content)
 	list($sep, $prev, $next) = preg_split('/\s*\,\s*/', $params);
 
 	$content = str_replace($match, "?&gt;<\$WPEntriesNavigation sep=\"$sep\" prev=\"$prev\" next=\"$next\"\$>&lt;?php", $content);
-}
-
-function eztags_from_post(&$content)
-{
-	$content = preg_replace('/the_post\(\s*\);?/', '?&gt;<$WPNextEntry$>&lt;?php', $content);
 }
 
 function eztags_from_query(&$content)
@@ -458,77 +458,81 @@ function eztags_from_wp_title(&$content)
 	$content = str_replace('<$WPPageTitle:$>', '<$WPTitle$>', $content);
 }
 
+function eztags_parse_from_init()
+{
+	eztags_bind('eztags_from_author');
+	eztags_bind('eztags_from_author_link');
+	eztags_bind('eztags_from_author_posts');
+	eztags_bind('eztags_from_blog_info');
+	eztags_bind('eztags_from_calendar');
+	eztags_bind('eztags_from_category');
+	eztags_bind('eztags_from_comment_author');
+	eztags_bind('eztags_from_comment_author_link');
+	eztags_bind('eztags_from_comment_author_url');
+	eztags_bind('eztags_from_comment_id');
+	eztags_bind('eztags_from_comment_date');
+	eztags_bind('eztags_from_comment_text');
+	eztags_bind('eztags_from_comment_time');
+	eztags_bind('eztags_from_comment_type');
+	eztags_bind('eztags_from_comments');
+	eztags_bind('eztags_from_comments_number');
+	eztags_bind('eztags_from_comments_open');
+	eztags_bind('eztags_from_comments_rss_link');
+	eztags_bind('eztags_from_content');
+	eztags_bind('eztags_from_date');
+	eztags_bind('eztags_from_e', '_e');
+	eztags_bind('eztags_from_edit_comment_link');
+	eztags_bind('eztags_from_edit_post_link');
+	eztags_bind('eztags_from_else');
+	eztags_bind('eztags_from_end_if');
+	eztags_bind('eztags_from_end_loop');
+	eztags_bind('eztags_from_entries_loop');
+	eztags_bind('eztags_from_excerpt');
+	eztags_bind('eztags_from_foot');
+	eztags_bind('eztags_from_footer');
+	eztags_bind('eztags_from_get_archives');
+	eztags_bind('eztags_from_head');
+	eztags_bind('eztags_from_header');
+	eztags_bind('eztags_from_id');
+	eztags_bind('eztags_from_if_entries');
+	eztags_bind('eztags_from_language_attributes');
+	eztags_bind('eztags_from_link_pages');
+	eztags_bind('eztags_from_links_list');
+	eztags_bind('eztags_from_list_bookmarks');
+	eztags_bind('eztags_from_list_categories');
+	eztags_bind('eztags_from_list_cats');
+	eztags_bind('eztags_from_list_pages');
+	eztags_bind('eztags_from_login');
+	eztags_bind('eztags_from_meta');
+	eztags_bind('eztags_from_permalink');
+	eztags_bind('eztags_from_pings_open');
+	eztags_bind('eztags_from_posts_nav_link');
+	eztags_bind('eztags_from_query');
+	eztags_bind('eztags_from_register');
+	eztags_bind('eztags_from_rewind_posts');
+	eztags_bind('eztags_from_search_query');
+	eztags_bind('eztags_from_sidebar');
+	eztags_bind('eztags_from_single_cat_title');
+	eztags_bind('eztags_from_time');
+	eztags_bind('eztags_from_title');
+	eztags_bind('eztags_from_trackback_rdf');
+	eztags_bind('eztags_from_trackback_url');
+	eztags_bind('eztags_from_wp_title');
+}
+
 function eztags_parse_from(&$content)
 {
 	eztags_from_e($content, '__');
 
-	eztags_from_author($content);
-	eztags_from_author_link($content);
-	eztags_from_author_posts($content);
-	eztags_from_blog_info($content);
-	eztags_from_calendar($content);
-	eztags_from_category($content);
-	eztags_from_comment_author($content);
-	eztags_from_comment_author_link($content);
-	eztags_from_comment_author_url($content);
-	eztags_from_comment_id($content);
-	eztags_from_comment_date($content);
-	eztags_from_comment_text($content);
-	eztags_from_comment_time($content);
-	eztags_from_comment_type($content);
-	eztags_from_comments($content);
-	eztags_from_comments_number($content);
-	eztags_from_comments_open($content);
-	eztags_from_comments_rss_link($content);
-	eztags_from_content($content);
-	eztags_from_date($content);
-	eztags_from_e($content, '_e');
-	eztags_from_edit_comment_link($content);
-	eztags_from_edit_post_link($content);
-	eztags_from_else($content);
-	eztags_from_end_if($content);
-	eztags_from_end_loop($content);
-	eztags_from_entries_loop($content);
-	eztags_from_excerpt($content);
-	eztags_from_foot($content);
-	eztags_from_footer($content);
-	eztags_from_get_archives($content);
-	eztags_from_head($content);
-	//eztags_from_header($content);
-	eztags_bind('eztags_from_header');
-	eztags_from_id($content);
-	eztags_from_if_entries($content);
-	eztags_from_language_attributes($content);
-	eztags_from_link_pages($content);
-	eztags_from_links_list($content);
-	eztags_from_list_bookmarks($content);
-	eztags_from_list_categories($content);
-	eztags_from_list_cats($content);
-	eztags_from_list_pages($content);
-	eztags_from_login($content);
-	eztags_from_meta($content);
-	eztags_from_permalink($content);
-	eztags_from_pings_open($content);
-	eztags_from_posts_nav_link($content);
-	eztags_from_query($content);
-	eztags_from_register($content);
-	eztags_from_rewind_posts($content);
-	eztags_from_search_query($content);
-	eztags_from_sidebar($content);
-	eztags_from_single_cat_title($content);
-	eztags_from_time($content);
-	eztags_from_title($content);
-	eztags_from_trackback_rdf($content);
-	eztags_from_trackback_url($content);
-	eztags_from_wp_title($content);
+	eztags_wind($content);
 
 	eztags_from_post($content);
-
-	eztags_wind($content);
 }
 
 function eztags_parse_std(&$content)
 {
+	eztags_parse_from_init();
+
 	$arr = preg_split('/[\n\r]{1,2}/', $content);
 	$n_arr = count($arr);
 
