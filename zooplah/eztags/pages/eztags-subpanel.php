@@ -1,7 +1,7 @@
 <?php
 
 /* The "Easier Theme Editor" subpanel page
- * It's just a hack of the theme editor
+ * It's just a modification of WordPress 2.0's theme editor
  */
 
 require_once '/' . ABSPATH . 'wp-content/plugins' . get_eztags_dir() . '/includes/eztags-mediator.php';
