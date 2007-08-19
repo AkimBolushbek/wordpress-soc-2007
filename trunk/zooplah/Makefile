@@ -1,7 +1,7 @@
 MARKDOWN ?= Markdown.pl
 
 PLUGIN_NAME = eztags
-PLUGIN_VERSION = carver
+PLUGIN_VERSION = renard
 PLUGIN_SPACER = -
 
 GZIP = gzip
@@ -11,7 +11,7 @@ all: readme.html eztags/docs/readme.html
 	cd eztags && $(MAKE)
 
 readme.html:
-	echo '<meta http-equiv="refresh" content="0; eztags/docs/readme.html">' > readme.html
+	echo '<meta http-equiv="refresh" content="0; eztags/docs/readme.html">' > $@
 
 eztags/docs/readme.html: readme.txt
 	sed -r \
@@ -20,8 +20,7 @@ eztags/docs/readme.html: readme.txt
 		-e 's/===\s+(.*)\s+===/<title>\1<\/title>\n# \1 #/g' \
 		-e 's/==\s+(.*)\s+==/## \1 ##/g' \
 		-e 's/=\s+(.*)\s+=/### \1 ###/g' \
-		readme.txt | \
-		$(MARKDOWN) --html4tags > eztags/docs/readme.html
+		$< | $(MARKDOWN) --html4tags > $@
 
 clean:
 	cd eztags && $(MAKE) clean

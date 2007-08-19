@@ -8,11 +8,6 @@ Stable tag: trunk
 
 Converts between PHP template tags and HTML-like easier template tags for easier theme editing.
 
-<script type="text/javascript">
-  if (location.href.indexOf('wp-plugins') != -1)
-    document.write('<p><strong>Note</strong>: Relative links will only work if you\'re reading this from your installation.</p>');
-</script>
-
 == Description ==
 
 When the plugin is activated, it creates an *Easier Theme Editor* subpanel in the *Presentation* panel of the Administration area *Site Admin* link in most themes).  After you [make the files writable with your FTP client](http://codex.wordpress.org/Changing_File_Permissions#Using_an_FTP_Client), you can edit the files with easier tags.  The plugin will try to automatically convert as many PHP tags to easier tags as possible, but may not be completely accurate (though it's getting better all the time).  When you save the files, the easier tags are converted back into PHP tags, and these tags will be converted back to easier tags the next time you view the file through the easier theme editor.
@@ -41,6 +36,10 @@ You know, I haven't figured that one out myself yet.  But as they say, if you ca
 == Screenshots ==
 
 1. Editing the index.php template file (*Main Index Template*) of my theme with the *Easier Theme Editor*.
+
+== Notes on the following sections ==
+
+The relative links to the documentation will only work if you're viewing this page through an installation on your WordPress blog.  If you're viewing this page in a plugin repository, you'll have to install the plugin and read this page from there for the links to work.
 
 == Use ==
 

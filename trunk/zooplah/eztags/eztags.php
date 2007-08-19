@@ -3,7 +3,7 @@
 Plugin Name: Easier Template Tags
 Plugin URI: http://wordpress-soc-2007.googlecode.com/svn/trunk/zooplah/
 Description: Provides an editor that allows you to easily edit themes without seeing much of the underlying PHP code.
-Version: <a href="http://en.wikipedia.org/wiki/Elliot_Carver">Carver</a>
+Version: <a href="http://en.wikipedia.org/wiki/Renard_(James_Bond)">Renard</a>
 Author: Keith Bowes
 Author URI: http://zooplah.farvista.net/
 */
