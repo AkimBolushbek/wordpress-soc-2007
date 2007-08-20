@@ -128,7 +128,6 @@ if( isset($_POST['submit']) ){
 		border:thin solid #CCCCCC;
 		margin-bottom:40px;
 	}
-	
 </style>
 <div id="searchresults">
 <?php

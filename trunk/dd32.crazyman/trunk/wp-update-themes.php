@@ -150,11 +150,11 @@ if ( count($broken_themes) ) {
     [author] => Becca Wei
     [authorhomepage] => http://beccary.com
     [download]*/
-		echo "<div class='theme' id='{$theme['id']}'>";
-		echo "<img src='{$theme['thumbnail']}' height='320' width='450' /><br />";
-		echo "{$theme['name']} By <a href='{$theme['authorhomepage']}' target='_blank'>{$theme['author']}</a> | ";
-		echo "<a href='themes.php?page=wp-update/wp-update-themes-install.php&step=2&url=".urlencode($theme['download'])."'>Install</a>";
-		echo '</div>';
+		echo "<div class='theme' id='{$theme['id']}'>
+			<img src='{$theme['thumbnail']}' height='320' width='450' /><br />
+			{$theme['name']} By <a href='{$theme['authorhomepage']}' target='_blank'>{$theme['author']}</a> | 
+			<a href='" . wp_nonce_url("themes.php?page=wp-update/wp-update-themes-install.php&amp;url=".urlencode($theme['download']), 'wpupdate-theme-install') . "'>Install</a>
+		</div>";
 	}
 ?>
 </div>

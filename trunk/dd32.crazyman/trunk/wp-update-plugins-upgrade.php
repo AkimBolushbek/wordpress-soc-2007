@@ -1,14 +1,18 @@
 <?php
 if( !defined('ABSPATH') || ! $wp_update )
 	die('Cannot be called directly.');
+check_admin_referer('wpupdate-upgrade-plugin');
+
 require_once('includes/wp-update-filesystem.php');
 $installedInfo = wpupdate_get_plugin_data(ABSPATH . PLUGINDIR . '/' . $_GET['upgrade']);
 $action = array();
 foreach($_GET as $key=>$val)
 	$action[] = $key .'='. urlencode($val);
 ?>
-<form action="<?php echo $pagenow . '?' . implode('&',$action); ?>" method="post">
-<?php
+<form action="<?php echo $pagenow . '?' . implode('&amp;',$action); ?>" method="post">
+<?php 
+wp_nonce_field('wpupdate-upgrade-plugin');
+
 $opt = array(); //Options for the filesystem.
 if( isset($_POST['required']) ){
 	if( !empty($_POST['required']) ){

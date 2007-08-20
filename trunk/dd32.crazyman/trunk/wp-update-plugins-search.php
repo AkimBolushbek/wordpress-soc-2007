@@ -106,7 +106,7 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 <?php
 	$tags = $wp_update->getPluginSearchTags();
 
-	$url = $pagenow . '?page=' . $_GET['page'] . '&tag=%s';
+	$url = $pagenow . '?page=' . $_GET['page'] . '&amp;tag=%s';
 
 	echo wpupdate_generate_tagcloud($tags,'link=' . urlencode($url));
 ?>
