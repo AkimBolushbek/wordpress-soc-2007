@@ -13,7 +13,15 @@ It also has the ability to install Themes and Plugins via the WordPress Administ
 
 */
 
-add_action('admin_menu', 'wpupdate_admin_init');
+add_action('init','wpupdate_init');
+function wpupdate_init(){
+	add_action('admin_menu', 'wpupdate_admin_init');
+
+	if ( get_option('update_autocheck_nightly') &&  ! wp_next_scheduled('wpupdate_cron')) {
+		wp_schedule_event( time(), 'daily', 'wpupdate_cron' ); //This is also defined in the options page code.
+	}
+	add_action('wpupdate_cron','wpupdate_cron');
+}
 function wpupdate_admin_init(){
 	global $pagenow;
 	//Override Plugins and Themes pages.
@@ -66,6 +74,22 @@ function wpupdate_themes($arg = ''){
 	global $wpdb,$menu,$submenu;
 	include('wp-update-themes.php');
 	exit;
+}
+
+function wpupdate_cron(){
+	include('includes/wp-update-class.php');
+	include('includes/wp-update-functions.php');
+	$wpupdate = new WP_Update();
+	$plugins = wpupdate_get_plugins();
+	foreach((array)$plugins as $plugin_file => $plugin_info){
+		$result = $wpupdate->checkPluginUpdate($plugin_file,false,false);
+		if( is_array($result['Errors']) && in_array('Not Cached',$result['Errors']) ){
+			//We want to force an update on this item
+			$result = $wpupdate->checkPluginUpdate($plugin_file,true,true);
+		}
+	}
+	//Now that we've updated every plugins details, we want to update the notices, this will also have the effect of sending the email if theres new updates.
+	$wpupdate->updateNotifications();
 }
 
 function wpupdate_notices(){

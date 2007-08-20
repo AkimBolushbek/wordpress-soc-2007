@@ -9,14 +9,14 @@ class WP_Update{
 	function WP_Update(){
 		require_once( ABSPATH . 'wp-includes/class-snoopy.php' );
 		require_once('wp-update-functions.php');
-		$this->loadPlugins();
+		$this->loadExtensions();
 	}
 	/**
 	 * Loads any wp-update Extensions which are set.
 	 *
 	 * @return null
 	 */	
-	function loadPlugins(){
+	function loadExtensions(){
 		if( ! is_dir(ABSPATH . 'wp-content/plugins/wp-update/extensions') )
 			return;
 		$dir = @dir(ABSPATH . 'wp-content/plugins/wp-update/extensions');
@@ -451,13 +451,15 @@ class WP_Update{
 		$plugins = wpupdate_get_plugins();
 		foreach((array)$plugins as $plugin_file => $plugin_info){
 			$plugin = $this->checkPluginUpdate($plugin_file);
-			if( isset($plugin['Update']) && true == $plugin['Update'] )
+			if( isset($plugin['Update']) && $plugin['Update'] )
 				$new[ $plugin_file ] = $plugin;
 		}
+
 		//Next, Clear any updates which have been installed
-		foreach((array)$previous as $plugin_file => $plugin_info){
+		if( is_array($previous) && count($previous) > 0 ){
+		foreach($previous as $plugin_file => $plugin_info){
 			if( ! isset($new[ $plugin_file ]) ){
-				unset ($previous[ $plugin_file ]);
+				array_splice($previous, array_search( $plugin_file, $previous), 1 );
 			} else {
 				//Item exists.
 				if( $previous[ $plugin_file ]['HideUpdate'] && 
@@ -466,7 +468,7 @@ class WP_Update{
 				else
 					$new[ $plugin_file ]['HideUpdate'] = false;
 			}
-		}
+		}}
 		update_option('wpupdate_notifications',$new);
 		//Now $previous contains the updates that were available last time, $new contains those which are available this time.
 
@@ -480,7 +482,7 @@ class WP_Update{
 						continue;
 					$updatedPlugins[] = $plugin_info['PluginInfo']['Name'] . ' ' . $plugin_info['PluginInfo']['Version'] . "\n";
 				}
-				if( $pluginsCount > 0){
+				if( count($updatedPlugins) > 0){
 					$message = sprintf(__('You have %d update(s) available for install.'),count($updatedPlugins));
 					$message .= "\n\n";
 					$message .= implode("\n",$updatedPlugins);

@@ -22,6 +22,14 @@
 		
 		$update_plugin_search_enable = isset($_POST['update_plugin_search_enable']);
 		$update_theme_search_enable = isset($_POST['update_theme_search_enable']);
+		
+		if( ! $update_autocheck_nightly ){
+			wp_clear_scheduled_hook('wpupdate_cron');
+		} else {
+			if ( ! wp_next_scheduled('wpupdate_cron')) {
+				wp_schedule_event( time(), 'daily', 'wpupdate_cron' );
+			}
+		}
 
 		update_option('update_notification_enable',	$update_notification_enable);
 		update_option('update_install_enable',		$update_install_enable);
@@ -35,7 +43,7 @@
 		update_option('update_email_email',			$update_email_email);
 		update_option('update_plugin_search_enable',$update_plugin_search_enable);
 		update_option('update_theme_search_enable',	$update_theme_search_enable);
-		echo '<div class="updated"><p>' . __('General Options Saved') . '.</p></div>';
+		echo '<div class="updated"><p>' . __('General Options Saved') . '.</p></div>';	
 	}
 	
 ?>
