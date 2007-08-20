@@ -136,7 +136,7 @@ class WP_Update{
 			if( get_option('update_install_enable') )
 				$updateText .= '<br/><a href="' . 
 					wp_nonce_url('plugins.php?page=wp-update/wp-update-plugins-install.php&amp;url=' . 
-									urlencode($updateStat['PluginInfo']['Download']).'&amp;upgrade='.$pluginfile, 'wpupdate-plugin-install') 
+									urlencode($updateStat['PluginInfo']['Download']).'&amp;upgrade='.$pluginfile, 'wpupdate-upgrade-plugin') 
 				. '">'.__('Install').'</a>';
 			if( isset($updateStat['Errors']) ){
 				$updateText .= '<br />' . implode('<br />',$updateStat['Errors']);

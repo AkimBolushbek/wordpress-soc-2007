@@ -123,8 +123,8 @@ if( !empty($wp_filesystem->errors) ){
 			}
 		}
 		echo implode("<br>",$messages);
-		//$folder = ABSPATH . 'wp-content/wpupdate/' . $_POST['upgrade_source'];
-		//$wp_filesystem->delete($folder, true);
+		$folder = ABSPATH . 'wp-content/wpupdate/' . $_POST['upgrade_source'];
+		$wp_filesystem->delete($folder, true);
 	} else {
 ?>
 	<h2><?php _e('Currently installed:'); ?></h2>
@@ -140,7 +140,7 @@ if( !empty($wp_filesystem->errors) ){
 			$fileinfo['name'] = $fileinfo['basename'];
 			$filename = wpupdate_url_to_file($file);
 			
-			$messages = $wp_update->installItem($filename, $fileinfo, 'wp-content/wpupdate/');
+			$messages = $wp_update->installItemFromZip($filename, $fileinfo, 'wp-content/wpupdate/');
 			unlink($filename); //Once installed, Delete the zip
 
 			echo '<div class="installLog">';
@@ -183,17 +183,17 @@ if( !empty($wp_filesystem->errors) ){
 					foreach( $diff as $fileName => $fileInfo){
 						switch($fileInfo['status']) {
 							case 'new':
-								echo "<span style='color: green'>$fileName (New)</span><br />";
+								echo "<span style='color: green'>$fileName (".__('New').")</span><br />";
 								break;
 							case 'deleted':
-								echo "<span style='color: red'>$fileName (Deleted)</span><br />";
+								echo "<span style='color: red'>$fileName (".__('Deleted').")</span><br />";
 								break;
 							case 'changed':
-								echo "<span style='color: orange'>$fileName (Changed)</span><br />";
+								echo "<span style='color: orange'>$fileName (".__('Changed').")</span><br />";
 								break;
 							default:
 							case 'same':
-								echo "<span style='color: black'>$fileName (unChanged)</span><br />";
+								echo "<span style='color: black'>$fileName (".__('unChanged').")</span><br />";
 								break;
 						}
 					}//end foreach
