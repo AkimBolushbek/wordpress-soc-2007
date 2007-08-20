@@ -8,14 +8,17 @@ Author: Matthias Bauer
 Author URI: http://moeffju.net/
 */
 
+define('ISHTAR_BASEDIR', dirname(__FILE__));
+define('ISHTAR_DOMAIN', 'ishtar');
+
 function ishtar_init() {
-	add_action('admin_menu', 'ishtar_config_page');
+  add_action('admin_menu', 'ishtar_config_page');
 }
 add_action('init', 'ishtar_init');
 
 function ishtar_config_page() {
-	if ( function_exists('add_submenu_page') )
-		add_submenu_page('plugins.php', __('Ishtar'), __('Ishtar'), 'manage_options', 'ishtar-main', 'ishtar_main');
+  if ( function_exists('add_submenu_page') )
+    add_submenu_page('plugins.php', __('Ishtar', ISHTAR_DOMAIN), __('Ishtar', ISHTAR_DOMAIN), 'manage_options', 'ishtar-main', 'ishtar_main');
 }
 
 function ishtar_is_fuzzy($data) {
@@ -27,38 +30,97 @@ function ishtar_is_untranslated($data) {
 }
 
 function ishtar_html_msgctxt($data) {
+  if (!array_key_exists('msgctxt', $data)) return '';
   return htmlspecialchars($data['msgctxt']);
 }
 
 function ishtar_html_msgid($data) {
-  return htmlspecialchars($data['msgid']);
+  return htmlspecialchars(str_replace("\\n", "\\n\n", $data['msgid']));
 }
 
 function ishtar_html_msgstr($data) {
-  return htmlspecialchars(implode("\n", $data['msgstr']));
+  return htmlspecialchars(str_replace("\\n", "\\n\n", implode("\n", $data['msgstr'])));
+}
+
+function ishtar_html_reference($data) {
+  if (!array_key_exists('reference', $data)) return '';
+  return htmlspecialchars(implode("<br>\n", $data['reference']));
+}
+
+function ishtar_filter($data, $filter_terms) {
+  return
+       (stripos($data['msgid'], $filter_terms) !== FALSE)
+    || (stripos(implode('', $data['msgstr']), $filter_terms) !== FALSE);
 }
 
 function ishtar_main() {
-	if ( isset($_POST['submit']) ) {
-		if ( function_exists('current_user_can') && !current_user_can('manage_options') )
-			die(__('Cheatin&#8217; uh?'));
-	}
+  if ( isset($_POST['submit']) ) {
+    if ( function_exists('current_user_can') && !current_user_can('manage_options') )
+      die(__('Cheatin&#8217; uh?'));
+  }
+
+  include('gettext.php');
 
   wp_enqueue_script('prototype');
   wp_print_scripts();
   
   /* For testing */
-  include('gettext.php');
-  $hash= parse_po_file(dirname(__FILE__).'/wordpress.pot');
-  $paginate_num= 100;
+  $hash= parse_po_file(ISHTAR_BASEDIR.'/test_fuzzy.po');
+  $full_hash= $hash;
+  
+  if (isset($_POST['filter']) && isset($_POST['filterterms']) && !empty($_POST['filterterms'])) {
+    $filter_terms= $_POST['filterterms'];
+    $temp= $hash;
+    $hash= array();
+    foreach ($temp as $k => $data) {
+      if ((stripos($data['msgid'], $filter_terms) !== FALSE) || (stripos(implode('', $data['msgstr']), $filter_terms) !== FALSE)) {
+        $hash[$k] = $data;
+      }
+    }
+    //$hash= array_filter($hash, create_function('$a', 'return ishtar_filter($a, \''.addslashes($filter_terms).'\');'));
+  }
+  
+  if (isset($_POST['finish'])) {
+    //echo "<pre>".htmlspecialchars(var_export($_POST, TRUE))."</pre>";
+    foreach ($_POST['ishtar'] as $k => $data) {
+      // normalize newlines
+      $s= $data['msgstr'];
+      $s= str_replace(array("\r\n", "\r"), array("\n", "\n"), $s);
+      $s= str_replace(array("\\n\n"), array("\\n"), $s);
+      $s= stripslashes($s);
+      
+      //echo "<pre>before = ".htmlspecialchars(var_export($full_hash[$k], TRUE))."<br>after = ".htmlspecialchars(var_export($data, TRUE))."</pre>";
+      $full_hash[$k]['msgstr']= array($s);
+      $hash[$k]= $full_hash[$k];
+    }
+    if (write_po_file($full_hash, ISHTAR_BASEDIR.'/test_fuzzy.po')) {
+      $message = __('Successfully saved file.', ISHTAR_DOMAIN);
+      $message_color = '#ddf';
+    }
+    else {
+      $message = __('Error saving file.', ISHTAR_DOMAIN);
+      $message_color = '#fdd';
+    }
+  }
+  
+  $paginate_num= 5;
   $paginate_count= sizeof($hash);
   $paginate_start= (isset($_POST['ishtar_ps']) ? intval($_POST['ishtar_ps']) : 0);
   if (isset($_POST['saveprev'])) $paginate_start-=$paginate_num;
   if (isset($_POST['savenext'])) $paginate_start+=$paginate_num;
   if (isset($_POST['savego'])) $paginate_start=($paginate_num * intval($_POST['savegopage']));
   $paginate_start= min(max($paginate_start, 0), $paginate_count-1);
-  $paginate_end= min($paginate_start + $paginate_num, $paginate_count-1);
+  $paginate_end= min($paginate_start + $paginate_num, $paginate_count);
 
+  $controls= array();
+  if ($paginate_start > 0)
+    $controls[]= '<input type="submit" name="saveprev" value="'.sprintf(__('Save and show previous %d', ISHTAR_DOMAIN), $paginate_num).'">';
+  if ($paginate_start + $paginate_num < $paginate_count)
+    $controls[]= '<input type="submit" name="savenext" value="'.sprintf(__('Save and show next %d', ISHTAR_DOMAIN), min($paginate_num, $paginate_end)).'">';
+  if ($paginate_count > $paginate_num)
+    $controls[]= __('Save and go to page:', ISHTAR_DOMAIN).' <input type="text" name="savegopage" size="3" value="'.floor($paginate_start / $paginate_num).'"><input type="submit" name="savego" value="'.__('Go', ISHTAR_DOMAIN).'">';
+  $controls[]= __('Filter:', ISHTAR_DOMAIN).' <input type="text" name="filterterms" value="'.htmlspecialchars($filter_terms).'"><input type="submit" name="filter" value="'.__('Filter', ISHTAR_DOMAIN).'">';
+  $controls[]= '<input type="submit" name="finish" value="'.__('Finish', ISHTAR_DOMAIN).'">';
 ?>
 <script type="text/javascript" charset="utf-8">
 // Guess m-width of font
@@ -67,33 +129,33 @@ d.appendChild(s);s.innerHTML="m";b.appendChild(d);var w=s.offsetWidth;var h=s.of
 
 var Textarea = Class.create();
 Textarea.prototype = {
-	initialize: function(el){
-		this.el = el;
-		this.rowLength = el.offsetWidth / w; //parseInt(el.getAttribute('cols'));
-		this.lineHeight = h;
-		this.rows = '';
-		this.delta = this.lineHeight;
-		this.el.setStyle({overflow: 'hidden'});
-		//this.timer = setInterval(function(){this.checkValue()}.bind(this), 100);
+  initialize: function(el){
+    this.el = el;
+    this.rowLength = el.offsetWidth / w; //parseInt(el.getAttribute('cols'));
+    this.lineHeight = h;
+    this.rows = '';
+    this.delta = this.lineHeight;
+    this.el.setStyle({overflow: 'hidden'});
+    //this.timer = setInterval(function(){this.checkValue()}.bind(this), 100);
     Event.observe(el, 'keyup', this.checkValue.bind(this));
     setTimeout(this.checkValue.bind(this), 50);
-	},
-	checkValue: function(){
-		this.rowLength = this.el.offsetWidth / w; //parseInt(el.getAttribute('cols'));
-		var value = this.el.value.split('\n');
-		var rows = 0;
-		for (var i=0, j=value.length; i<j; ++i) {
-			var tempLength = value[i].length == 0 ? 1 : value[i].length;
-			rows += Math.ceil( tempLength / this.rowLength );
-		}
-		if (this.rows !== rows) {
-			this.rows = rows;
-			this.resize();
-		}
-	},
-	resize: function(){
-		this.el.setStyle({height: this.lineHeight * this.rows + this.delta + 'px'});
-	}
+  },
+  checkValue: function(){
+    this.rowLength = this.el.offsetWidth / w; //parseInt(el.getAttribute('cols'));
+    var value = this.el.value.split('\n');
+    var rows = 0;
+    for (var i=0, j=value.length; i<j; ++i) {
+      var tempLength = value[i].length == 0 ? 1 : value[i].length;
+      rows += Math.ceil( tempLength / this.rowLength );
+    }
+    if (this.rows !== rows) {
+      this.rows = rows;
+      this.resize();
+    }
+  },
+  resize: function(){
+    this.el.setStyle({height: this.lineHeight * this.rows + this.delta + 'px'});
+  }
 }
 
 Event.observe(window, 'load', function(){
@@ -154,11 +216,13 @@ Event.observe(window, 'load', function(){
 .ishtar .ishtar-ref { font-size: 70%; }
 .ishtar .ishtar-fuz { text-align: center; }
 </style>
-<!-- <div id="message" class="updated fade"><p><strong><?php _e('Updated.') ?></strong></p></div> -->
+<?php if ($message): ?>
+<div id="message" class="updated fade"><p><strong><?php echo $message; ?></strong></p></div>
+<?php endif; ?>
 <div class="wrap ishtar">
-<h2><?php _e('Ishtar'); ?></h2>
-<p>Alt-N: Go to <u>n</u>ext untranslated or fuzzy</p>
-<p>Displaying entries <?php echo $paginate_start; ?> &ndash; <?php echo $paginate_end-1; ?> of <?php echo $paginate_count-1; ?>.</p>
+<h2><?php _e('Ishtar', ISHTAR_DOMAIN); ?></h2>
+<p><?php _e('Alt-N: Go to <u>n</u>ext untranslated or fuzzy', ISHTAR_DOMAIN); ?></p>
+<p><?php _e(sprintf('Displaying entries %1$d &ndash; %2$d of %3$d.', $paginate_start, $paginate_end, $paginate_count), ISHTAR_DOMAIN); ?></p>
 <form method="POST">
 <input type="hidden" name="ishtar_ps" value="<?php echo $paginate_start; ?>">
 <table>
@@ -169,27 +233,28 @@ Event.observe(window, 'load', function(){
 <col width="10%">
 </colgroup>
 <thead>
-<!-- <tr><td colspan="4"> <input type="text" name="searchval" value=""> <input type="submit" name="search" value="Search"> </td></tr> -->
-<tr><td colspan="4"> <?php if ($paginate_start > 0): ?><input type="submit" name="saveprev" value="Save and show previous <?php echo $paginate_num; ?>"> <?php endif; if ($paginate_start + $paginate_num < $paginate_count): ?><input type="submit" name="savenext" value="Save and show next <?php echo min($paginate_num, $paginate_end); ?>"><?php endif; ?> <?php if ($paginate_count > $paginate_num): ?><input type="submit" name="savego" value="Save and go to page:"><input type="text" name="savegopage" size="3" value="<?php echo floor($paginate_start / $paginate_num); ?>"><?php endif; ?><input type="submit" name="finish" value="Finish"> </td></tr>
-<tr> <th>reference</th> <th>msgid</th> <th>msgstr</th> <th>fuzzy</th> </tr>
+<tr><td colspan="4"> <?php echo implode(' ', $controls); ?> </td></tr>
+<tr> <th><?php _e('reference', ISHTAR_DOMAIN) ?></th> <th><?php _e('msgid', ISHTAR_DOMAIN); ?></th> <th><?php _e('msgstr', ISHTAR_DOMAIN); ?></th> <th><?php _e('fuzzy', ISHTAR_DOMAIN) ?></th> </tr>
 </thead>
 <tbody>
 <?php
-$i= 0;
 foreach (array_slice($hash, $paginate_start, $paginate_num) as $data):
+  $i= $data['idx'];
   $c= array();
   if (ishtar_is_fuzzy($data)) $c[]= 'ishtar-f';
   if (ishtar_is_untranslated($data)) $c[]= 'ishtar-u';
 ?>
-<tr<?php if (sizeof($c) > 0) echo ' class="'.implode(' ', $c).'"'; ?>> <td><span class="ishtar-ctx"><?php echo ishtar_html_msgctxt($data); ?></span><br><span class="ishtar-ref"><?php echo $data['reference']; ?></span></td> <td><?php echo ishtar_html_msgid($data); ?></td> <td><textarea name="ishtar[<?php echo $i; ?>][msgstr]"><?php echo ishtar_html_msgstr($data); ?></textarea></td> <td class="ishtar-fuz"><?php if (ishtar_is_fuzzy($data)): ?><label for="ishtar_<?php echo $i; ?>_fuzzy"><input type="checkbox" name="ishtar[<?php echo $i; ?>][flags]" id="ishtar_<?php echo $i; ?>_fuzzy" value="fuzzy" checked="checked"></label><?php else: ?>-<?php endif; ?></td> </tr>
+<tr<?php if (sizeof($c) > 0) echo ' class="'.implode(' ', $c).'"'; ?>> <td><span class="ishtar-ctx"><?php echo ishtar_html_msgctxt($data); ?></span><br><span class="ishtar-ref"><?php echo ishtar_html_reference($data); ?></span></td> <td><?php echo ishtar_html_msgid($data); ?></td> <td><textarea name="ishtar[<?php echo $i; ?>][msgstr]"><?php echo ishtar_html_msgstr($data); ?></textarea></td> <td class="ishtar-fuz"><?php if (ishtar_is_fuzzy($data)): ?><label for="ishtar_<?php echo $i; ?>_fuzzy"><input type="checkbox" name="ishtar[<?php echo $i; ?>][flags]" id="ishtar_<?php echo $i; ?>_fuzzy" value="fuzzy" checked="checked"></label><?php else: ?>-<?php endif; ?></td> </tr>
 <?php
   $i++;
 endforeach;
 ?>
 </tbody>
+<?php if (0): ?>
 <tfoot>
-<tr><td colspan="4"> <?php if ($paginate_start > 0): ?><input type="submit" name="saveprev" value="Save and show previous <?php echo $paginate_num; ?>"> <?php endif; if ($paginate_start + $paginate_num < $paginate_count): ?><input type="submit" name="savenext" value="Save and show next <?php echo min($paginate_num, $paginate_end); ?>"><?php endif; ?> <?php if ($paginate_count > $paginate_num): ?><input type="submit" name="savego" value="Save and go to page:"><input type="text" name="savegopage" size="3" value="<?php echo floor($paginate_start / $paginate_num); ?>"><?php endif; ?><input type="submit" name="finish" value="Finish"> </td></tr>
+<tr><td colspan="4"> <?php echo implode(' ', $controls); ?> </td></tr>
 </tfoot>
+<?php endif; ?>
 </table>
 </form>
 </div>

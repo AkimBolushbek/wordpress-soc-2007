@@ -9,10 +9,19 @@ function _po_clean_helper($x) {
 		if ($x[0] == '"')
 			$x= substr($x, 1, -1);
 		$x= str_replace("\"\n\"", '', $x);
+    $x= str_replace("\\t", '\\\t', $x);
+    $x= str_replace("\\n", '\\\n', $x);
+    $x= str_replace("\\r", '\\\r', $x);
 		$x= str_replace('$', '\\$', $x);
 		$x= @ eval ("return \"$x\";");
 	}
 	return $x;
+}
+
+function _po_escape($x) {
+  $s= '"'.str_replace(array('"', "\n", "\\n"), array('\"', "\\n\"\n\"", "\\n\"\n\""), $x).'"';
+  if (strpos($s, "\n") !== FALSE) $s= "\"\"\n".$s;
+  return $s;
 }
 
 /* Parse gettext .po files. */
@@ -64,7 +73,7 @@ function parse_po_file($in) {
 			case '#|' : // msgid previous-untranslated-string
 				break;
 			case '#:' : // reference...
-        $temp['reference']= $data;
+        $temp['reference'][]= $data;
         break;
 			case 'msgctxt' :
 				// context
@@ -109,10 +118,10 @@ function parse_po_file($in) {
 	if ($state == 'msgstr')
 		$hash[]= $temp;
 
-	// Cleanup data, merge multiline entries, reindex hash for ksort
+	// Cleanup data, merge multiline entries
 	$temp= $hash;
 	$hash= array ();
-	foreach ($temp as $entry) {
+	foreach ($temp as $i => $entry) {
 		foreach ($entry as & $v) {
 			$v= _po_clean_helper($v);
 			if ($v === FALSE) {
@@ -120,20 +129,60 @@ function parse_po_file($in) {
 				return FALSE;
 			}
 		}
-		$hash[$entry['msgid']]= $entry;
+    $entry['idx'] = $i;
+		$hash[]= $entry;
 	}
 
 	return $hash;
 }
 
+function sort_by_msgid($hash) {
+  foreach ($hash as $entry) {
+    $temp[$entry['msgid']]= $entry;
+  }
+  ksort($temp, SORT_STRING);
+  $hash= array();
+  foreach ($temp as $entry) {
+    $hash[]= $entry;
+  }
+  return $hash;
+}
+
 /* Write a GNU gettext style po file. */
 function write_po_file($hash, $out) {
-	ksort($hash, SORT_STRING);
-	
-	
+  $fh= fopen($out, 'w');
+  if (!$fh) return FALSE;
 	foreach ($hash as $entry) {
-		
+    if (array_key_exists('reference', $entry)) {
+      foreach ($entry['reference'] as $l) {
+        fputs($fh, '#: '.$l."\n");
+      }
+    }
+    if (array_key_exists('flags', $entry) && sizeof(array_keys($entry['flags'])) > 0) {
+      fputs($fh, '#, '.implode(', ', array_keys($entry['flags']))."\n");
+    }
+    foreach (array('msgctxt', 'msgid', 'msgid_plural', 'msgstr') as $k) {
+      if (array_key_exists($k, $entry)) {
+        if ($k === 'msgstr') {
+          if (array_key_exists('msgid_plural', $entry)) {
+            foreach ($entry[$k] as $i => $l) {
+              fputs($fh, $k.'['.$i.'] '._po_escape($l)."\n");
+            }
+          }
+          else {
+            fputs($fh, $k.' '._po_escape(implode("\n", $entry[$k]))."\n");
+          }
+        }
+        else {
+          fputs($fh, $k.' '._po_escape($entry[$k])."\n");
+        }
+      }
+    }
+    fputs($fh, "\n");
 	}
+  fclose($fh);
+  
+  return TRUE;
 }
 
 /* Write a GNU gettext style machine object. */
