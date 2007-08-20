@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+  <title>WordPress Performance Tool</title>
+  <meta name="GENERATOR" content="OpenOffice.org 2.2  (Win32)" />
+  <meta name="CREATED" content="20070706;18513904" />
+  <meta name="CHANGED" content="16010101;0" />
+  <link rel="stylesheet" href="stylenew.css" media="screen" type="text/css" />
+  <script src = "home.js" /> 
+</head>
+
+<body lang="en-US" dir="LTR">
+  <div id="container">
+    <div id="header">
+	  <img src="pt.jpg" alt="WordPress Performance Tool" />
+	</div>
+	<div id="top">
+      The performance tool allows you to check the performance of a current build and compare it
+	  against previous builds. Select whether you want to generate results (create an XML file) or 
+	  compare results.
+	</div>
+	<div id="radios">
+	  <form method="post" action="home.php">
+	    <input type = "radio" name ="operation" value = "generate" onclick = "handleChange(this)" />
+		  Generate Results
+		  
+		<input type = "radio" name = "operation" value = "compare" onclick = "handleChange(this)" />
+		  Compare Results
+		  <br />
+		</input>
+	</div>
+	<div id="formBoxGenerate" style  = "display: none" >
+	  <p class="blue">To continue, choose a name you wish to save the file as, and the number of runs of the 
+	  performance test. The number of runs roughly corresponds to the number of times
+	  each test will be run.<p />
+	  <p class="inputs">
+	    <span class="bold">Save File As: </span><br /><input type = "textbox" name = "saveFile" value = "build2_2Results.xml" /><br /><br />
+		<span class="bold">Number Of Runs: </span><br /><input type = "textbox" name = "runs" value = "50" /><br />
+	  <p />
+    </div>
+	<div id="formBoxCompare" style = "display:none" >
+	  <p class="blue">
+	    Select two files to compare
+	  </p>
+	  <p class="inputs">
+	    <span class="bold">First File: </span><br /><input type = "textbox" name = "firstFile" value = "build2_2Results.xml" /><br /><br />
+		<span class="bold">Second File: </span><br /><input type = "Textbox" name = "secondFile" value = "betaBuildResults.xml" /><br />
+	  </p>
+	</div>
+	<div id="formBoxSubmit">
+	  <span class="sumbitInfo">
+	    <input type = "submit" name = "submitButton" value = "Go!" />
+	  </span>	
+	  </form>
+	</div>
+  </div>
+</body>
+
+</html>
