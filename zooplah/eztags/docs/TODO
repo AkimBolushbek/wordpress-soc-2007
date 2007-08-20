@@ -12,10 +12,10 @@ First release (target date: 2007-09-01)
    those who might download it.
 4. Create a screenshot and describe it.
 5. Release a test build to the public.
-6. Create a Makefile.  It should run that script, generate an HTML
-   README file (from readme.txt) using Markdown, merge all the PO
-   files with the master POT file and convert the PO files into
-   MO files, and create a zip file.
+6. Create a Makefile.  It should generate an HTML README file
+   (from readme.txt) using Markdown, merge all the PO files with
+   the master POT file and convert the PO files into MO files,
+   and create a zip file.
 7. Use more esoteric Markdown features, since the primary README
    file is going to be the HTML version.
 8. Link to the HTML README, tags listing, and caveats from
