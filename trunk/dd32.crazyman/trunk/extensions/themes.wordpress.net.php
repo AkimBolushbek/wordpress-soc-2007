@@ -14,7 +14,7 @@ function wpupdate_themeswordpressnet_search($args){
 		$snoopy = new Snoopy();
 		$snoopy->fetch($url);
 
-		preg_match_all('#<a href="(.*?)" rel="bookmark" title="(.*?)"><img src=\'.*/snapshots/(\d+?)-thumb.jpg\'#i',$snoopy->results,$mat1);
+		preg_match_all('#<a href="(.*?)" rel="bookmark" title="(.*?)"><img src=".*/snapshots/(\d+?)-thumb.jpg"#i',$snoopy->results,$mat1);
 
 		if( ! $mat1 )
 			return $args;
@@ -68,7 +68,7 @@ $tags = array( 	1 => '1 column', 2 => '2 columns',	3 => '3 columns', 4 => '4 col
 	$string[] = 'order=' . $options['order'];
 	$string[] = 'andor=' . $options['andor'];
 	
-	return join('&',$string);
+	return join('&amp;',$string);
 }
 
 add_filter('update_themeSearchOptions','wpupdate_wordpressnet_themeSearchOptions');
