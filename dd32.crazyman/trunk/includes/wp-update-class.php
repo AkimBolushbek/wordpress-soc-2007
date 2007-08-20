@@ -472,6 +472,7 @@ class WP_Update{
 	}
 	//ToDo: Internationalise
 	function installItemFromZip($filename,$fileinfo=array(),$destination=''){
+		require_once('wp-update-filesystem.php');
 		global $wp_filesystem;
 		if( ! $wp_filesystem || ! is_object($wp_filesystem) )
 			WP_Filesystem();
@@ -479,7 +480,6 @@ class WP_Update{
 			return array('Errors'=>array('Filesystem options not set correctly'));
 		$fs =& $wp_filesystem; //Just for simplicity
 
-		require_once('wp-update-filesystem.php');
 		require_once('pclzip.lib.php');	
 		$messages = array();
 		

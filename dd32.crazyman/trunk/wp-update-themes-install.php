@@ -26,7 +26,7 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 	}
 ?>
 	<h3><?php _e('Step 2'); ?></h3>
-		<div class="section">
+	<div class="section">
 		<h4><?php _e('Installing..'); ?></h4>
 		<p>
 			<?php _e('Filename'); ?>: <strong><?php echo basename($filename); ?></strong><br />
@@ -52,11 +52,14 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 				foreach((array)$result as $message){
 					echo $message . '<br />';
 				}
-				var_dump($result);
 			?>
+		</p>
+	</div>
+	<p>
+		<?php _e('If you see no errors mentioned above, then your theme is now installed, and may be <a href="themes.php">activated</a>.'); ?>
+	</p>
 <?php
 }
-
 ?>
 <?php if( empty($_GET['url']) && empty($_FILES) ){ ?>
 	<h3><?php _e('Step 1:'); ?></h3>
