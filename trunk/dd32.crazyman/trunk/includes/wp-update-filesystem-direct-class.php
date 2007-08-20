@@ -308,6 +308,8 @@ class WP_Filesystem_Direct{
 			//File
 			$ret[$struc['name']] = $struc;
 		}
+		$dir->close();
+		unset($dir);
 		return $ret;
 	}
 	function __destruct(){
