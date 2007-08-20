@@ -64,8 +64,8 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 		</form>
 <?php
 	if( !empty($searchTerm) ){
-		$results = $wp_update->search('plugins',array($searchTerm));
 		$resultText = 'Plugin Search: ' . $searchTerm;
+		$results = $wp_update->search('plugins',array($searchTerm));
 	} elseif (!empty($tagSearch)) {
 		$resultText = 'Plugins Tagged: ' . $tagSearch;
 		$results = $wp_update->getPluginsByTag($tagSearch);

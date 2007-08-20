@@ -55,7 +55,8 @@ class WP_Update{
 					array('results'=>array(),
 							'info'=>array(
 								'terms'=>$terms,
-								'page'=>$page)
+								'page'=>$page,
+								'pages'=>1)
 							));
 		}
 	}
