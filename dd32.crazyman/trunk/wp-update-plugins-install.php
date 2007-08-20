@@ -15,17 +15,14 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 }
 
 ?>
-<style type="text/css">
-
-</style>
 <div class="wrap">
 	<h2><?php _e('Install a Plugin'); ?></h2>
 	<?php
 		//First we check to see if this is a WordPress.org plugin, We'll have some requirements to check first :)
 		if ( isset($_GET['wp-id']) && !empty($_GET['wp-id']) && !isset($_GET['proceed']) ) {
+			check_admin_referer('wpupdate-install-plugin');
 			$id = $_GET['wp-id'];
-			$pluginInfo = apply_filters('wpupdate_checkPluginUpdate-wordpress.org',$id); //$wp_update->checkPluginUpdateWordpressOrg($id);
-			var_dump($pluginInfo);
+			$pluginInfo = apply_filters('wpupdate_checkPluginUpdate-wordpress.org',$id);
 			?>
 				<p>
 					<?php _e('Are you sure you wish to install the following Plugin?'); ?>
@@ -56,20 +53,20 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 					<strong><?php _e('Download'); ?>:</strong> <?php echo '<a target="_blank" href="' . $pluginInfo['Download'] . '">' . $pluginInfo['Download'] . '</a>' ?><br/>
 					<strong><?php _e('Tags'); ?>:</strong><?php
 												foreach( (array) $pluginInfo['Tags'] as $tag){
-													echo '<a href="plugins.php?page=wp-update/wp-update-plugins-search.php&tag=' . $tag . '">' . 
+													echo '<a href="plugins.php?page=wp-update/wp-update-plugins-search.php&amp;tag=' . $tag . '">' . 
 															str_replace('-',' ',$tag) . '</a> ';
 												}
 												?><br />
 					<strong><?php _e('Related Plugins'); ?>:</strong><?php
 												foreach( (array) $pluginInfo['Related'] as $related){
-													echo '<a href="plugins.php?page=wp-update%2Fwp-update-plugins-install.php&wp-id=' . $related . '">' . 
+													echo '<a href="plugins.php?page=wp-update%2Fwp-update-plugins-install.php&amp;wp-id=' . $related . '">' . 
 														str_replace('-',' ',$related) . '</a> ';
 												}
 												?><br/>
 				</p>
 				<p class="submit">
-				<form action="<?php echo $pagenow ?>" method="GET">
-					<input type="hidden" name="page" value="<?php echo attribute_escape($_GET['page']); ?>" />
+				<form action="<?php echo $pagenow . '?page=' . $_GET['page']; ?>" method="GET">
+					<?php wp_nonce_field('wpupdate-install-plugin'); ?>
 					<input type="hidden" name="url" value="<?php echo attribute_escape($pluginInfo['Download']); ?>" />
 					<input type="hidden" name="proceed" value="y" />
 					<input type="submit" name="submit" value="<?php _e('Ok, Install the plugin &raquo;') ?>" />
@@ -79,6 +76,7 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 		}//end if wp-id
 	?>
 	<?php if( (isset($_GET['url']) && !empty($_GET['url']) ) || !empty($_FILES) ){
+		check_admin_referer('wpupdate-install-plugin');
 		if( isset($_GET['url']) ){
 			//Download file
 			$filename = attribute_escape($_GET['url']); //TODO?
@@ -120,30 +118,33 @@ if( isset($_GET['upgrade']) || isset($_POST['upgrade']) ){
 	<?php if( (!isset($_GET['url']) || empty($_GET['url']) ) && empty($_FILES) && (!isset($_GET['wp-id']) || empty($_GET['wp-id'])) ){ ?>
 		<h3><?php _e('Upload file'); ?></h3>
 		<p>
-			<form enctype="multipart/form-data" name="installlocalfile" method="POST">
+			<form enctype="multipart/form-data" name="installlocalfile" method="POST" action="<?php echo $pagenow . '?page=' . $_GET['page'] ?>">
+				<?php wp_nonce_field('wpupdate-install-plugin'); ?>
 				<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ((int)ini_get('post_max_size'))*1024*1024; ?>" />
-				<?php _e('Select File'); ?>: <input type="file" name="pluginfile" />&nbsp;<input type="submit" name="submit" value="Upload &raquo;" /><br />
+				<?php _e('Select File'); ?>: <input type="file" name="pluginfile" />&nbsp;<input type="submit" name="submit" value="<?php _e('Upload &raquo;'); ?>" /><br />
 				<strong><?php _e('Max filesize'); ?>:</strong><?php echo ini_get('post_max_size'); ?>
 			</form>
 		</p>
 		<h3><?php _e('From URL'); ?></h3>
 		<p>
-			<form enctype="multipart/form-data" name="installurl" method="GET">
+			<form enctype="multipart/form-data" name="installurl" method="GET" action="<?php echo $pagenow . '?page=' . $_GET['page'] ?>">
+			<?php wp_nonce_field('wpupdate-install-plugin'); ?>
 			<input type="hidden" name="page" value="<?php echo attribute_escape($_GET['page']); ?>" />
 			<?php _e('URL'); ?>: <input type="text" name="url" /> &nbsp;
-				<input type="submit" name="submit" value="Install &raquo;" />
+				<input type="submit" name="submit" value="<?php _e('Install &raquo;'); ?>" />
 			</form>
 		</p>
 		<h3><?php _e('Wordpress Plugin ID'); ?></h3>
 		<p>
-			<form enctype="multipart/form-data" name="installurl" method="GET">
+			<form enctype="multipart/form-data" name="installurl" method="GET" action="<?php echo $pagenow . '?page=' . $_GET['page'] ?>">
+			<?php wp_nonce_field('wpupdate-install-plugin'); ?>
 			<input type="hidden" name="page" value="<?php echo attribute_escape($_GET['page']); ?>" />
 			ID: <input type="text" name="wp-id" /> &nbsp;
-				<input type="submit" name="submit" value="Install &raquo;" />
+				<input type="submit" name="submit" value=""<?php _e('Install &raquo;'); ?>" />
 			</form>
 		</p>
 		<h3><?php _e('Via a Search'); ?></h3>
-			<p><?php _e('To install themes directly without uploading them yourself, Please use the'); ?> <a href="themes.php?page=wp-update/wp-update-plugin-search.php"><?php _e('Plugin Search'); ?></a> <?php _e('tab, and select "Install" on the item.'); ?></p>
+			<p><?php sprintf(__('To install themes directly without uploading them yourself, Please use the <a href="%s">Plugin Search</a> tab, and select "Install" on the item.'), 'themes.php?page=wp-update/wp-update-plugin-search.php'); ?></p>
 		</p>
 	<?php } ?>
 </div>

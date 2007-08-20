@@ -6,6 +6,7 @@
 	}
 	
 	if( isset($_POST['submit_general']) ){
+		check_admin_referer('wpupdate-general-options');
 		$update_notification_enable = isset($_POST['update_notification_enable']);
 		$update_install_enable 		= isset($_POST['update_install_enable']);
 		$update_upgrade_enable 		= isset($_POST['update_upgrade_enable']);
@@ -40,7 +41,8 @@
 ?>
 <div class="wrap">
 	<h2>General Options</h2>
-	<form method="post">
+	<form method="post" action="<?php echo $pagenow . '?page=' . $_GET['page'] ?>">
+	<?php wp_nonce_field('wpupdate-general-options'); ?>
 	<p>
 		<h3>General Options</h3>
 		<input type="checkbox" name="update_notification_enable" <?php checked(true,get_option('update_notification_enable')) ?> />
@@ -87,7 +89,7 @@
 			echo '<div class="updated"><p>' . __('<strong>Note:</strong>With the current server configuration, <strong>"FTP"</strong> Filesystem access is recomended.') . '</p></div>';
 	}
 	if( isset($_POST['submit_filesystem']) ){
-		var_dump($_POST);
+		check_admin_referer('wpupdate-filesystem-options');
 		if( 'direct' == $_POST['filesystem']['type'] )
 			update_option('wpfs_method','direct');
 		else
@@ -96,7 +98,7 @@
 		$ftp = array();
 		$ftp['method'] = $_POST['filesystem']['ftp']['method'];
 		$ftp['hostname'] = $_POST['filesystem']['ftp']['hostname'];
-		$ftp['username'] = $_POST['filesystem']['ftp']['username']; //Underscores have been used to prevent browser "wands" from attacking the field
+		$ftp['username'] = $_POST['filesystem']['ftp']['username'];
 		$ftp['password'] = false;
 		$ftp['passwordsave'] = false;
 		$ftp['basedir'] = $_POST['filesystem']['ftp']['basedir'];
@@ -110,7 +112,6 @@
 			$ftp['password'] = $password;
 		} 
 		update_option('wpfs_ftp',$ftp);
-		var_dump($ftp);
 	}//end if filesystem 
 	
 	$method = 'direct' == get_option('wpfs_method') ? 'direct' : 'ftp';
@@ -119,7 +120,8 @@
 
 <div class="wrap">
 	<h2> Filesystem Options </h2>
-	<form name="filesystem" method="post">
+	<form name="filesystem" method="post" action="<?php echo $pagenow . '?page=' . $_GET['page'] ?>">
+	<?php wp_nonce_field('wpupdate-filesystem-options'); ?>
 	<strong>FTP:</strong> <input type="radio" name="filesystem[type]" value="ftp" onchange="$('#filesystem-ftp').show(); $('#filesystem-direct').hide();"<?php checked('ftp',$method); ?> /> &nbsp;
 	<strong>Direct:</strong> <input type="radio" name="filesystem[type]" value="direct" onchange="$('#filesystem-direct').show(); $('#filesystem-ftp').hide();"<?php checked('direct',$method); ?> /><br />
 	
@@ -162,7 +164,7 @@
 								if( !extension_loaded('sockets') ){ echo ' disabled="disabled"';} 
 								selected('phpsocket',$ftp['method']); ?>>PHP Sockets</option>
 							<option value="phpstream"<?php 
-								if( !function_exists('fsockopen') ){ echo ' disabled="disabled"';} 
+								if( true || !function_exists('fsockopen') ){ echo ' disabled="disabled"';}  /* Disabled temporarily */
 								selected('phpstream',$ftp['method']); ?>>PHP Stream Sockets</option>
 						</select>
 		<div id="ftp-status">&nbsp;</div>

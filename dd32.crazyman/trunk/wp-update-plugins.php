@@ -8,6 +8,7 @@ if( ! $wp_update || ! is_object($wp_update) )
 
 if ( isset($_GET['action']) ) {
 	if ('hidenotifications' == $_GET['action']){
+		check_admin_referer('wpupdate-hide-notice');
 		$notices = get_option('wpupdate_notifications');
 		foreach($notices as $plugin_file=>$plugin_info){
 			$notices[ $plugin_file ]['HideUpdate'] = true; //Hide all the updates available.
@@ -54,7 +55,7 @@ if ( isset($_GET['action']) ) {
 		update_option('deactivated_plugins', $current); 
 		
 		foreach ( (array)$current as $plugin) {
-			if( 'wp-update/wp-update.php' == $plugin) //Slip this in to prevent this script being disabled by a mass-sweep
+			if( 'wp-update/wp-update.php' == $plugin) //Slip this in to prevent this script being disabled by a mass-sweep, Else the user will loose 'Reactivate All', wnich might confuse; (We also assume that we wont break a future version here)
 				continue;
 			array_splice($current, array_search($plugin, $current), 1);
 			do_action('deactivate_' . $plugin);
@@ -80,7 +81,7 @@ if ( isset($_GET['action']) ) {
 				// A fatal error in any one plugin means NO 
 				// plugins will be reactivated. Sorry, but that's 
 				// just the way it is. :-/ 
-				wp_redirect('plugins.php?error=true&plugin='.urlencode($plugin)); // we'll override this later if the plugin can be included without fatal error 
+				wp_redirect('plugins.php?error=true&amp;plugin='.urlencode($plugin)); // we'll override this later if the plugin can be included without fatal error 
 				$errors[$plugin] = __('Plugin generated a fatal error.'); // we'll override this later if the plugin can be included without fatal error 
 				ob_start(); 
 				@include(ABSPATH . PLUGINDIR . '/' . $plugin); 
@@ -110,7 +111,7 @@ function wpupdate_header(){ ?>
 function checkUpdate(file){
 	var update = 'td#wpupdate-' + file.replace('/','').replace('.','');
 	$(update).html('Checking Update..');
-	$(update).load('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=checkPluginUpdate&file='+file);
+	$(update).load('<?php echo get_option('siteurl'); ?>/wp-content/plugins/wp-update/wp-update-ajax.php?action=checkPluginUpdate&amp;file='+file);
 }
 //]]>
 </script>

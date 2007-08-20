@@ -17,6 +17,7 @@ if( ! $wp_update || ! is_object($wp_update) )
 	<h2><?php _e('Install a Theme'); ?></h2>
 <?php 
 if( !empty($_FILES) || !empty($_GET['url']) ){ 
+	check_admin_referer('wpupdate-theme-install');
 	if( isset($_GET['url']) ){
 		//Download file
 		$filename = attribute_escape($_GET['url']); //TODO?
@@ -24,7 +25,6 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 		$filename = $_FILES['themefile']['name'];
 	}
 ?>
-	
 	<h3><?php _e('Step 2'); ?></h3>
 		<div class="section">
 		<h4><?php _e('Installing..'); ?></h4>
@@ -63,9 +63,9 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 		<div class="section">
 			<h4><?php _e('Upload file'); ?></h4>
 			<p>
-			<form enctype="multipart/form-data" name="installlocalfile" method="POST">
+			<form enctype="multipart/form-data" name="installlocalfile" method="POST" action="<?php echo $pagenow . '?page=' . $_GET['page'] ?>">
+			<?php wp_nonce_field('wpupdate-theme-install'); ?>
 			<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ((int)ini_get('post_max_size'))*1024*1024; ?>" />
-			<input type="hidden" name="step" value="2" />
 			<?php _e('Select File'); ?>: <input type="file" name="themefile" />&nbsp;<input type="submit" name="submit" value="<?php _e('Upload &raquo;'); ?>" /><br />
 			<strong><?php _e('Max filesize'); ?>:</strong><?php echo ini_get('post_max_size'); ?>
 			</form>
@@ -75,33 +75,4 @@ if( !empty($_FILES) || !empty($_GET['url']) ){
 			</p>
 		</div>
 <?php } /* end if empty && empty */?>
-
-<?php 
-function step2(){ 
-	global $wp_update;
-	if( isset($_GET['url']) ){
-		//Download file
-		$filename = attribute_escape($_GET['url']);
-	} elseif ( $_FILES['themefile']['tmp_name'] ) {
-		$filename = $_FILES['themefile']['name'];
-	}
-
-?>
-	<h3>Step 2: Installing</h3>
-	<div class="section">
-		<p>
-			<strong>Filename:</strong> <?php echo $filename; ?><br />
-			<?php
-			if( $_FILES['themefile']['tmp_name'] )
-				$wp_update->installTheme($_FILES['themefile']['tmp_name'],$_FILES['themefile'] );
-			elseif( isset($_GET['url']) )
-				$wp_update->installThemeFromURL(urldecode($_GET['url']));
-			?>
-		</p>
-		<p>
-			If there are no <span style="color:red">[FAILED]</span> items above, Then the theme has been installed correctly.<br/>
-			You may activate it via the <a href="themes.php">Themes page</a> now.
-		</p>
-	</div>
-<?php } ?>
 </div>

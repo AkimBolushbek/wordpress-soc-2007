@@ -101,7 +101,9 @@ function wpupdate_themeSearchHTML($theme){
 				<span>
 					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
 					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
-					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='themes.php?page=wp-update/wp-update-themes-install.php&step=2&url=".urlencode($theme['download'])."' target='_blank'>".__('Install')."</a>
+					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='" . 
+							wp_nonce_url('themes.php?page=wp-update/wp-update-themes-install.php&amp;url='.urlencode($theme['download']),'wpupdate-theme-install') . 
+					"' target='_blank'>".__('Install')."</a>
 				</span>
 			</div>\n";
 }
@@ -112,8 +114,9 @@ function wpupdate_pluginSearchHTML($plugin,$wordwrap=25){
 				' . wordwrap($plugin['Desc'],$wordwrap,"<br/>\n") . '
 				</p>
 				<p>
-				<a href="plugins.php?page=wp-update/wp-update-plugins-install.php&wp-id='.urlencode($plugin['Id']).'">' . __('Install') . '</a> 
-				<a href="'.$plugin['PluginHome'].'" target="_blank">WordPress.Org</a>
+				<a href="' . 
+					wp_nonce_url('plugins.php?page=wp-update/wp-update-plugins-install.php&amp;wp-id='.urlencode($plugin['Id']), 'wpupdate-plugin-install')
+				.'">' . __('Install') . '</a> <a href="'.$plugin['PluginHome'].'" target="_blank">WordPress.Org</a>
 				</p>
 		</span></div> &nbsp; ';
 }

@@ -13,20 +13,7 @@ It also has the ability to install Themes and Plugins via the WordPress Administ
 
 */
 
-/*
-NOTES:
-wp_opbjexT_cache ignores expiration time, everything is for 900 seconds.
-http://trac.wordpress.org/ticket/4179
-_e() isnt used with a textdomain, i *think* thats a bad thing to do.. 
-TODO: Remove HTML from within the _() calls?
-*/
-
-
-function wpupdate_init() {
-	add_action('admin_menu', 'wpupdate_admin_init');
-}
-add_action('init', 'wpupdate_init');
-
+add_action('admin_menu', 'wpupdate_admin_init');
 function wpupdate_admin_init(){
 	global $pagenow;
 	//Override Plugins and Themes pages.
@@ -98,7 +85,7 @@ function wpupdate_notices(){
 		echo '<br /><strong>';
 			echo implode(', ',$plugins);
 		echo '</strong>';
-		echo '<span style="float:right;"><a href="plugins.php?action=hidenotifications">' . __('Hide these updates') . '</a></span>';
+		echo '<span style="float:right;"><a href="' . wp_nonce_url('plugins.php?action=hidenotifications', 'wpupdate-hide-notice') .'">' . __('Hide these updates') . '</a></span>';
 	echo '</p></div>';
 	return;
 }

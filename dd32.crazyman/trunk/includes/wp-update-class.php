@@ -132,7 +132,10 @@ class WP_Update{
 			$updateText = __('Update Available').':<br/>';
 			$updateText .= '<strong>' . $updateStat['Version'] . '</strong>';
 			if( get_option('update_install_enable') )
-				$updateText .= '<br/><a href="plugins.php?page=wp-update/wp-update-plugins-install.php&url='.urlencode($updateStat['PluginInfo']['Download']).'&upgrade='.$pluginfile.'">'.__('Install').'</a>';
+				$updateText .= '<br/><a href="' . 
+					wp_nonce_url('plugins.php?page=wp-update/wp-update-plugins-install.php&amp;url=' . 
+									urlencode($updateStat['PluginInfo']['Download']).'&amp;upgrade='.$pluginfile, 'wpupdate-plugin-install') 
+				. '">'.__('Install').'</a>';
 			if( isset($updateStat['Errors']) ){
 				$updateText .= '<br />' . implode('<br />',$updateStat['Errors']);
 			}
@@ -264,13 +267,14 @@ class WP_Update{
 		if( strpos($snoopy->results, '<?xml') > -1 ){
 			$data = $this->__PluginUpdateCustomParse($snoopy->results);
 		/*} elseif( is_rss($snoopy->results){
-			Blah */
+		  } elseif (Looks like IXR Response?){*/
 		} else {
 			$data = false;
 		}
 		return $data;		
 	}
 	function  __PluginUpdateCustomParse($data){
+		/* XML Parsing the looney way */
 		preg_match('#<plugin>(.*?)<\/plugin>#is',$data,$items);
 			preg_match('#<name>(.*?)<\/name>#i'				,$items[1],$pluginname);
 			preg_match('#<version>(.*?)<\/version>#i'		,$items[1],$version);
