@@ -57,17 +57,17 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 </script>
 <div class="wrap">
 	<div class="searchresults">
-	<h2>Search for Plugins</h2>
+	<h2><?php _e('Search for Plugins'); ?></h2>
 		<form method="post" action="<?php echo $pagenow . '?page=' . $_GET['page']; ?>">
 			<input type="text" name="term" value="<?php if( !empty($searchTerm)){ echo attribute_escape($searchTerm);}  ?>" />
-			<input type="submit" name="submit" value="Search" />
+			<input type="submit" name="submit" value="<?php _e('Search'); ?>" />
 		</form>
 <?php
 	if( !empty($searchTerm) ){
-		$resultText = 'Plugin Search: ' . $searchTerm;
+		$resultText = __('Plugin Search: ') . $searchTerm;
 		$results = $wp_update->search('plugins',array($searchTerm));
 	} elseif (!empty($tagSearch)) {
-		$resultText = 'Plugins Tagged: ' . $tagSearch;
+		$resultText = __('Plugins Tagged: ') . $tagSearch;
 		$results = $wp_update->getPluginsByTag($tagSearch);
 	}
 
@@ -100,7 +100,7 @@ if( isset($_POST['term']) || isset($_GET['tag']) ){
 	} //end if search
 	
 ?>
-	<h2>Search by Tag</h2>
+	<h2><?php _e('Search by Tag'); ?></h2>
 	<div class="taglist">
 		<p>
 <?php
