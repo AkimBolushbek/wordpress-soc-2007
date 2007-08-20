@@ -267,7 +267,9 @@ if (empty($plugins)) {
 				$updateText = __('Not Checked');
 			} else {
 				$updateText = $wp_update->getPluginUpdateText($plugin_file);
-				if( false === $updateText){
+				if( false !== $updateText){
+					$updateText = __($updateText);
+				} else {
 					$updateText = __('Please Wait');
 					$updateText .= "<script type='text/javascript'>checkUpdate('$plugin_file');</script>";
 				}
