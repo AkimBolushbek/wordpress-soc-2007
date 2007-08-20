@@ -144,12 +144,6 @@ if ( count($broken_themes) ) {
 <?php
 	$themes = $wp_update->getThemesFeatured();
 	foreach($themes['results'] as $theme){
-	/*[id] => almost-spring
-    [thumbnail] => http://wordpress.org/extend/themes/t/almost-spring.png
-    [name] => Almost Spring
-    [author] => Becca Wei
-    [authorhomepage] => http://beccary.com
-    [download]*/
 		echo "<div class='theme' id='{$theme['id']}'>
 			<img src='{$theme['thumbnail']}' height='320' width='450' /><br />
 			{$theme['name']} By <a href='{$theme['authorhomepage']}' target='_blank'>{$theme['author']}</a> | 
