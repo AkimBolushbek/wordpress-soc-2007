@@ -2,7 +2,7 @@
 
 /*
 Plugin Name: Podcasting
-Version: 0.5
+Version: 1.0
 Plugin URI: http://code.google.com/p/wordpress-soc-2007/
 Description: Adds full podcasting support.
 Author: Ronald Heft, Jr.
