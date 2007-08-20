@@ -1,9 +1,9 @@
 <?php
-/* Notes:
-	Some items have been changed from the default wordpress Install:
-		- removed is_readable check; Unneeded IO operations, if error occures while opening file, return false to signify it, 
-		- added Update URI: entry
-		- maybe a few other items
+/**
+* Modified version of get_plugin_data(), Containes a few minor performance increases as well as extra Metadata items
+*
+* @param string $plugin_file the file to look for information in
+* @return array of Metadata, Null on failuse
 */
 function wpupdate_get_plugin_data( $plugin_file ) {
 	$plugin_data = @implode( '', @file( $plugin_file ));
@@ -45,6 +45,12 @@ function wpupdate_get_plugin_data( $plugin_file ) {
 	return array ('Name' => $name, 'Title' => $plugin, 'Description' => $description, 'Author' => $author, 'Version' => $version, 'Update' => $update_uri, 'Slug' => $slug );
 }
 
+/**
+* mofidied version of get_plugins(), few performance increases
+*
+* @param string $plugin_root the basedirectory to look for plugins in, Defaults to '' which is ABSPATH . PLUGINDIR
+* @return array of plugin metadatas.
+*/
 function wpupdate_get_plugins($plugin_root='') {
 	global $wp_plugins;
 
@@ -95,18 +101,30 @@ function wpupdate_get_plugins($plugin_root='') {
 	return $wp_plugins;
 }
 
-
+/**
+* Prints out a Structure of the Theme information in a block div
+*
+* @param mixed array $theme the Theme information
+* @return string of HTML
+*/
 function wpupdate_themeSearchHTML($theme){
 	return "&nbsp;<div class='themeinfo'>
 				<span>
 					<a href='{$theme['url']}' title='{$theme['name']}' target='_blank'>{$theme['name']}<br />
-					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']} - Downloaded {$theme['downloadcount']} times' title='{$theme['name']} - Downloaded {$theme['downloadcount']} times' /></a><br/>
+					<img src='{$theme['snapshot']['thumb']}' alt='{$theme['name']}' title='{$theme['name']}' /></a><br/>
 					<a href='{$theme['testrun']}' target='_blank'>".__('Test Run')."</a> | <a href='" . 
 							wp_nonce_url('themes.php?page=wp-update/wp-update-themes-install.php&amp;url='.urlencode($theme['download']),'wpupdate-theme-install') . 
 					"' target='_blank'>".__('Install')."</a>
 				</span>
 			</div>\n";
 }
+/**
+* Prints out a Structure of the Plugin information in a block div
+*
+* @param mixed array $theme the Theme information
+* @param integer $wordwrap the width of text to wrap the plugin information to(To keep teh block width thin)
+* @return string of HTML
+*/
 function wpupdate_pluginSearchHTML($plugin,$wordwrap=25){
 	return '<div class="plugin"><span>
 			<h3>'.$plugin['Name'].'</h3>
@@ -120,6 +138,13 @@ function wpupdate_pluginSearchHTML($plugin,$wordwrap=25){
 				</p>
 		</span></div> &nbsp; ';
 }
+/**
+* Text of if the process suceeds
+*
+* @param boolean $result if the process has succeeded
+* @param array $args to modify the output.
+*/
+if( ! function_exists('succeeded') ){
 function succeeded($result=false,$args=''){
 	$defaults = array(
 		'before' => ' ', 'after' => '',
@@ -132,7 +157,13 @@ function succeeded($result=false,$args=''){
 		return $r['before'] . '<span style="color:' . $r['true-colour'] . '">' . __($r['true']) . '</span>' . $r['after'];
 	else
 		return $r['before'] . '<span style="color:' . $r['false-colour'] . '">' . __($r['false']) . '</span>' . $r['after'];
-}
+}}
+/**
+* Downloads a file to a local url using the Snoopy HTTP Class
+*
+* @param string $url the URL of the file to download
+* @return mixed false on failure, string Filename on success.
+*/
 function wpupdate_url_to_file($url=false){
 	//WARNING: The file is not automatically deleted, The script must unlink() the file.
 	if( ! $url )
@@ -155,6 +186,12 @@ function wpupdate_url_to_file($url=false){
 
 	return $tmpfname;
 }
+/**
+* Modification of wp_generate_tagcloud() to generate a tag cloud from a list of terms.
+*
+* @param array $tags list of tags and their weighting
+* @param args $args the arguemetns of the function
+*/
 function wpupdate_generate_tagcloud($tags=false,$args=''){
 	$defaults = array(
 		'smallest' => 8, 'largest' => 22, 'unit' => 'pt', 'number' => 45,
@@ -219,6 +256,14 @@ function wpupdate_generate_tagcloud($tags=false,$args=''){
 	return apply_filters( 'wpupdate_generate_tag_cloud', $return, $tags, $args );
 }
 
+/**
+* Determines the difference between 2 folders, Relies on wp_filesystem
+*
+* @param string $folder1 the source folder
+* @param string $folder2 the folder to compare against.
+* @return mixed, false on failure, Array of files with changes on success.
+*/
+if( ! function_exists('folder_diff') ){
 function folder_diff($folder1, $folder2){
 	global $wp_filesystem;
 	if( ! $wp_filesystem || ! is_object($wp_filesystem) )
@@ -280,6 +325,6 @@ function folder_diff($folder1, $folder2){
 		}
 	}
 	return $Files;
-}//end function
+}}//end function
 
 ?>

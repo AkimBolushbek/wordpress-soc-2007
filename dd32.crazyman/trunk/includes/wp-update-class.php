@@ -1,6 +1,7 @@
 <?php
 /**
  * WP-Update Main class, This is where most of the magic is contained.
+ *
  * @author Dion Hulse
  * @version 0.1
  */
@@ -26,6 +27,7 @@ class WP_Update{
 	}
 	/**
 	 * Searches for a Plugin/Theme based upon tags/terms
+	 *
 	 * @param string $item Search type, "themes"||"plugins"
 	 * @return mixed Array holding results on success, false on failure
 	 */
@@ -57,19 +59,17 @@ class WP_Update{
 							));
 		}
 	}
-	/*** THEME SEARCH FUNCTIONS ****/
-	/** FEATURED THEEMS */
 	/**
 	 * Returns the themes currently featured on WordPress.org
+	 *
 	 * @return mixed Array holding results on success, null on failure
 	 */
 	function getThemesFeatured(){
 		return apply_filters('wpupdate_themesFeatured',array('results'=>array(),'info'=>array()));
 	}
-	/*** PLUGIN FUNCTIONS ***/
-	/** PLUGIN TAG FUNCTIONS **/
 	/**
 	 * Retrieves the current tag list from the Tag Providers
+	 *
 	 * @return array of tags
 	 */
 	function getPluginSearchTags(){
@@ -77,6 +77,7 @@ class WP_Update{
 	}
 	/**
 	 * Returns plugins from WordPress.org of the specified tag
+	 *
 	 * @param mixed $tag the tags for the plugins wanted
 	 * @param int $page the pagenumber to display
 	 * @return mixed set of plugins
@@ -90,9 +91,9 @@ class WP_Update{
 		return apply_filters('wpupdate_pluginTagSearch',$results);
 	}
 	
-	/** PLUGIN UPDATE FUNCTIONS **/
 	/**
 	 * Determines the Text to display for a plugin Update
+	 *
 	 * @param string $pluginfile the name of the plugin file
 	 * @param bool $return to return the value or echo it
 	 * @param bool $skipcache If the cache'd values should be ignored
@@ -149,6 +150,7 @@ class WP_Update{
 	}
 	/**
 	 * Searches the Plugin repositories for a given plugin
+	 *
 	 * @param string $pluginfile the name of the plugin file
 	 * @param bool $skipcache If the cache'd values should be ignored
 	 * @param bool $forcecheck To Check for the update NOW, or to leave it
@@ -215,7 +217,7 @@ class WP_Update{
 			if( false !== get_option('update_'.$pluginfile) )
 				update_option('update_'.$pluginfile, $pluginUpdateInfo);
 			else 
-				add_option('update_'.$pluginfile, $pluginUpdateInfo, 'Update Information for ' . $pluginfile, 'no');
+				add_option('update_'.$pluginfile, $pluginUpdateInfo, sprintf(__('Update Information for %s'),$pluginfile), 'no');
 				//We dont want to autoload this for every page, Reduce memory usage exept when needed.
 		}
 		
@@ -225,7 +227,7 @@ class WP_Update{
 		
 		//If no Plugin data available, Or the Plugin version is not specified, we cant do anything for the plugin.
 		if( !$pluginUpdateInfo || !$pluginUpdateInfo['Version'] )
-			return array( 'Errors' =>array('Not Compatible','(No Version specified on update page)'));
+			return array( 'Errors' =>array('Not Compatible',__('(No Version specified on update page)')));
 
 		$pluginUpdateInfo = apply_filters('wpupdate_plugin-updateinfo-' . $pluginUpdateInfo, $pluginUpdateInfo);
 
@@ -243,6 +245,12 @@ class WP_Update{
 		}
 	}
 	
+	/**
+	 * Checks for update information from a given hostname.
+	 *
+	 * @param string $url the update link for the plugin
+	 * @return mixed array of plugin info on success, null on failure
+	 */
 	function checkPluginUpdateURL($url){
 		$update = null;
 		//First, Get the Hostname
@@ -257,6 +265,7 @@ class WP_Update{
 	
 	/**
 	 * Checks a Custom update URL for a plugin
+	 *
 	 * @param string $uri the update link for the plugin
 	 * @return mixed array of details on sucess, false on failure
 	 */
@@ -273,9 +282,16 @@ class WP_Update{
 		}
 		return $data;		
 	}
+	/**
+	 * Parses a XML Response for a given URL
+	 *
+	 * @param string $data XML data
+	 * @return mixed array of details on sucess, false on failure
+	 */
 	function  __PluginUpdateCustomParse($data){
 		/* XML Parsing the looney way */
-		preg_match('#<plugin>(.*?)<\/plugin>#is',$data,$items);
+		if( ! preg_match('#<plugin>(.*?)<\/plugin>#is',$data,$items) )
+			return false;
 			preg_match('#<name>(.*?)<\/name>#i'				,$items[1],$pluginname);
 			preg_match('#<version>(.*?)<\/version>#i'		,$items[1],$version);
 			preg_match('#<lastupdate>(.*?)<\/lastupdate>#i'	,$items[1],$lastupdate);
@@ -306,6 +322,13 @@ class WP_Update{
 						'Requirements' => $requirements
 					);
 	}
+	/**
+	 * Determines if a plugin is compatible with the current WP install
+	 * (Relies on having the requirements passed to it, Doesnt inspect the plugin source itself)
+	 *
+	 * @param mixed array of details of the current plugin
+	 * @return mixed array of results.
+	 */
 	function checkPluginCompatible($pluginUpdateInfo){
 		global $wp_version;
 		$pluginCompatible = true; //We'll override this later
@@ -413,6 +436,13 @@ class WP_Update{
 			
 		return $pluginCompatible;
 	}
+	/**
+	* Updates the notifications to display when an admin is logged in if there is an update available
+	* Also emails administrator if email alerts are enabled.
+	*
+	* @param null
+	* @return null
+	*/
 	function updateNotifications(){
 		$previous = get_option('wpupdate_notifications');
 		$new = array();
@@ -463,21 +493,39 @@ class WP_Update{
 		}//end if changes.
 	}//end function updateNotifications()
 	
-	/** INSTALL FUNCITONS **/
+	/**
+	* Installs a plugin from a given local filename
+	*
+	* @param string $filename Name of the local file
+	* @return See installItemFromZip
+	*/
 	function installPlugin($filename,$fileinfo=array()){
 		return $this->installItemFromZip($filename, $fileinfo, 'wp-content/plugins/');
 	}
+	/**
+	* Installs a theme from a given local filename
+	*
+	* @param string $filename Name of the local file
+	* @return See installItemFromZip
+	*/
 	function installTheme($filename,$fileinfo=array()){
 		return $this->installItemFromZip($filename, $fileinfo, 'wp-content/themes/');
 	}
-	//ToDo: Internationalise
+	/**
+	* Installs a Item(Plugin||theme) from a given local file into a local directory
+	*
+	* @param string $filename Name of the local file
+	* @param mixed array details of the File
+	* @param string $destination the directory to install in (Minus ABSPATH)
+	* @return boolean false on failure, mixed array on success
+	*/
 	function installItemFromZip($filename,$fileinfo=array(),$destination=''){
 		require_once('wp-update-filesystem.php');
 		global $wp_filesystem;
 		if( ! $wp_filesystem || ! is_object($wp_filesystem) )
 			WP_Filesystem();
 		if( ! is_object($wp_filesystem) )
-			return array('Errors'=>array('Filesystem options not set correctly'));
+			return array('Errors'=>array(__('Filesystem options not set correctly')));
 		$fs =& $wp_filesystem; //Just for simplicity
 
 		require_once('pclzip.lib.php');	
@@ -490,16 +538,16 @@ class WP_Update{
 
 		//Check to see if its a Valid archive
 		if( false == ($archiveFiles = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING)) ){
-			return array('Errors'=>array('Incompatible Archive'));
+			return array('Errors'=>array(__('Incompatible Archive')));
 		} else {
-			$messages[] = 'Valid Archive Selected';
+			$messages[] = __('Valid Archive Selected');
 		}
 		if ( 0 == count($archiveFiles) )
-			return array('Errors'=>array('Empty Archive'));
+			return array('Errors'=>array(__('Empty Archive')));
 		
 		//First of all, Does the zip file contain a base folder?
 		$base = $fs->get_base_dir() . $destination;
-		$messages[] = "Base Directory: <strong>$base</strong>";
+		$messages[] = sprintf(__("Base Directory: <strong>%s</strong>"),$base);
 		
 		$fs->setDefaultPermissions( $fs->getchmod($base) );
 		
@@ -520,11 +568,11 @@ class WP_Update{
 				//If no Slash then it needs to be put in a folder
 				
 				if( false === strpos($thisFileInfo['filename'],'/') ){
-					$messages[] = 'Installing to Subdirectory: <strong>' . basename($fileinfo['name'],'.zip') . '</strong>';
+					$messages[] = sprintf(__('Installing to Subdirectory: <strong>%s</strong>'),basename($fileinfo['name'],'.zip'));
 
 					$base .= basename($fileinfo['name'],'.zip');
 					if( $fs->is_dir($base) )
-						return array('Errors'=>array('Folder Exists! Install cannot continue' . $base));
+						return array('Errors'=>array(sprintf(__('Folder Exists! Install cannot continue to installing to %s'),$base)));
 					
 					$messages[] = __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip') . succeeded( $fs->mkdir( $base ) );
 					break; //We've created any folders we need, we can now break out of this loop.
@@ -548,6 +596,15 @@ class WP_Update{
 		}
 		return $messages;
 	} //end installItem()
+	/**
+	* Installs a Item(Plugin||theme) from a given local directory into a local directory
+	*
+	* @param string $source location of the local directory to install from
+	* @param string $destination location of the local directory to install to
+	* @return boolean false on failure, mixed array on success
+	*
+	* @TODO This is a stub function, Most code for this will be in wp-update-plugins-upgrade.php
+	*/
 	function installItemFromFolder($source,$destination){
 		require_once('wp-update-filesystem.php');
 		global $wp_filesystem;
@@ -559,55 +616,6 @@ class WP_Update{
 
 		$messages = array();
 		
-		//First of all, Does the zip file contain a base folder?
-		$base = $fs->get_base_dir() . $destination;
-		$messages[] = "Base Directory: <strong>$base</strong>";
-		
-		$fs->setDefaultPermissions( $fs->getchmod($base) );
-		
-		//Check if the destination directory exists, If not, create it.
-		$path = explode('/',$base);
-		$tmppath = '';
-		for( $j = 0; $j < count($path) - 1; $j++ ){
-				$tmppath .= $path[$j] . '/';
-				if( ! $fs->is_dir($tmppath) )
-					$messages[] = __('<strong>Creating folder</strong>: ') . $tmppath . succeeded( $fs->mkdir($tmppath) );
-		}
-		
-		if( count($archiveFiles) > 1){
-			//Multiple files, they'll need to be in a folder
-			$baseFolderName = false;
-
-			foreach((array)$archiveFiles as $thisFileInfo){
-				//If no Slash then it needs to be put in a folder
-				
-				if( false === strpos($thisFileInfo['filename'],'/') ){
-					$messages[] = 'Installing to Subdirectory: <strong>' . basename($fileinfo['name'],'.zip') . '</strong>';
-
-					$base .= basename($fileinfo['name'],'.zip');
-					if( $fs->is_dir($base) )
-						return array('Errors'=>array('Folder Exists! Install cannot continue' . $base));
-					
-					$messages[] = __('<strong>Creating folder</strong>: ') . basename($fileinfo['name'],'.zip') . succeeded( $fs->mkdir( $base ) );
-					break; //We've created any folders we need, we can now break out of this loop.
-				}
-			}
-		}
-		//Inflate the files and Create Directory Structure
-		foreach($archiveFiles as $archiveFile){
-			$path = explode('/',$archiveFile['filename']);
-			$tmppath = '';
-			//Loop through each of the items and check the folder exists.
-			for( $j = 0; $j < count($path) - 1; $j++ ){
-				$tmppath .= $path[$j] . '/';
-				if( ! $fs->is_dir($base . $tmppath) )
-					$messages[] = __('<strong>Creating folder</strong>: ') . $tmppath . succeeded( $fs->mkdir($base . $tmppath) );
-			}//end for
-			//We've made sure the folders are there, So lets extract the file now:
-			if( ! $archiveFile['folder'] )
-				$messages[] = __('<strong>Inflating File</strong>: ') . $archiveFile['filename'] . 
-							succeeded( $fs->put_contents($base.$archiveFile['filename'], $archiveFile['content']) );
-		}
 		return $messages;
 	} //end installItem()
 }
