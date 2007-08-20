@@ -156,7 +156,14 @@ if( !empty($wp_filesystem->errors) ){
 					$newdata['Folder'] = dirname($pluginFile);
 					break;
 				}
-			} //else, locate the correct one.. blah blah
+			} else {
+				foreach($plugins as $pluginFile => $plugin){ //We want the first one from the array.
+					if( $plugin['Name'] != $installedInfo['Name'] )
+						continue;
+					$newdata = $plugin;
+					$newdata['Folder'] = dirname($pluginFile);
+				}
+			}
 
 			echo '<input type="hidden" name="upgrade_source" value="' . $newdata['Folder'] . '" />';
 
