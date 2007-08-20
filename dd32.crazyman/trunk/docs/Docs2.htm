@@ -1,0 +1,731 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 12 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Cambria;
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:0cm;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+h1
+	{mso-style-link:"Heading 1 Char";
+	margin-top:24.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	page-break-after:avoid;
+	font-size:14.0pt;
+	font-family:"Cambria","serif";
+	color:#365F91;}
+h2
+	{mso-style-link:"Heading 2 Char";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	page-break-after:avoid;
+	font-size:13.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-link:"Title Char";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoTitleCxSpFirst, li.MsoTitleCxSpFirst, div.MsoTitleCxSpFirst
+	{mso-style-link:"Title Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoTitleCxSpMiddle, li.MsoTitleCxSpMiddle, div.MsoTitleCxSpMiddle
+	{mso-style-link:"Title Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoTitleCxSpLast, li.MsoTitleCxSpLast, div.MsoTitleCxSpLast
+	{mso-style-link:"Title Char";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+pre
+	{mso-style-link:"HTML Preformatted Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+span.TitleChar
+	{mso-style-name:"Title Char";
+	mso-style-link:Title;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-link:"Heading 1";
+	font-family:"Cambria","serif";
+	color:#365F91;
+	font-weight:bold;}
+span.Heading2Char
+	{mso-style-name:"Heading 2 Char";
+	mso-style-link:"Heading 2";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;}
+span.HTMLPreformattedChar
+	{mso-style-name:"HTML Preformatted Char";
+	mso-style-link:"HTML Preformatted";
+	font-family:"Courier New";}
+.MsoPapDefault
+	{margin-bottom:10.0pt;
+	line-height:115%;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+
+</head>
+
+<body lang=EN-AU link=blue vlink=purple>
+
+<div class=Section1>
+
+<div style='border:none;border-bottom:solid #4F81BD 1.0pt;padding:0cm 0cm 4.0pt 0cm'>
+
+<p class=MsoTitle>Wp-Update Hooks/Filters</p>
+
+</div>
+
+<h1>Hooks</h1>
+
+<p class=MsoNormal>Wpupdate_requirement-$type</p>
+
+<p class=MsoNormal>For unsupported requirement types this hook is called, 4
+arrays are passed via references within the array passed.</p>
+
+<p class=MsoNormal>do_action('wpupdate_requirement-'.$reqInfo['Type'],
+array(&amp;$pluginUpdateInfo, &amp;$reqInfo,
+&amp;$pluginCompatible,&amp;$errors));</p>
+
+<h1>Filters</h1>
+
+<h2>wpupdate_themeSearchProviders</h2>
+
+<p class=MsoNormal>This filter is called when searching for Themes, The filter
+function should expect a array to be passed of similar nature to the following,
+and return the same array(With its own search results tacked onto the ‘results’
+section.</p>
+
+<p class=MsoNormal>The values in the results array should follow the same as
+the format below:</p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><b><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>array</span></b></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>  'results' </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>    <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      0 </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>        <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'name' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'Cutline 3-Column Split           1.1'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=28)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'url' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/columns/3-columns/4415/cutline-3-column-split-11/'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=77)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'id' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'4415'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=4)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'download' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/download.php?theme=4415'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=51)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'snapshot' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>            <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'thumb' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4415-thumb.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=54)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'medium' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4415-medium.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=55)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'big' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4415-big.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=52)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'testrun' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/testrun/?wptheme=4415'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=49)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      1 </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>        <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'name' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'NetWorker  1.0'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=14)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'url' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/columns/3-columns/4391/networker-10/'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=64)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'id' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'4391'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=4)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'download' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/download.php?theme=4391'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=51)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'snapshot' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>            <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'thumb' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4391-thumb.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=54)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'medium' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4391-medium.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=55)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'big' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4391-big.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=52)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'testrun' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/testrun/?wptheme=4391'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=49)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      2 </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>        <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'name' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'Red Secret  0.1'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=15)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'url' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/columns/3-columns/4371/red-secret-01/'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=65)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'id' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'4371'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=4)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'download' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/download.php?theme=4371'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=51)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'snapshot' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>            <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'thumb' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4371-thumb.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=54)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'medium' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4371-medium.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=55)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>              'big' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://s.themes.wordpress.net/snapshots/4371-big.jpg'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=52)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          'testrun' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> string </span><span
+style='font-size:8.0pt;font-family:"Courier New";color:#CC0000'>'http://themes.wordpress.net/testrun/?wptheme=4371'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=49)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>  'info' </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>    <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      'page' </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> int </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#4E9A06'>1</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      'pages' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> int </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#4E9A06'>20</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      'searchOptions' </span><span style='font-size:8.0pt;
+font-family:"Courier New";color:#888A85'>=&gt;</span><span style='font-size:
+8.0pt;font-family:"Courier New";color:black'> </span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>        <b>array</b></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          0 </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> string </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#CC0000'>'3 columns'</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> <i>(length=9)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>          1 </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> string </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#CC0000'>'Blue'</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> <i>(length=4)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      'sortby' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'date'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=4)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal;background:white'><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'>      'order' </span><span style='font-size:8.0pt;font-family:
+"Courier New";color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+font-family:"Courier New";color:black'> string </span><span style='font-size:
+8.0pt;font-family:"Courier New";color:#CC0000'>'DESC'</span><span
+style='font-size:8.0pt;font-family:"Courier New";color:black'> <i>(length=4)</i></span></p>
+
+<p class=MsoNormal style='margin-bottom:9.65pt;line-height:normal;background:
+white'><span style='font-size:8.0pt;font-family:"Courier New";color:black'>     
+'andor' </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#888A85'>=&gt;</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> string </span><span style='font-size:8.0pt;font-family:"Courier New";
+color:#CC0000'>'AND'</span><span style='font-size:8.0pt;font-family:"Courier New";
+color:black'> <i>(length=3)</i></span></p>
+
+<h2>wpupdate_themeSearchOptions</h2>
+
+<p class=MsoNormal>Function should accept an array similar to the below, and
+return the same array:</p>
+
+<pre style='background:white'><b><span style='color:black'>array</span></b></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>  'sections' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>    <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      'Columns' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>        <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'1 column'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=8)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          1 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'2 columns'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=9)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      'Colour' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>        <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Red'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=3)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          1 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Green'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=5)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      'Advanced' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>        <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Plugins required'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=16)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          1 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Widget ready'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=12)</i></span></pre>
+
+<p class=MsoNormal>There may be as many sections as wanted, and each section
+may contain as many items as they want. Long sections may be wrapped to multiple
+lines.</p>
+
+<h2>wpupdate_pluginSearchProviders, wpupdate_pluginTagSearch</h2>
+
+<p class=MsoNormal>Very similar to wpupdate_themeSearchProviders, Both take and
+return the same structure.</p>
+
+<pre style='background:white'><b><span style='font-size:8.0pt;color:black'>array</span></b></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>  'results' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>    <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>        <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Name' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'WP-Testimonials'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=15)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Desc' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Displays client testimonials in WordPress'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=41)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Version' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>''</span><span
+style='font-size:8.0pt;color:black'> <i>(length=0)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'LastUpdate' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>''</span><span
+style='font-size:8.0pt;color:black'> <i>(length=0)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Id' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'wp-testimonials'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=15)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Download' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'http://downloads.wordpress.org/plugin/wp-testimonials.zip'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=57)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'PluginHome' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'http://wordpress.org/extend/plugins/wp-testimonials/'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=52)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'UpdateURL' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'http://wordpress.org/extend/plugins/wp-testimonials/'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=52)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Tags' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>            <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>              0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'test'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=4)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Rating' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>''</span><span
+style='font-size:8.0pt;color:black'> <i>(length=0)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      1 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>        <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Name' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Genki Feedburner SiteStats'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=26)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Desc' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'Insert Feedburner SiteStats code (without Feeds Flare) for a speed boost'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=72)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Version' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>''</span><span
+style='font-size:8.0pt;color:black'> <i>(length=0)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'LastUpdate' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>''</span><span
+style='font-size:8.0pt;color:black'> <i>(length=0)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Id' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'genki-feedburner-sitestats'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=26)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Download' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'http://downloads.wordpress.org/plugin/genki-feedburner-sitestats.zip'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=68)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'PluginHome' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'http://wordpress.org/extend/plugins/genki-feedburner-sitestats/'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=63)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'UpdateURL' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'http://wordpress.org/extend/plugins/genki-feedburner-sitestats/'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=63)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Tags' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>            <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>              0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'test'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=4)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          'Rating' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>''</span><span
+style='font-size:8.0pt;color:black'> <i>(length=0)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>  'info' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>    <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      'terms' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> </span></pre><pre style='background:white'><span
+style='font-size:8.0pt;color:black'>        <b>array</b></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>          0 </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> string </span><span style='font-size:8.0pt;color:#CC0000'>'test'</span><span
+style='font-size:8.0pt;color:black'> <i>(length=4)</i></span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      'page' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> int </span><span style='font-size:8.0pt;color:#4E9A06'>1</span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>      'pages' </span><span
+style='font-size:8.0pt;color:#888A85'>=&gt;</span><span style='font-size:8.0pt;
+color:black'> int </span><span style='font-size:8.0pt;color:#4E9A06'>1</span></pre><pre
+style='background:white'><span style='font-size:8.0pt;color:black'>&nbsp;</span></pre>
+
+<h2>wpupdate_update-url</h2>
+
+<p class=MsoNormal>This function is passed 2 parameters, 1 is the Update URL
+(Which may be blank), 2<sup>nd</sup> is the plugin Metadata</p>
+
+<p class=MsoNormal><span style='font-size:8.0pt;line-height:115%'>$pluginData['Update']
+= apply_filters('wpupdate_update-url', $pluginData['Update'], $pluginData);</span></p>
+
+<h2>wpupdate_checkPluginUpdate-hostname.domain</h2>
+
+<p class=MsoNormal>While checking for an update for a given plugin, the data is
+retrieved via this filter.</p>
+
+<p class=MsoNormal>If the URL is <a
+href="http://wordpress.org/extend/plugins/wp-update/">http://wordpress.org/extend/plugins/wp-update/</a>
+then the filter to get the information will be <b><i><span style='font-size:
+12.0pt;line-height:115%'>wpupdate_checkPluginUpdate-wordpress.org</span></i></b><span
+style='font-size:12.0pt;line-height:115%'>.</span></p>
+
+<p class=MsoNoSpacing><span style='font-size:8.0pt'>$components =
+parse_url($url);</span></p>
+
+<p class=MsoNoSpacing><span style='font-size:8.0pt'>$update = apply_filters('wpupdate_checkPluginUpdate-'
+. strtolower($components['host']), $url);</span></p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>All these filters can be seen in action in the /<i>wp-update/extensions/*.php</i>
+files.</p>
+
+</div>
+
+</body>
+
+</html>
