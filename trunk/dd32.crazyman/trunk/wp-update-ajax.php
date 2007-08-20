@@ -25,7 +25,7 @@ switch($_GET['action']){
 		$searchResults = $wp_update->search('themes',$searchOptions,$page);
 
 		if( !isset($searchResults['results']) || empty($searchResults['results']) )
-			die('no more results');
+			die(__('no more results'));
 		foreach($searchResults['results'] as $theme)
 			echo wpupdate_themeSearchHTML($theme);
 		break;
@@ -37,10 +37,9 @@ switch($_GET['action']){
 			$results = $wp_update->search('plugins',$_POST['term'],$page);
 		}
 		if( !isset($results['results']) || empty($results['results']) )
-			echo __('no more results');
-		else 
-			foreach($results['results'] as $plugin)
-				echo wpupdate_pluginSearchHTML($plugin);
+			die(__('no more results'));
+		foreach($results['results'] as $plugin)
+			echo wpupdate_pluginSearchHTML($plugin);
 		break;
 	case 'filesystem_get_ftp_path':
 		include_once('includes/wp-update-filesystem.php');

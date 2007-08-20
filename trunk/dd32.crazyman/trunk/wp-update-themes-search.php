@@ -11,7 +11,7 @@ global $wp_update;
 $wp_update = new WP_Update;
 ?>
 <div class="wrap">
-<h2>Search Themes</h2>
+<h2><?php _e('Search Themes') ?></h2>
 <form id="searchoptions" name="sortoptions" method="post" action="<?php echo $pagenow . '?page=' . $_GET['page']; ?>">
 <?php
 	$searchOptions = apply_filters('update_themeSearchOptions', array('sections'=>array()) );
@@ -69,13 +69,13 @@ $wp_update = new WP_Update;
 			</select>
 			<select name='order' class='postform'>
 				<option value='DESC'><?php _e('Order') ?></option>
-				<option value='ASC'<?php selected('ASC',$_POST['order']) ?>>ASC</option>
-				<option value='DESC'<?php selected('DESC',$_POST['order']) ?>>DESC</option>
+				<option value='ASC'<?php selected('ASC',$_POST['order']) ?>><?php _e('ASC') ?></option>
+				<option value='DESC'<?php selected('DESC',$_POST['order']) ?>><?php _e('DESC') ?></option>
 			</select>
 			<select name='andor' class='postform'>
-				<option value='AND'>ANY or ALL</option>
-				<option value='OR'<?php selected('OR',$_POST['andor']) ?>>ANY</option>
-				<option value='AND'<?php selected('AND',$_POST['andor']) ?>>ALL</option>
+				<option value='AND'><?php _e('ANY or ALL') ?></option>
+				<option value='OR'<?php selected('OR',$_POST['andor']) ?>><?php _e('ANY') ?></option>
+				<option value='AND'<?php selected('AND',$_POST['andor']) ?>><?php _e('ALL') ?></option>
 			</select>
 			<input type="submit" name="submit" value="<?php _e('Search') ?>"  />
 		</td>

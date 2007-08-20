@@ -323,7 +323,5 @@ if (empty($plugins)) {
 </div>
 
 <?php 
-//global $wp_object_cache;
-//$wp_object_cache->stats();
 include('admin-footer.php');
 ?>
