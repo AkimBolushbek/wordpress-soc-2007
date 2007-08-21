@@ -15,6 +15,7 @@ readme.html:
 
 eztags/docs/readme.html: readme.txt
 	sed -r \
+		-e 's/(Donate\s+link:\s*)(.*)/\1[Donate](\2)/g' \
 		-e 's/(\w+:.*)/\1<br>/g' \
 		-e 's/===\s+(.*)\s+===/<title>\1<\/title>\n# \1 #/g' \
 		-e 's/==\s+(.*)\s+==/## \1 ##/g' \
@@ -36,7 +37,7 @@ tarball: clean all
 gz: tarball
 
 bz2:
-	$(MAKE) tarball GZIP=bz2
+	$(MAKE) tarball GZIP=bzip2
 
 soc:
 	$(MAKE) PLUGIN_NAME=2007_wordpress PLUGIN_VERSION=bowes_keith PLUGIN_SPACER=_ gz
