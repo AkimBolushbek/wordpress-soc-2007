@@ -3,7 +3,7 @@
 Plugin Name: wp-Update
 Plugin URI: http://dd32.id.au/
 Description: A Plugin to keep WordPress Plugin and Themes up to date.
-Version: 0.1
+Version: 0.2
 Author: Dion Hulse
 Author URI: http://dd32.id.au/
 Update URI: http://dd32.id.au/pluginupdate/wp-update/
