@@ -96,7 +96,7 @@ See [caveats.html](caveats.html) for more.
 == Donate ==
 
 <span id="donate"></span>
-If you've found *Easier Template Tags* helpful and want to show your appreciate and help further its development, please consider donating.
+If you've found *Easier Template Tags* helpful and want to show your appreciation and help further its development, please consider making a donation.
 
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_s-xclick">
