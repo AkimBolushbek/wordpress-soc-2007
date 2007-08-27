@@ -78,8 +78,8 @@ if ( $ajax ) {
 	if ( $postcomments ) {	
 		//inspiration for this code derived from another ajax commenting plugin
 		$comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments} WHERE comment_ID = {$wpdb->insert_id} LIMIT 1;");
-		$commentcount = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments} WHERE comment_post_ID = '".$wpdb->escape($_comm    ent_post_ID)."' LIMIT 1;");
-		$post->comment_status = $wpdb->get_var("SELECT comment_status FROM {$wpdb->posts} WHERE ID = '".$wpdb->escape($_commen    t_post_ID)."' LIMIT 1;");
+		$commentcount = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments} WHERE comment_post_ID = '".$wpdb->escape($comment_post_ID)."' LIMIT 1;");
+		$post->comment_status = $wpdb->get_var("SELECT comment_status FROM {$wpdb->posts} WHERE ID = '".$wpdb->escape($comment_post_ID)."' LIMIT 1;");
 
 		ob_start();
 		$comments = array($comment); 
