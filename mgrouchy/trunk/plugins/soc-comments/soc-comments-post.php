@@ -77,7 +77,7 @@ if ( $ajax ) {
 	
 	if ( $postcomments ) {	
 		//inspiration for this code derived from another ajax commenting plugin
-		$comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments} WHERE comment_ID = {$wpdb->insert_id} LIMIT 1;");
+		$comment = $wpdb->get_row("SELECT * FROM {$wpdb->comments} WHERE comment_ID = $comment_id LIMIT 1;");
 		$commentcount = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->comments} WHERE comment_post_ID = '".$wpdb->escape($comment_post_ID)."' LIMIT 1;");
 		$post->comment_status = $wpdb->get_var("SELECT comment_status FROM {$wpdb->posts} WHERE ID = '".$wpdb->escape($comment_post_ID)."' LIMIT 1;");
 
@@ -87,7 +87,7 @@ if ( $ajax ) {
 	   	$commentout = ob_get_clean();
    	    preg_match('#<li(.*?)>(.*)</li>#ims', $commentout, $matches); // Regular Expression cuts out the LI element's HTML
  
-   echo '<li '.$matches[1].' style="display:none">'.$matches[2].'</li>';
+   echo '<li ' .$matches[1].' >'.$matches[2].'</li>';
    exit;
 		
 	
