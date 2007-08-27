@@ -28,7 +28,7 @@ if ( !class_exists( "soc_comments" ) ){
 			include('soc-edit-comments.php');
 			exit;
 		}
-		
+	
 		//get list of comments
 		function get_comment_list( $start, $num , $s = false, $sfield = false , $sort = "" , $filter = 'all'  ){
 			global $wpdb;
@@ -102,42 +102,63 @@ if ( !class_exists( "soc_comments" ) ){
 	}
 	
 	
-		function commentjs() { 
+	function headjs() {	
+		wp_enqueue_script( 'soc-comments-js' );	
+	}	
+
+	function commentjs() { 
 			$url = get_option('siteurl') . "/wp-content/plugins/soc-comments/soc-comments-post.php";  
-			?> <script type='text/javascript' src='<?php echo get_option('siteurl') . "/wp-includes/js/jquery/jquery.js"?>'></script>
-<script type='text/javascript' src='<?php echo get_option('siteurl') . "/wp-includes/js/jquery/jquery.form.js"?>'></script>
+			?>
 			
 			 <script type="text/javascript"><!--
-	   		 	jQuery('#commentform').submit({
+	   		 jQuery(document).ready(function() {	
+				jQuery('#commentform').submit(function() {
+					alert("submitting our comment!");
+					comment_form_submit();
 
-					jQuery(document).ready(function() {
-	        	 		var options = {
-	             			url: '<?php echo $url; ?>' ,
-							beforeSubmit: pushdata ,
-	     					success: showComment,
-							};	
-					});
-    	     		// bind form and provide a simple callback function
-    	     		jQuery('#commentform').ajaxForm(options);
-		     		});
-				
+				});
+			});
+			
+function comment_form_submit() {
+    alert("we are in the comment form submit function!");
+    jQuery(document).ready(function() {
+     var options = { 
+		url: '<?php echo $url ?>',
+        beforeSubmit: pushdata,
+        success: showComment,
+    };  
+    alert(options);
+    alert("we finished defining our options!"); 
+    // bind form and provide a simple callback function
+    jQuery('#commentform').ajaxForm(options);
+    }); 
+    alert('did this work?');
+	jQuery('.commentlist').attr("id","commentlist");
+}
 
-				function pushdata(formData, jqForm, options ) {
-					formData.push({ name: 'ajax', value: '1'}, {name: 'postcomments', value: '1' });
- 					return true;
-				}
+function pushdata(formData, jqForm, options ) { 
+    formData.push({ name: 'ajax', value: '1'}, {name: 'postcomments', value: '1' }); 
+    alert("pushing data");
+	return true;
+}
 
-				function showComment(responseText, statustext) {
-					var commentlist = jQuery('commentlist');
-					if (commentlist == null) {
-						var form = jQuery('commentform');
-						form.before('<ol id="commentlist"></ol>');
-						commentlist = jQuery('commentlist');
-					}
-					commentlist.append(responseText);
+function showComment(responseText, statustext) {
+    var commentlist = jQuery('#commentlist');
+    alert("showing comment");
+    if (commentlist == null) {
+        alert("comment form is null, creating new comment");
+        var form = jQuery('#commentform');
+        form.before('<ol class="commentlist" id="commentlist"></ol>');
+        commentlist = jQuery('#commentlist');
+    }
+    alert("lets append our comment to the comment list");
+    alert(responseText);
+    commentlist.append(responseText);
 
-				}
-			 //--></script>
+ }
+
+
+		 //--></script>
 			 <? 
 		}
 
@@ -225,7 +246,9 @@ if (class_exists("soc_comments")) {
 if (isset($soc_com)) {
 	add_action( 'load-edit-comments.php', array( &$soc_com,'replace_edit_comment' ), 9 );
 	wp_register_script('soc-comments-js',  $plugindir . '/js/soc-comments.js', array('jquery', 'jquery-form'), '0.1');
+	//wp_register_script('ajax-comments-js', array('jquery', 'jquery-form'), '0.1');
 	add_action('comment_form', array( &$soc_com, 'commentjs'), 9);
+	add_action('wp_head', array(&$soc_com, 'headjs'),9);
 }
 
 
