@@ -92,6 +92,6 @@ function showReplyResponse(responseText, statusText) {
 		jQuery('#comment-reply-form').remove();
 		//append our comment
 		comList = jQuery('#the-comment-list');
-		comList.prepend(responseText).slideDown("slow");
+		comList.prepend(responseText).show("slow");
 	});
 }
