@@ -55,7 +55,7 @@ function onSuccess(responseText) {
 	}
 	else {
 		jQuery('<ol class="commentlist" id="commentlist"></ol>').insertBefore('#commentform');
-		jQuery(responseText).appendTo('#commentlist'); 
+		jQuery(responseText).appendTo('#commentlist').show('slow'); 
 	}
 	jQuery('#commentform').clearForm();
 }					
