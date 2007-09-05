@@ -70,6 +70,7 @@ $items = get_option('wpum_items');
 </style>
 <script type="text/javascript">
 /* <![CDATA[ */
+	var $ = jQuery;
 	$.tabs = {
 		tabContainer: [],
 		init: function(HTMLcontainer,container){
