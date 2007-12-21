@@ -1,0 +1,118 @@
+<p><title>Easier Template Tags</title></p>
+
+<h1>Easier Template Tags</h1>
+
+<p>Contributors: <br>
+Donate link: <a href="#donate">Donate</a><br>
+Tags: theming<br>
+Requires at least: 2.1<br>
+Tested up to: 2.2.2<br>
+Stable tag: trunk<br></p>
+
+<p>Converts between PHP template tags and easier HTML-like template tags for easier theme editing.</p>
+
+<h2>Description</h2>
+
+<p>When the plugin is activated, it creates an <em>Renard</em> subpanel in the <em>Presentation</em> panel of the Administration area <em>Site Admin</em> link in most themes).  After you <a href="http://codex.wordpress.org/Changing_File_Permissions#Using_an_FTP_Client">make the files writable with your FTP client</a>, you can edit the files with easier tags.  The plugin will try to automatically convert as many PHP tags to easier tags as possible, but may not be completely accurate (though it's getting better all the time).  When you save the files, the easier tags are converted back into PHP tags, and these tags will be converted back to easier tags the next time you view the file through the Renard editor.<br></p>
+
+<h2>Installation</h2>
+
+<ol>
+<li>Upload the eztags directory to the wp-content/plugins directory on your server.  You can also upload the contents of the eztags directory to wp-contents/plugins, but that's far more likely to create a clutter.</li>
+<li>Activate the plugin (<em>Renard</em>).</li>
+</ol>
+
+<h3>Getting a Newer Version</h3>
+
+<p>You can get checkout the absolute latest code from the <a href="http://code.google.com/p/wordpress-soc-2007/source">Google Code Subversion repository</a>.  <a href="http://code.google.com/p/wordpress-soc-2007/downloads/list">Snapshots</a> are also available, but pretty much guaranteed to be outdated.  I expect to have a release on <a href="http://kechjo.cogia.net">my site</a> in September.<br></p>
+
+<p>Keep in mind that it's in testing right now.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>What's so great about <em>Renard</em>?</h3>
+
+<p><em>Renard</em> is made with patent pending vulpo technology that makes it 48% better than eating a Big Mac while standing on your head.</p>
+
+<h3>Why are FAQs always littered with such useless questions?</h3>
+
+<p>You know, I haven't figured that one out myself yet.  But as they say, if you can't beat 'em, join 'em.</p>
+
+<h2>Screenshots</h2>
+
+<ol>
+<li>Editing the index.php template file (<em>Main Index Template</em>) of my theme with the <em>Renard Editor</em>.</li>
+</ol>
+
+<h2>Notes on the following sections</h2>
+
+<p>The relative links to the documentation will only work if you're viewing this page through an installation on your WordPress blog.  If you're viewing this page in a plugin repository, you'll have to install the plugin and read this page from there for the links to work.</p>
+
+<h2>Use</h2>
+
+<ol>
+<li>Go to the <em>Site Admin</em> area.</li>
+<li>Go to the <em>Presentation</em> panel.</li>
+<li>Go to the <em>Renard</em> subpanel.</li>
+<li>Select the template file you want to edit.</li>
+<li>See <a href="tags.txt">tags.txt</a> for a list of tags that you can use.</li>
+<li>Edit the file using those tags.</li>
+<li>Push <em>Save</em> to update your template file.</li>
+</ol>
+
+<h2>Development</h2>
+
+<h3>Improving the plugin</h3>
+
+<p>See <a href="specs.txt">specs.txt</a> for how the plugin works.  If you want to make it better, then by all means*...  I'd be glad if someone likes my plugin, finds it useful and wants to improve it.</p>
+
+<h3>If it doesn't work with a theme</h3>
+
+<p>That's a very real possibility.  Two courses of action are possible.  One is to submit a bug.  However, if this thing only affects one theme, it probably will be easier to do the second: change the theme to a more coherent format.  That will help on both our sides.<br></p>
+
+<h3>Adding tags to your plugin</h3>
+
+<p>renard/includes/renard-functions-public.php contains the <code>renard_bind()</code> function for that.  Here's an example.</p>
+
+<pre><code>
+function mytheme_foo(&$content, $myparam)
+{
+&nbsp;&nbsp;&nbsp;&nbsp;$in_str = $content;
+&nbsp;&nbsp;&nbsp;&nbsp;$new_tag = renard_add("<\$MyFoo:$myparam\$>");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;$content = preg_replace('/foo\(\);?/', $new_tag, $content);
+&nbsp;&nbsp;&nbsp;&nbsp;if ( $content == $in_str )
+&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$content = str_replace($new_tag, '&lt;?php foo(); ?&gt;', $content);
+&nbsp;&nbsp;&nbsp;&nbsp;}
+}
+
+$myvar = 'Bar';
+
+renard_bind('mytheme_foo', $myvar);
+</code></pre>
+
+<h3>* Licensing</h3>
+
+<p>This plugin is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html" title="General Public License">GPL</a>.  It had to be.  I personally like the <a href="http://www.opensource.org/licenses/bsd-license.php" title="Berkeley Software Distribution">BSD</a>-style licenses better.  They give you more freedom, I think, and require only that you indicate the origin of your code (that I wrote the original code) without requiring you to release your full modified code.  However, part of <a href="http://groups.google.com/group/wordpress-soc-2007/web/welcome?hl=en">The Agreement</a> was to license the code under the GPL.<br></p>
+
+<h2>Current caveats</h2>
+
+<ul>
+<li>The easier tags are case sensitive (title, TITLE, and Title are different entities).</li>
+<li>In many themes, not all PHP can be converted to an easier format.  Just ignore the parts that you don't understand.</li>
+</ul>
+
+<p>See <a href="caveats.html">caveats.html</a> for more.</p>
+
+<h2>Donate</h2>
+
+<p><span id="donate"></span>
+If you've found <em>Renard</em> helpful and want to show your appreciation and help further its development, please consider making a donation.</p>
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post"><br>
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!"><br>
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1"><br>
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+</form>
