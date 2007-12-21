@@ -1,0 +1,396 @@
+To use Renard, just enter into the editor
+(Admin > Presentation > Renard).
+
+The text box will automatically convert back and forth between
+the PHP functions that drive the theme and the easily edited
+HTML-like tags.  You can also add your own tags and easily
+customize your theme.  Note that no changes will be made until
+you save the file.
+
+Like with other systems, tags that start and end with dollar signs
+are tags that echo something out.  More precisely, they're replaced
+with PHP functions.  Those without dollar signs are containers
+and may or may not actually correspond to PHP code.
+
+So the format is:
+<ContainerTag>content</ContainerTag>
+<$Tag$>
+
+Tags can have attributes, like in HTML.  Unlike HTML, attributes
+are all lower-case, and must have a value in double quotes.
+
+Instead of having only a single attribute, some tags have a
+parameter.  The syntax is:
+TagName:parameter
+
+The parameter can be empty, in which case the colon is still
+required.  In tags without parameters, the colon is forbidden
+(for the obvious reason that the colon marks the beginning of a
+parameter).
+
+Currently, tags and parameters are case-sensitive.  That may
+change in the future, though all it will really do is add bloat
+and perhaps bugs to the code.
+
+Currently implemented tags:
+<$CommentAuthor$>
+	Displays the author of the current comment.
+<$CommentAuthorLink$>
+	Link to the website of the author of the current comment,
+	if he or she has one.
+<$CommentAuthorURL$>
+	Displays the author's web site URL, if he or she has one.
+	Notes: Really only useful in links.
+<$CommentDate$>
+	The date of the current comment, formatted according to
+	your settings.
+<$CommentDate:format$>
+	The date of the current comment, formatted according to
+	the specified format.
+	Parameters: format - The format for the date.
+<$CommentID$>
+	The ID of the current comment.
+<$CommentText$>
+	Text of the current comment.
+<$CommentTime$>
+	The time of the current comment, formatted according to
+	your settings.
+<$CommentType[ attributes]$>
+	Display the type of comment this is.
+	Attributes: comment - The text to display if it's a
+		comment.
+	trackback - The text to display if it's a trackback.
+	pingback - The text to display if it's a pingback.
+
+<$EntryAuthor$>
+	The author of the current entry or blog.
+<$EntryAuthorLink$>
+	Link to the website the author of the current post.
+<$EntryAuthorPostsLink$>
+	Link to the posts that the author of the current post
+	also wrote.
+<$EntryCommentsNumber[ attributes]$>
+	Display the number of comments for the current entry.
+	Attributes: zero - Text to display when there are no
+		comments.
+	one - Text to display when there's one comment
+	more - Text to display when there are more than one
+		comment.
+	number - Number of comments.
+	Note: If you don't understand what <number> is for, rest
+		assured I don't either.  I'd advise not to use
+		it, since it's optional anyway.
+<$EntryDate$>
+	The date of the current entry.
+	Notes: Formatted according to your settings.
+<$EntryExcerpt$>
+	The excerpt of the current entry.
+<$EntryID$>
+	The ID of the current entry.
+<$EntryPermalink$>
+	The URL of the current entry.
+<$EntryTime$>
+	The time the entry was initially posted.
+	Notes: It's formatted according to your settings.
+<$EntryTime:format$>
+	The time the entry was initially posted.
+	Parameters: format - The format for the time.
+	Notes: It's formatted according <format>.
+<$EntryTitle$>
+	The title of the current entry or blog.
+<$EntryTrackbackURL$>
+	The trackback URL for the current entry or blog.
+
+<$WPArchives:arguments$>
+	Displays the list of archives, according to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		type=yearly|monthly|daily|weekly|postbypost
+		limit=<integer>
+		format=html|option|link|custom
+		before=<text>
+		after=<text>
+		show_post_count=0|1
+<$WPAutodiscover$>
+	Provides a link that agents can use to automatically
+	discover the trackback link to the blog or entry.
+<$WPBookmarks:arguments$>
+	Displays the list of bookmarks, according to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		categorize=0|1
+		categories=<category-ids>
+		category_name=<category>
+		category_orderby=name|id
+		category_order=ASC|DESC
+		title_li=<text>
+		title_before=<text>
+		title_after=<text>
+		show_private=0|1
+		include=<bookmark-ids>
+		exclude=<bookmark-ids>
+		orderby=id|url|name|target|description|rating|
+			owner|updated|rel|notes|rss|length|rand
+		order=ASC|DESC
+		limit=<integer>
+		before=<text>
+		after=<text>
+		category_before=<text>
+		category_after=<text>
+		show_images=0|1
+		show_description=0|1
+		show_rating=0|1
+		show_updated=0|1
+		hide_invisible=0|1
+<$WPCalendar$>
+	Displays a calendar with a one-letter day abbreviation.
+<$WPCalendar3$>
+	Displays a calendar with a day abbreviation according to
+	your locale settings (typically three characters; hence
+	the name).
+	Notes: Length of the abbreviation may vary according to
+		different locale settings.
+<$WPCategories:arguments$>
+	Displays the categories of the current blog, according
+	to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		show_option_all=<text>
+		orderby=name|ID|count
+		order=ASC|DESC
+		show_last_updated=0|1
+		style=list|none
+		show_count=0|1
+		hide_empty=0|1
+		use_desc_for_title=0|1
+		child_of=<category>
+		feed=<feed-title>
+		feed_image=<url>
+		exclude=<category-ids>
+		include=<category-ids>
+		hierarchical=0|1
+		title_li=<text>
+		number=<integer>
+<$WPCategoriesOld:arguments$>
+	Displays the categories of the current blog, according
+	to <arguments>.
+	Parameters:  arguments - zero or more arguments, separated
+		by an ampersand.
+	Notes: You should use <$WCategories:arguments$> instead.
+		It's included because some themes still use it.
+<$WPElse$>
+	The code below this is rendered if a previous <$WPIf*$>
+	or other condition was false.
+	Notes: The code is rendered until an <$WPEndIf$> tag is
+		encountered.
+<$WPEndEntries$>
+	Ends the <$WPIfEntries$>/<$WPIfNoEntries$> section.
+<$WPEndIf$>
+	End of the section started by an <$WPIf*$> tag or other
+	condition.
+<$WPEndLoop$>
+	Ends the current loop.  The content after it won't be
+	parsed until the loop is finished.
+<$WPEntriesLoop$>
+	Runs <$WPNextEntry$> and all following text, markup, and
+	code, until <$WPEndLoop$> is encountered.  It repeats
+	until there are no more entries to display.
+	Note: It displays the number of entries indicated in the
+		options.
+<$WPEntriesNavigation[ attributes]$>
+	Provides a link to older and newer entries.
+	Attributes:
+	sep - The separator
+	prev - Text to display for the link to newer entries
+	next - Text to display for the link to older entries
+<$WPFooter$>
+	Additional footer information.
+	Note: This won't do anything unless you're using a plugin
+		that adds this information.
+<$WPHeader$>
+	Additional header information.
+	Note: This won't do anything unless you're using a plugin
+		that adds this information.
+<$WPIfCommentsOpen$>
+	Render the following code only if comments are open.
+<$WPIfEntries$>
+	If there are entries in the current blog, the code below
+	it will be parsed.
+	Notes: A <$WPIfNoEntries$> tag should be used in
+		conjunction with <$WPIfEntries$> for the rare
+		occasions in which no entries are in the blog.
+<$WPIfNoEntries$>
+	If there are no entries in the current blog, the code
+	below it will be parsed.
+<$WPIfPingsOpen$>
+	Render the following code only if comments are open.
+<$WPInfo:item$>
+	Displays the info about the blog's <item>.
+	Parameters: item.  Here are some popular items:
+		atom_url
+		comments_rss2_url
+		charset (character set)
+		description
+		html_type (HTML MIME type)
+		name
+		pingback_url
+		rdf_url
+		rss_url
+		rss2_url
+		stylesheet_directory
+		stylesheet_url
+		template_directory
+		template_url
+		url
+<$WPLanguageAttributes$>
+	The HTML attributes for the proper display of the content,
+	based on the server computer's locale.
+<$WPLinkPages:arguments$>
+	Display numbered links for multi-page blog posts according
+	<arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		before=<text>
+		after=<text>
+		next_or_number=next|number
+		nextpagelink=<text>
+		previouspagelink=<text>
+		pagelink=<text>
+		morefile=<file>
+<$WPLinks:order$>
+	Displays your blogroll in the specified <order>.
+	Parameters: order - How to order the links:
+		_id - Reverse chronological
+		_name - Reverse alphabetical
+		id - Chronological
+		name - Alphabetical
+<$WPLoadComments$>
+	Loads the comments template file (comments.php).
+<$WPLoadFooter$>
+	Loads the footer template file (footer.php).
+<$WPLoadHeader$>
+	Loads the header template file (header.php).
+<$WPLoadSidebar$>
+	Loads the sidebar template file (sidebar.php).
+<$WPLoginOut$>
+	Provide a link to the log-in or log-out page, depending
+	on your log-in status.
+<$WPMeta$>
+	Additional meta information.
+	Note: This won't do anything unless you're using a plugin
+		that adds this information.
+<$WPNextEntry$>
+	Advance to the next blog entry.  The <$Entry*$> tags will
+	then give information about the next entry instead of the
+	current one.
+	Note: The <$WPEntriesLoop$> tag just creates a loop with
+		this tag until there are no more entries to
+		display.
+<$WPPages:arguments$>
+	Lists all WordPress pages, according to <arguments>.
+	Parameters: arguments - zero or more of the following
+		arguments, separated by an ampersand:
+		sort_column=post_column|menu_order|post_date|
+			post_modified|ID|post_author|post_name
+		sort_order=asc|desc
+		exclude=<page-ids>
+		include=<page-ids>
+		depth=<integer>
+		child_of=<page-id>
+		show_date=<empty>|modified|<string>
+		date_format=<date-format>
+		title_li=<text>
+		hierarchical=0|1
+		meta_key=<text>
+		meta_value=<text>
+<$WPPageTitle[:sep]$>
+	The title of the current page (for example, blog entry),
+	separated by <sep>.
+<$WPRegister$>
+	Link to register as a user on the blog, if that has been
+	enabled.
+<$WPRewind$>
+	Rewinds the entries to the beginning.
+	Note: You must call <$WPNextEntry$> after this to get
+		information about the first entry.
+<$WPQuery:query$>
+	Queries the database about information about the entries.
+	Parameters: query - What to query in the database.
+		Examples:
+		cat - Category ID
+		p - page number
+		showposts - The number of posts to show
+<$WPSearch$>
+	What the user had searched for.
+
+<CommentsRSSLink>
+	Display a link to the RSS comments feed.
+	Note: The content is the link text.
+<CurrentCategory>
+	Displays the category of the current page.
+	Notes: The content is the heading for the current-
+		category display.
+<EditComment>
+	Displays a link to edit the current comment, if you have
+	that permission.
+	Notes: The content is the text to display for the link.
+<EditEntry>
+	Displays a link to edit the current entry, if you have
+	that permission.
+	Notes: The content is the text to display for the link.
+<EntryCategories>
+	Enumerates the categories of the current entry and
+	displays them, separated by the designated character(s).
+	Notes: The content is the character(s) used for separating
+               the categories.
+<EntryContent>
+	Displays the content of the current entry.
+	Notes: The content of this attribute is a string that
+		will be displayed when excerpts are used.
+<TranslatableString>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
+		This is a string to give to a tag's parameters or
+		content.  To output to the screen, use
+		<TranslatableText>.
+<TranslatableString:domain>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <domain>-<lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
+		This is a string to give to a tag's parameters or
+		content.  To output to the screen, use
+		<TranslatableText:domain>.
+<TranslatableText>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
+<TranslatableText:domain>
+	Text to be translated.
+	Notes:
+		The content of this tag is a string contained in
+		the localization table <domain>-<lang-code>.po.
+		Converting the PHP function to this tag is
+		extremely buggy right now.
+
+NOTES
+1. PHP sections start with <?php and ends with ?>.  Easier
+   template tags must be placed outside of PHP sections.  It's
+   best to only use easier template tags in areas where others are
+   present.
+2. Clarification: There must be no spaces in the less-than
+   sign, dollar sign and tag name.  Similarly, there must be no
+   space before the final dollar sign or between the final dollar
+   sign and the final greater-than sign.  If there's no dollar
+   sign in the tag, the same rules apply according to logic: no
+   space before the initial less-than-sign or after the final
+   greater-than sign.
