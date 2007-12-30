@@ -34,7 +34,7 @@ clean:
 	rm -f *.zip *.tar.gz *.tar.bz2
 
 zip: clean all
-	zip -r $(PLUGIN_NAME)$(PLUGIN_SPACER)$(PLUGIN_VERSION).zip *
+	zip -r $(PLUGIN_NAME)$(PLUGIN_SPACER)$(PLUGIN_VERSION).zip ../$(PLUGIN_NAME)
 
 tarball: clean all
 	tar cf $(PLUGIN_NAME)$(PLUGIN_SPACER)$(PLUGIN_VERSION).tar ../$(PLUGIN_NAME)
