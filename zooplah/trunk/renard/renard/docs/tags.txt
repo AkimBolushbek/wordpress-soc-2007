@@ -64,6 +64,12 @@ Currently implemented tags:
 
 <$EntryAuthor$>
 	The author of the current entry or blog.
+<$EntryAuthorDescription$>
+	Description of the current entry's author.
+<$EntryAuthorFirstName$>
+	The first name of the current entry's author.
+<$EntryAuthorLastName$>
+	The last name of the current entry's author.
 <$EntryAuthorLink$>
 	Link to the website the author of the current post.
 <$EntryAuthorPostsLink$>
