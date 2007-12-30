@@ -1,12 +1,12 @@
 <?php
-/*
+@header-start@
 Plugin Name: Renard
 Plugin URI: http://kechjo.cogia.net/blogo/2007/09/09/renard
 Description: Provides an editor that allows you to easily edit themes without seeing much of the underlying PHP code.
-Version: 0.2
+Version: @VERSION@
 Author: Keith Bowes
 Author URI: http://kechjo.cogia.net/
-*/
+@header-end@
 
 /*  Copyright 2007  Renard
 
@@ -25,14 +25,6 @@ Author URI: http://kechjo.cogia.net/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-require_once 'includes/renard-functions-public.php';
-
-function add_renard_admin_pages()
-{
-	add_theme_page(__z('Renard Editor'), __z('Renard'), edit_themes, get_renard_dir() . 'renard/pages/renard-subpanel.php');
-	add_options_page(__z('Renard Options'), __z('Renard'), edit_themes, get_renard_dir() . 'renard/pages/renard-options.php');
-}
-
-add_action('admin_menu', 'add_renard_admin_pages');
+require_once 'renard/renard.php';
 
 ?>
