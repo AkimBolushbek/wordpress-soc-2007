@@ -1,13 +1,16 @@
 MARKDOWN ?= Markdown.pl
 
 PLUGIN_NAME = renard
-PLUGIN_VERSION = 0.2
+PLUGIN_VERSION = 0.2.1
 PLUGIN_SPACER = -
+export PLUGIN_VERSION
 
 GZIP = gzip
 GZIPFLAGS =
 
-all: readme.html $(PLUGIN_NAME)/docs/readme.html
+include functions.mk
+
+all: readme.html $(PLUGIN_NAME)/docs/readme.html renard.php
 	cd $(PLUGIN_NAME) && $(MAKE)
 
 readme.html:
@@ -21,10 +24,13 @@ $(PLUGIN_NAME)/docs/readme.html: readme.txt
 		-e 's/==\s+(.*)\s+==/## \1 ##/g' \
 		-e 's/=\s+(.*)\s+=/### \1 ###/g' \
 		$< | $(MARKDOWN) --html4tags > $@
+renard.php: renard.php.in
+	$(call IN_TO_PHP)
 
 clean:
 	cd $(PLUGIN_NAME) && $(MAKE) clean
 	rm -f readme.html
+	rm -f renard.php
 	rm -f *.zip *.tar.gz *.tar.bz2
 
 zip: clean all
