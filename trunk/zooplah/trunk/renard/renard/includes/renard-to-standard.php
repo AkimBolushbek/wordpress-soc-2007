@@ -111,6 +111,9 @@ function renard_parse_ez(&$content)
 	$content = str_replace('<$EntryTitle$>', '<?php the_title(); ?>', $content);
 
 	$content = str_replace('<$EntryAuthor$>', '<?php the_author(); ?>', $content);
+	$content = str_replace('<$EntryAuthorDescription$>', '<?php the_author_description(); ?>', $content);
+	$content = str_replace('<$EntryAuthorFirstName$>', '<?php the_author_firstname(); ?>', $content);
+	$content = str_replace('<$EntryAuthorLastName$>', '<?php the_author_lastname(); ?>', $content);
 	$content = str_replace('<$EntryAuthorLink$>', '<?php the_author_link(); ?>', $content);
 	$content = str_replace('<$EntryAuthorPostsLink$>', '<?php the_author_posts_link(); ?>', $content);
 	$content = str_replace('<$EntryDate$>', '<?php the_date(); ?>', $content);

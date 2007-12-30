@@ -12,6 +12,21 @@ function renard_from_author(&$content)
 	$content = preg_replace('/([^_])the_author\(\s*\);?/', '$1?&gt;<$EntryAuthor$>&lt;?php', $content);
 }
 
+function renard_from_author_description(&$content)
+{
+	$content = preg_replace('/the_author_description\(\s*\);?/', '?&gt;<$EntryAuthorDescription$>&lt;?php', $content);
+}
+
+function renard_from_author_first_name(&$content)
+{
+	$content = preg_replace('/the_author_firstname\(\s*\);?/', '?&gt;<$EntryAuthorFirstName$>&lt;?php', $content);
+}
+
+function renard_from_author_last_name(&$content)
+{
+	$content = preg_replace('/the_author_lastname\(\s*\);?/', '?&gt;<$EntryAuthorLastName$>&lt;?php', $content);
+}
+
 function renard_from_author_link(&$content)
 {
 	$content = preg_replace('/the_author_link\(\s*\);?/', '?&gt;<$EntryAuthorLink$>&lt;?php', $content);
@@ -461,6 +476,9 @@ function renard_from_wp_title(&$content)
 function renard_parse_from_init()
 {
 	renard_bind('renard_from_author');
+	renard_bind('renard_from_author_description');
+	renard_bind('renard_from_author_first_name');
+	renard_bind('renard_from_author_last_name');
 	renard_bind('renard_from_author_link');
 	renard_bind('renard_from_author_posts');
 	renard_bind('renard_from_blog_info');
