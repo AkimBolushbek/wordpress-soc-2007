@@ -36,10 +36,15 @@
   * Hide or show disabled files
 * Ensure it works in WordPress 2.3.
 
-0.3 (target date: 2007-12-31)
-* Make a preprocessor and a postprocessor so that PHP arguments
-  with commas and parentheses will be less screwy.
+0.2.1 (target date: 2007-12-31)
+* New screenshot that displays its production name.
 * Tutorial on making a basic theme. 
+* Support for more template tags.
+* Donate link in the editor.
+
+0.3 (target date: 2008-01-08)
+* Make a preprocessor and a postprocessor so that PHP arguments
+  with commas and parentheses will be less screwy. 
 * Support for all documented template tags.
 
 0.4 (target date: 2008-01-12)
