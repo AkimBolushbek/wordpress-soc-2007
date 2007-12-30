@@ -3,7 +3,7 @@ Contributors:
 Donate link: #donate
 Tags: theming
 Requires at least: 2.1
-Tested up to: 2.3
+Tested up to: 2.3.2
 Stable tag: trunk
 
 Converts between PHP template tags and easier HTML-like template tags for easier theme editing.
