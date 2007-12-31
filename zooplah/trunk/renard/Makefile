@@ -7,6 +7,8 @@ PLUGIN_SPACER = -
 GZIP = gzip
 GZIPFLAGS =
 
+export PLUGIN_VERSION
+
 include functions.mk
 
 all: readme.html $(PLUGIN_NAME)/docs/readme.html renard.php
